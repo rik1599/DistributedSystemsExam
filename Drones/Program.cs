@@ -1,2 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Akka.Actor;
+
+using (var system = ActorSystem.Create("DeployTarget")) 
+{
+    Console.ReadKey();
+}
