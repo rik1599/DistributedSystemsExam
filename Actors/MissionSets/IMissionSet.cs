@@ -1,11 +1,5 @@
 ﻿using Actors.MissionPathPriority;
 using Akka.Actor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace Actors.MissionSets
 {
@@ -18,15 +12,10 @@ namespace Actors.MissionSets
     /// <typeparam name="M"></typeparam>
     public abstract class IMissionSet<M> where M : Mission
     {
-        private IDictionary<IActorRef, M> _missions = new Dictionary<IActorRef, M>();
-
         /// <summary>
         /// Tutte le missioni della collezione
         /// </summary>
-        public IDictionary<IActorRef, M> Missions => _missions.ToDictionary(
-            mission => mission.Key,
-            mission => mission.Value
-            );
+        protected IDictionary<IActorRef, M> Missions { get; private set; } = new Dictionary<IActorRef, M>();
 
         /// <summary>
         /// Cerca una missione nel set attraverso il nome del suo nodo
@@ -35,8 +24,8 @@ namespace Actors.MissionSets
         /// <returns>L'istanza della missione se esiste, altrimenti null</returns>
         public M? GetMission(IActorRef nodeRef)
         {
-            if (_missions.ContainsKey(nodeRef))
-                return _missions[nodeRef];
+            if (Missions.ContainsKey(nodeRef))
+                return Missions[nodeRef];
             return null;
         }
 
@@ -47,8 +36,8 @@ namespace Actors.MissionSets
         /// <param name="path"></param>
         public void AddMission(IActorRef nodeRef, MissionPath path)
         {
-            if (!_missions.ContainsKey(nodeRef))
-                _missions.Add(nodeRef, CreateMission(nodeRef, path));
+            if (!Missions.ContainsKey(nodeRef))
+                Missions.Add(nodeRef, CreateMission(nodeRef, path));
         }
 
         /// <summary>
@@ -58,7 +47,7 @@ namespace Actors.MissionSets
         /// <returns>True se la missione è stata rimossa</returns>
         public bool RemoveMission(IActorRef nodeRef)
         {
-            return _missions.Remove(nodeRef);
+            return Missions.Remove(nodeRef);
         }
 
         /// <summary>
