@@ -1,23 +1,19 @@
 ﻿using Akka.Actor;
-using Actors;
 using Environment;
+using MathNet.Spatial.Euclidean;
 
 using (var system = ActorSystem.Create("Deployer"))
 {
-    var remoteAddress = Address.Parse("akka.tcp://DeployTarget@localhost:8081");
-    var remoteEcho1 = system.ActorOf(
-        Props.Create(() => new EchoActor())
-            .WithDeploy(Deploy.None.WithScope(new RemoteScope(remoteAddress))), 
-        "remoteecho1");
-    var remoteEcho2 = system.ActorOf(
-        Props.Create(() => new EchoActor())
-            .WithDeploy(Deploy.None.WithScope(new RemoteScope(remoteAddress))),
-        "remoteecho2");
+    var environment = system.ActorOf(Props.Create(() => new EnvironmentActor()));
+
+    Mission mission = new(Point2D.Origin, new Point2D(10, 30));
+    Host host = new HostFactoryTCP().Create("localhost", 8081);
+    MissionMessage message = new(mission, host.Parse());
 
     Console.ReadKey();
 
-    system.ActorOf(Props.Create(() => new HelloActor(remoteEcho1)));
-    system.ActorOf(Props.Create(() => new HelloActor(remoteEcho2)));
+    environment.Tell(message);
 
     Console.ReadKey();
+    system.Terminate();
 }

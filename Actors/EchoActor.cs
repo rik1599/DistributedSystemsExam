@@ -9,8 +9,10 @@ namespace Actors
     /// <summary>
     /// Actor that just replies the message that it received earlier
     /// </summary>
-    public class EchoActor : ReceiveActor
+    public class EchoActor : ReceiveActor, IWithTimers
     {
+        public ITimerScheduler Timers { get; set; }
+
         public EchoActor()
         {
             Receive<Hello>(hello =>
