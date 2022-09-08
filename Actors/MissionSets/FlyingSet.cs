@@ -1,11 +1,12 @@
-﻿using Akka.Actor;
+﻿using Actors.MissionPathPriority;
+using Akka.Actor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Actors.Mission
+namespace Actors.MissionSets
 {
     /// <summary>
     /// Strumento per la gestione delle missioni in volo. 
@@ -15,7 +16,7 @@ namespace Actors.Mission
     /// </summary>
     public class FlyingSet : IMissionSet<FlyingMission>
     {
-        protected override FlyingMission CreateMission(IActorRef nodeRef, Path path)
+        protected override FlyingMission CreateMission(IActorRef nodeRef, MissionPath path)
         {
             // generazione 
             return new FlyingMission(nodeRef, path, DateTime.Now);

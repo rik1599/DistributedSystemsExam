@@ -1,11 +1,12 @@
-﻿using Akka.Actor;
+﻿using Actors.MissionPathPriority;
+using Akka.Actor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Actors.Mission
+namespace Actors.MissionSets
 {
     /// <summary>
     /// Un set di missioni con cui sono in conflitto 
@@ -52,7 +53,7 @@ namespace Actors.Mission
                 );
         }
         
-        protected override WaitingMission CreateMission(IActorRef nodeRef, Path path)
+        protected override WaitingMission CreateMission(IActorRef nodeRef, MissionPath path)
         {
             return new WaitingMission(nodeRef, path, Priority.InfinitePriority);
         }

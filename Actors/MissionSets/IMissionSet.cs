@@ -1,11 +1,13 @@
-﻿using Akka.Actor;
+﻿using Actors.MissionPathPriority;
+using Akka.Actor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Actors.Mission
+
+namespace Actors.MissionSets
 {
     /// <summary>
     /// Strumento generico per gestire set di missioni attraverso 
@@ -43,7 +45,7 @@ namespace Actors.Mission
         /// </summary>
         /// <param name="nodeRef"></param>
         /// <param name="path"></param>
-        public void AddMission(IActorRef nodeRef, Path path)
+        public void AddMission(IActorRef nodeRef, MissionPath path)
         {
             if (!_missions.ContainsKey(nodeRef))
                 _missions.Add(nodeRef, CreateMission(nodeRef, path));
@@ -65,6 +67,6 @@ namespace Actors.Mission
         /// <param name="nodeRef"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected abstract M CreateMission(IActorRef nodeRef, Path path);
+        protected abstract M CreateMission(IActorRef nodeRef, MissionPath path);
     }
 }

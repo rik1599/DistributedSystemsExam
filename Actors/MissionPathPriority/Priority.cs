@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Actors.Mission
+namespace Actors.MissionPathPriority
 {
     /// <summary>
     /// Priorità di una missione; è rappresentata da una metrica. 

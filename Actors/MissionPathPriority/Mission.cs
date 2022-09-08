@@ -1,7 +1,7 @@
 ﻿using Akka.Actor;
 using MathNet.Spatial.Euclidean;
 
-namespace Actors.Mission
+namespace Actors.MissionPathPriority
 {
     /// <summary>
     /// Missione. E' caratterizzata dalla sua tratta (utilizzabile
@@ -14,9 +14,9 @@ namespace Actors.Mission
     {
         protected IActorRef NodeRef { get; private set; }
 
-        protected Path Path { get; private set; }
+        protected MissionPath Path { get; private set; }
 
-        protected Mission(IActorRef nodeRef, Path path)
+        protected Mission(IActorRef nodeRef, MissionPath path)
         {
             NodeRef = nodeRef;
             Path = path;
@@ -30,7 +30,7 @@ namespace Actors.Mission
     {
         public Priority Priority { get; set; }
 
-        public WaitingMission(IActorRef nodeRef, Path path, Priority priority) : base(nodeRef, path)
+        public WaitingMission(IActorRef nodeRef, MissionPath path, Priority priority) : base(nodeRef, path)
         {
             Priority = priority;
         }
@@ -53,7 +53,7 @@ namespace Actors.Mission
     {
         private readonly DateTime _startTime;
 
-        public FlyingMission(IActorRef nodeRef, Path path, DateTime startTime) : base(nodeRef, path)
+        public FlyingMission(IActorRef nodeRef, MissionPath path, DateTime startTime) : base(nodeRef, path)
         {
             _startTime = startTime;
         }

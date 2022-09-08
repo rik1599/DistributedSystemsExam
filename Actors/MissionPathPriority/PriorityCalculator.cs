@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Actors.Mission
+namespace Actors.MissionPathPriority
 {
     /// <summary>
     /// Strumento per il calcolo della priorità di un nodo 

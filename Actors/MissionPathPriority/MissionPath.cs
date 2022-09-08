@@ -1,6 +1,6 @@
 ﻿using MathNet.Spatial.Euclidean;
 
-namespace Actors.Mission
+namespace Actors.MissionPathPriority
 {
     /// <summary>
     /// Tratta che un drone vuole percorrere, si tratta
@@ -10,7 +10,7 @@ namespace Actors.Mission
     /// Permette di calcolare agevolmente conflitti (con un margine) e 
     /// di ottenere la distanza (in termini temporali) da un certo punto.
     /// </summary>
-    public class Path
+    public class MissionPath
     {
         public Point2D StartPoint { get; private set; }
         public Point2D EndPoint { get; private set; }
@@ -27,7 +27,7 @@ namespace Actors.Mission
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
         /// <param name="speed">Velocità in unità spaziali al secondo</param>
-        public Path(Point2D startPoint, Point2D endPoint, float speed)
+        public MissionPath(Point2D startPoint, Point2D endPoint, float speed)
         {
             StartPoint = startPoint;
             EndPoint = endPoint;
@@ -48,7 +48,7 @@ namespace Actors.Mission
         /// 
         /// Se non ci sono conflitti tra le due tratte, si ritorna null.
         /// </returns>
-        public Point2D? ClosestConflictPoint(Path p)
+        public Point2D? ClosestConflictPoint(MissionPath p)
         {
             return null;
         }
