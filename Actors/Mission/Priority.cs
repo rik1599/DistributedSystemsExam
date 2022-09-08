@@ -62,7 +62,9 @@ namespace Actors.Mission
 
             if (MetricValue.CompareTo(other.MetricValue) != 0) return MetricValue.CompareTo(other.MetricValue);
 
-            return NodeRef.CompareTo(other.NodeRef);
+            // in caso di parità di metrica vince il nodo
+            // con identificatore più piccolo
+            return - NodeRef.CompareTo(other.NodeRef);
         }
 
         internal Priority(double metricValue, IActorRef? nodeRef)
