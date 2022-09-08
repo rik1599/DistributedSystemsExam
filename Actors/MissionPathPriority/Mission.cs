@@ -12,9 +12,9 @@ namespace Actors.MissionPathPriority
     /// </summary>
     public abstract class Mission
     {
-        protected IActorRef NodeRef { get; private set; }
+        public IActorRef NodeRef { get; private set; }
 
-        protected MissionPath Path { get; private set; }
+        public MissionPath Path { get; private set; }
 
         protected Mission(IActorRef nodeRef, MissionPath path)
         {
