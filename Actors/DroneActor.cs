@@ -21,14 +21,19 @@ namespace Actors
         {
             Others = others;
             Mission = new WaitingMission(Self, missionPath, Priority.NullPriority);
-            _droneState = new InitState(this);
 
-            Receive<ConnectRequest> (msg => _droneState = _droneState.OnReceive(msg, TODO, TODO, TODO, TODO, TODO, TODO));
-            Receive<ConnectResponse>(msg => _droneState = _droneState.OnReceive(msg, TODO, TODO, TODO, TODO, TODO));
-            Receive<FlyingResponse> (msg => _droneState = _droneState.OnReceive(msg, TODO, TODO, TODO, TODO));
-            Receive<MetricMessage>  (msg => _droneState = _droneState.OnReceive(msg, TODO, TODO, TODO));
-            Receive<WaitMeMessage>  (msg => _droneState = _droneState.OnReceive(msg, TODO, TODO));
-            Receive<ExitMessage>    (msg => _droneState = _droneState.OnReceive(msg, TODO));
+            // la modalità di gestione dei messaggi dipende dallo stato del drone
+            Receive<ConnectRequest> (msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<ConnectResponse>(msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<FlyingResponse> (msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<MetricMessage>  (msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<WaitMeMessage>  (msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<ExitMessage>    (msg => _droneState = _droneState.OnReceive(msg, Self));
+
+            // avvio lo stato iniziale
+            _droneState = InitState
+                .CreateInitState(this, Self)
+                .RunState();
         }
     }
 }
