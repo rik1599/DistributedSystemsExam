@@ -22,7 +22,7 @@ namespace Actors
     /// NOTA: chiamare OnReceive(InternalFlyIsSafeMessage) per
     /// liberare il flying set.
     /// </summary>
-    internal class FlyingMissionsMonitor
+    public class FlyingMissionsMonitor
     {
         private Mission _thisMission;
 
@@ -87,7 +87,7 @@ namespace Actors
                 _timers.Cancel(flyingMission);
 
                 // libero il flying set
-                return _flyingSet.RemoveMission(nodeRef);
+                return _flyingSet.RemoveMission(nodeRef) != null;
             }
 
             return false;

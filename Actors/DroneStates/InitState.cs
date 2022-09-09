@@ -8,35 +8,18 @@ namespace Actors.DroneStates
     internal class InitState : DroneActorState
     {
 
-        private ConflictSet _conflictSet;
-
-        private FlyingMissionsMonitor _flyingMissionsMonitor;
-
         private ISet<IActorRef> _expectedConnectResponses;
 
-        // shortcut per la tratta Mission Path
-        private MissionPath MissionPath { 
-            get { return DroneActor.ThisMission.Path; } 
-        }
 
-
-        internal InitState(DroneActor droneActor, IActorRef droneActorRef) : base(droneActor, droneActorRef)
+        internal InitState(DroneActor droneActor, IActorRef droneActorRef, 
+            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
+            : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
         {
-            _conflictSet = new ConflictSet();
-
-            _flyingMissionsMonitor = new FlyingMissionsMonitor(droneActor.ThisMission,
-                new FlyingSet(), droneActor.Timers);
-
             _expectedConnectResponses = DroneActor.Nodes.ToHashSet();
         }
 
         internal override DroneActorState RunState()
         {
-            // se non ho vicini, posso passare direttamente allo stato successivo
-            if (_expectedConnectResponses.Count == 0)
-                return CreateNegotiateState(DroneActor, DroneActorRef, 
-                    _conflictSet, _flyingMissionsMonitor).RunState();
-
             // invio richiesta di connessione a tutti i nodi noti
             var connectRequest = new ConnectRequest(MissionPath);
 
@@ -47,51 +30,67 @@ namespace Actors.DroneStates
 
             // TODO: far partire timeout
 
-            return this;
-        }
-
-        internal override DroneActorState OnReceive(ConnectRequest msg, IActorRef sender)
-        {
-            // rispondo con la mia tratta
-            sender.Tell(new ConnectResponse(MissionPath));
-
-            // se non conosco già il nodo, lo aggiungo alla lista
-            if (!DroneActor.Nodes.Contains(sender))  
-                DroneActor.Nodes.Add(sender);
-
-            // verifico se c'è conflitto (ed eventualmente aggiungo al conflict set)
-            var conflictPoint = MissionPath.ClosestConflictPoint(msg.Path);
-            if (conflictPoint != null)
-            {
-                _conflictSet.AddMission(sender, msg.Path);
-            }
-
-            return this;
+            // se non ho vicini, annullo i timeout e posso passare
+            // direttamente allo stato successivo
+            return checkIfIReceivedAllResponses(); ;
         }
 
         internal override DroneActorState OnReceive(ConnectResponse msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            // verifico se c'è conflitto (ed eventualmente aggiungo al conflict set)
+            if (MissionPath.ClosestConflictPoint(msg.Path) != null)
+            {
+                ConflictSet.AddMission(sender, msg.Path);
+            }
+
+            _expectedConnectResponses.Remove(sender);
+
+            return checkIfIReceivedAllResponses();
         }
 
         internal override DroneActorState OnReceive(FlyingResponse msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            base.OnReceive(msg, sender);
+
+            _expectedConnectResponses.Remove(sender);
+
+            return checkIfIReceivedAllResponses();
         }
 
         internal override DroneActorState OnReceive(MetricMessage msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            // (sono ancora in stato di inizializzazione,
+            // quindi non partecipo alle negoziazioni)
+            sender.Tell(new MetricMessage(Priority.NullPriority));
+
+            return this;
         }
 
         internal override DroneActorState OnReceive(WaitMeMessage msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            // (ignoro)
+            return this;
         }
 
         internal override DroneActorState OnReceive(ExitMessage msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            _expectedConnectResponses.Remove(sender);
+
+            return checkIfIReceivedAllResponses();
         }
+
+        private DroneActorState checkIfIReceivedAllResponses()
+        {
+            // se non attendo altre risposte, posso passare allo stato successivo
+            if (_expectedConnectResponses.Count == 0)
+            {
+                // TODO: cancella il timeout su attesa messaggi
+
+                return CreateNegotiateState(DroneActor, DroneActorRef,
+                    ConflictSet, FlyingMissionsMonitor).RunState();
+            }
+
+            return this;
+        } 
     }
 }

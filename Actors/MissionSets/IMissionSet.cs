@@ -44,10 +44,15 @@ namespace Actors.MissionSets
         /// Rimuovi una missione dal set
         /// </summary>
         /// <param name="nodeRef"></param>
-        /// <returns>True se la missione è stata rimossa</returns>
-        public bool RemoveMission(IActorRef nodeRef)
+        /// <returns>L'istanza della missione eventualmente rimossa</returns>
+        public M? RemoveMission(IActorRef nodeRef)
         {
-            return Missions.Remove(nodeRef);
+            if (!Missions.ContainsKey(nodeRef))
+                return null;
+
+            var mission = Missions[nodeRef];
+            Missions.Remove(nodeRef);
+            return mission;
         }
 
         /// <summary>
