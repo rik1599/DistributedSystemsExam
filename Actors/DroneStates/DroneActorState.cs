@@ -1,4 +1,5 @@
 ﻿using Actors.Messages.External;
+using Actors.MissionSets;
 using Akka.Actor;
 
 namespace Actors.DroneStates
@@ -19,8 +20,9 @@ namespace Actors.DroneStates
         public static DroneActorState CreateInitState(DroneActor droneActor, IActorRef droneActorRef)
             => new InitState(droneActor, droneActorRef);
 
-        public static DroneActorState CreateNegotiateState(DroneActor droneActor, IActorRef droneActorRef)
-            => new NegotiateState(droneActor, droneActorRef);
+        public static DroneActorState CreateNegotiateState(DroneActor droneActor, IActorRef droneActorRef, 
+            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
+            => new NegotiateState(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor);
 
         public static DroneActorState CreateWaitingState(DroneActor droneActor, IActorRef droneActorRef)
             => new WaitingState(droneActor, droneActorRef);

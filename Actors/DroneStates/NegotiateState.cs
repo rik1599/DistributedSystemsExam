@@ -1,12 +1,21 @@
 ﻿using Actors.Messages.External;
+using Actors.MissionSets;
 using Akka.Actor;
 
 namespace Actors.DroneStates
 {
     internal class NegotiateState : DroneActorState
     {
-        public NegotiateState(DroneActor droneActor, IActorRef droneActorRef) : base(droneActor, droneActorRef)
+        private ConflictSet _conflictSet;
+        private FlyingMissionsMonitor _flyingMissionsMonitor;
+
+
+        public NegotiateState(DroneActor droneActor, IActorRef droneActorRef, 
+            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
+            : base(droneActor, droneActorRef)
         {
+            _conflictSet = conflictSet;
+            _flyingMissionsMonitor = flyingMissionsMonitor;
         }
 
         internal override DroneActorState RunState()

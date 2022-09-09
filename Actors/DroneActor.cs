@@ -12,15 +12,16 @@ namespace Actors
         private readonly ILoggingAdapter _log = Context.GetLogger();
 
         internal DateTime TimeSpawn { get; private set; } = DateTime.Now;
-        internal ISet<IActorRef> Others { get; private set; }
-        internal Mission Mission { get; private set; }
+
+        internal ISet<IActorRef> OtherNodes { get; private set; }
+        internal Mission ThisMission { get; private set; }
 
         private DroneActorState _droneState;
 
         public DroneActor(ISet<IActorRef> others, MissionPath missionPath)
         {
-            Others = others;
-            Mission = new WaitingMission(Self, missionPath, Priority.NullPriority);
+            OtherNodes = others;
+            ThisMission = new WaitingMission(Self, missionPath, Priority.NullPriority);
 
             // avvio lo stato iniziale
             _droneState = InitState.CreateInitState(this, Self).RunState();                 
