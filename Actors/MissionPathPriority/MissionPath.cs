@@ -1,7 +1,30 @@
 ﻿using MathNet.Spatial.Euclidean;
+using MathNet.Spatial.Units;
 
 namespace Actors.MissionPathPriority
 {
+    struct PointDistance : IComparable<PointDistance>
+    {
+        public Point2D PointOnMe { get; private set; }
+        public Point2D PointOnOther { get; private set; }
+
+        public double Distance
+        {
+            get { return PointOnMe.DistanceTo(PointOnOther); }
+        }
+
+        public PointDistance(Point2D pointOnMe, Point2D pointOnOther)
+        {
+            PointOnMe = pointOnMe;
+            PointOnOther = pointOnOther;
+        }
+
+        public int CompareTo(PointDistance other)
+        {
+            return (int)(Distance - other.Distance);
+        }
+    }
+
     /// <summary>
     /// Tratta che un drone vuole percorrere, si tratta
     /// di uno spostamento da un punto A ad un punto B ad una certa
@@ -14,12 +37,18 @@ namespace Actors.MissionPathPriority
     {
         public Point2D StartPoint { get; private set; }
         public Point2D EndPoint { get; private set; }
+
+        private LineSegment2D PathSegment { 
+            get { return new LineSegment2D(StartPoint, EndPoint); }
+        }
         
         /// <summary>
         /// Velocità alla quale il drone si sposta. Si misura in 
         /// unità spaziali al secondo.
         /// </summary>
         public float Speed { get; private set; }
+
+        public const float MarginDistance = 5.0f;
 
         /// <summary>
         /// 
@@ -50,7 +79,21 @@ namespace Actors.MissionPathPriority
         /// </returns>
         public Point2D? ClosestConflictPoint(MissionPath p)
         {
-            return null;
+            PointDistance[] potentialConflictPoint = new PointDistance[4];
+            potentialConflictPoint[0] = new PointDistance(StartPoint, p.PathSegment.ClosestPointTo(StartPoint));
+            potentialConflictPoint[1] = new PointDistance(EndPoint, p.PathSegment.ClosestPointTo(EndPoint));
+            potentialConflictPoint[2] = new PointDistance(
+                p.PathSegment.ClosestPointTo(p.StartPoint), 
+                p.PathSegment.ClosestPointTo(PathSegment.ClosestPointTo(p.StartPoint)));
+            potentialConflictPoint[3] = new PointDistance(
+                PathSegment.ClosestPointTo(p.EndPoint), 
+                p.PathSegment.ClosestPointTo(PathSegment.ClosestPointTo(p.EndPoint)));
+
+            var minDistancePoint = potentialConflictPoint.Min();
+
+            if (minDistancePoint.Distance < MarginDistance)
+                return minDistancePoint.PointOnMe;
+            else return null;
         }
 
         /// <summary>

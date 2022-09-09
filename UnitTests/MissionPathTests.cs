@@ -8,13 +8,13 @@ namespace UnitTests
         [Fact]
         public void CheckParallel()
         {
-            MissionPath missionPathA = new MissionPath(
+            MissionPath missionPathA = new (
                 Point2D.Origin,
                 new Point2D(2, 2),
                 1.0F
                 );
 
-            MissionPath missionPathB = new MissionPath(
+            MissionPath missionPathB = new (
                 new Point2D(1, -1),
                 new Point2D(3, 1),
                 1.0F
@@ -26,13 +26,13 @@ namespace UnitTests
         [Fact]
         public void CheckIncident()
         {
-            MissionPath missionPathA = new MissionPath(
+            MissionPath missionPathA = new (
                 Point2D.Origin,
                 new Point2D(2, 2),
                 1.0F
                 );
 
-            MissionPath missionPathB = new MissionPath(
+            MissionPath missionPathB = new (
                 new Point2D(0, 2),
                 new Point2D(2, 0),
                 1.0F

@@ -72,7 +72,7 @@ namespace Actors.MissionPathPriority
             MetricValue = metricValue;
             NodeRef = nodeRef;
         }
-,     }
+    }
 
     internal class InfinitePriority : Priority
     {
