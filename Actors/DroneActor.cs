@@ -13,14 +13,14 @@ namespace Actors
 
         internal DateTime TimeSpawn { get; private set; } = DateTime.Now;
 
-        internal ISet<IActorRef> OtherNodes { get; private set; }
+        internal ISet<IActorRef> Nodes { get; private set; }
         internal Mission ThisMission { get; private set; }
 
         private DroneActorState _droneState;
 
         public DroneActor(ISet<IActorRef> others, MissionPath missionPath)
         {
-            OtherNodes = others;
+            Nodes = others;
             ThisMission = new WaitingMission(Self, missionPath, Priority.NullPriority);
 
             // avvio lo stato iniziale

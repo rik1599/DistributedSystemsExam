@@ -35,7 +35,7 @@ namespace Actors.MissionPathPriority
         /// 
         /// Non confrontare con altre priorità infinite.
         /// </summary>
-        public static Priority InfinitePriority = new InfinitePriority();
+        public static Priority InfinitePriority { get { return new InfinitePriority(); } }
 
         /// <summary>
         /// Priorità di un nodo che vuole perdere tutte le negoziazioni.
@@ -44,7 +44,7 @@ namespace Actors.MissionPathPriority
         /// 
         /// Non confrontare con altre priorità nulle.
         /// </summary>
-        public static Priority NullPriority = new NullPriority();
+        public static Priority NullPriority { get { return new NullPriority(); } }
 
         /// <summary>
         /// Confronta due priorità. Il confronto ritorna un numero positivo 
