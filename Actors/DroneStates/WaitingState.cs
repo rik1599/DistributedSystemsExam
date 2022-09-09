@@ -9,7 +9,7 @@ namespace Actors.DroneStates
         {
         }
 
-        internal override DroneActorState InitStateProcedure()
+        internal override DroneActorState RunState()
         {
             throw new NotImplementedException();
         }

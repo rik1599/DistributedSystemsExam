@@ -12,23 +12,27 @@ namespace Actors
         private readonly ILoggingAdapter _log = Context.GetLogger();
 
         internal DateTime TimeSpawn { get; private set; } = DateTime.Now;
-        internal ISet<IActorRef> Others { get; private set; }
-        internal Mission Mission { get; private set; }
+
+        internal ISet<IActorRef> OtherNodes { get; private set; }
+        internal Mission ThisMission { get; private set; }
 
         private DroneActorState _droneState;
 
         public DroneActor(ISet<IActorRef> others, MissionPath missionPath)
         {
-            Others = others;
-            Mission = new WaitingMission(Self, missionPath, Priority.NullPriority);
-            _droneState = new InitState(this);
+            OtherNodes = others;
+            ThisMission = new WaitingMission(Self, missionPath, Priority.NullPriority);
 
-            Receive<ConnectRequest> (msg => _droneState = _droneState.OnReceive(msg, TODO, TODO, TODO, TODO, TODO, TODO));
-            Receive<ConnectResponse>(msg => _droneState = _droneState.OnReceive(msg, TODO, TODO, TODO, TODO, TODO));
-            Receive<FlyingResponse> (msg => _droneState = _droneState.OnReceive(msg, TODO, TODO, TODO, TODO));
-            Receive<MetricMessage>  (msg => _droneState = _droneState.OnReceive(msg, TODO, TODO, TODO));
-            Receive<WaitMeMessage>  (msg => _droneState = _droneState.OnReceive(msg, TODO, TODO));
-            Receive<ExitMessage>    (msg => _droneState = _droneState.OnReceive(msg, TODO));
+            // avvio lo stato iniziale
+            _droneState = InitState.CreateInitState(this, Self).RunState();                 
+
+            // la modalità di gestione dei messaggi dipende dallo stato del drone
+            Receive<ConnectRequest> (msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<ConnectResponse>(msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<FlyingResponse> (msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<MetricMessage>  (msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<WaitMeMessage>  (msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<ExitMessage>    (msg => _droneState = _droneState.OnReceive(msg, Self));
         }
     }
 }
