@@ -77,23 +77,14 @@ namespace Actors.MissionPathPriority
         /// 
         /// Se non ci sono conflitti tra le due tratte, si ritorna null.
         /// </returns>
-        public Point2D? ClosestConflictPoint(MissionPath p)
+        public Point2D? ClosestConflictPoint(MissionPath p, double margin = MarginDistance)
         {
-            PointDistance[] potentialConflictPoint = new PointDistance[4];
-            potentialConflictPoint[0] = new PointDistance(StartPoint, p.PathSegment.ClosestPointTo(StartPoint));
-            potentialConflictPoint[1] = new PointDistance(EndPoint, p.PathSegment.ClosestPointTo(EndPoint));
-            potentialConflictPoint[2] = new PointDistance(
-                p.PathSegment.ClosestPointTo(p.StartPoint), 
-                p.PathSegment.ClosestPointTo(PathSegment.ClosestPointTo(p.StartPoint)));
-            potentialConflictPoint[3] = new PointDistance(
-                PathSegment.ClosestPointTo(p.EndPoint), 
-                p.PathSegment.ClosestPointTo(PathSegment.ClosestPointTo(p.EndPoint)));
+            var minDistanceSegment = new SegmentDistanceCalculator(PathSegment, p.PathSegment).ComputeMinDistance();
 
-            var minDistancePoint = potentialConflictPoint.Min();
-
-            if (minDistancePoint.Distance < MarginDistance)
-                return minDistancePoint.PointOnMe;
-            else return null;
+            if (minDistanceSegment.Length < margin && PathSegment.TryIntersect(minDistanceSegment, out var conflictPoint, Angle.FromRadians(0)))
+                return conflictPoint;
+            else
+                return null;
         }
 
         /// <summary>
