@@ -1,11 +1,14 @@
 ﻿using Actors.Messages.External;
+using Actors.MissionSets;
 using Akka.Actor;
 
 namespace Actors.DroneStates
 {
     internal class WaitingState : DroneActorState
     {
-        public WaitingState(DroneActor droneActor, IActorRef droneActorRef) : base(droneActor, droneActorRef)
+        public WaitingState(DroneActor droneActor, IActorRef droneActorRef,
+            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
+            : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
         {
         }
 

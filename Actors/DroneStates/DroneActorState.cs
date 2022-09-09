@@ -49,11 +49,13 @@ namespace Actors.DroneStates
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
             => new NegotiateState(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor);
 
-        public static DroneActorState CreateWaitingState(DroneActor droneActor, IActorRef droneActorRef)
-            => new WaitingState(droneActor, droneActorRef);
+        public static DroneActorState CreateWaitingState(DroneActor droneActor, IActorRef droneActorRef,
+            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
+            => new WaitingState(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor);
 
-        public static DroneActorState CreateFlyingState(DroneActor droneActor, IActorRef droneActorRef)
-            => new FlyingState(droneActor, droneActorRef);
+        public static DroneActorState CreateFlyingState(DroneActor droneActor, IActorRef droneActorRef,
+            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
+            => new FlyingState(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor);
 
         #endregion
 

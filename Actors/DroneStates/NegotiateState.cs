@@ -6,16 +6,12 @@ namespace Actors.DroneStates
 {
     internal class NegotiateState : DroneActorState
     {
-        private ConflictSet _conflictSet;
-        private FlyingMissionsMonitor _flyingMissionsMonitor;
-
 
         public NegotiateState(DroneActor droneActor, IActorRef droneActorRef, 
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
-            : base(droneActor, droneActorRef)
+            : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
         {
-            _conflictSet = conflictSet;
-            _flyingMissionsMonitor = flyingMissionsMonitor;
+
         }
 
         internal override DroneActorState RunState()
