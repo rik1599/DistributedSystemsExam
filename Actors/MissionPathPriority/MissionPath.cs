@@ -3,28 +3,6 @@ using MathNet.Spatial.Units;
 
 namespace Actors.MissionPathPriority
 {
-    struct PointDistance : IComparable<PointDistance>
-    {
-        public Point2D PointOnMe { get; private set; }
-        public Point2D PointOnOther { get; private set; }
-
-        public double Distance
-        {
-            get { return PointOnMe.DistanceTo(PointOnOther); }
-        }
-
-        public PointDistance(Point2D pointOnMe, Point2D pointOnOther)
-        {
-            PointOnMe = pointOnMe;
-            PointOnOther = pointOnOther;
-        }
-
-        public int CompareTo(PointDistance other)
-        {
-            return (int)(Distance - other.Distance);
-        }
-    }
-
     /// <summary>
     /// Tratta che un drone vuole percorrere, si tratta
     /// di uno spostamento da un punto A ad un punto B ad una certa
@@ -96,7 +74,9 @@ namespace Actors.MissionPathPriority
         /// <returns></returns>
         public TimeSpan TimeDistance(Point2D p)
         {
-            return TimeSpan.Zero;
+            return TimeSpan.FromSeconds(
+                new Line2D(StartPoint, p).Length / Speed
+                );
         }
     }
 }
