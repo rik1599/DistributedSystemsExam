@@ -38,6 +38,18 @@ namespace Actors
             
             _position += distance;
             _lastUpdateTime = DateTime.Now;
+
+            var distanceToEnd = _position - _mission.Path.EndPoint;
+            if (distanceToEnd.X >= 0 && distanceToEnd.Y >= 0)
+            {
+                _supervisor.Tell(new InternalMissionEnded());
+                Context.Stop(Self);
+            }
+        }
+
+        public static Props Props(Mission mission, IActorRef supervisor, Point2D position)
+        {
+            return Akka.Actor.Props.Create(() => new FlyingDroneActor(mission, supervisor, position));
         }
     }
 }
