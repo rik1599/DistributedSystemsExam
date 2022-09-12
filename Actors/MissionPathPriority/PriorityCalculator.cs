@@ -58,7 +58,9 @@ namespace Actors.MissionPathPriority
             }
 
             return new Priority(
-                Math.Pow(ParseValue(age), k) - h1*ParseValue(maxFlyingMissionsWait) - h2*ParseValue(sumOfWaitsICause),
+                Math.Pow(ParseValue(age), k) 
+                    - h1 * conflictSet.Count * ParseValue(maxFlyingMissionsWait) 
+                    - h2 * ParseValue(sumOfWaitsICause),
                 thisMission.NodeRef
             );
         }
