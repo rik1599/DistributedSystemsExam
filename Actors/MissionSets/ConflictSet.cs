@@ -52,6 +52,16 @@ namespace Actors.MissionSets
         {
             return new WaitingMission(nodeRef, path, Priority.InfinitePriority);
         }
+
+        public ISet<IActorRef> GetAllNodes()
+        {
+            return Missions.Keys.ToHashSet();
+        }
+
+        public ISet<WaitingMission> GetMissions()
+        {
+            return Missions.Values.ToHashSet();
+        }
     }
 
 

@@ -12,6 +12,10 @@ namespace Actors
         private readonly ILoggingAdapter _log = Context.GetLogger();
 
         internal DateTime TimeSpawn { get; private set; } = DateTime.Now;
+        internal TimeSpan Age
+        {
+            get { return DateTime.Now - TimeSpawn; }
+        }
 
         internal ISet<IActorRef> Nodes { get; private set; }
         internal Mission ThisMission { get; private set; }
