@@ -32,10 +32,11 @@ namespace Actors.DroneStates
                 node.Tell(new FlyingResponse(MissionPath));
             }
 
-            // TODO: avvia attore per la gestione del nodo in volo
+            // Avvio un attore figlio che gestisce il processo del volo
             _flyingDroneActor = DroneActor.DroneContext.ActorOf(
                 FlyingDroneActor.Props(DroneActor.ThisMission, DroneActorRef), "fly-actor");
 
+            // lo supervisiono (in modo da rilevare quando e come termina)
             DroneActor.DroneContext.WatchWith(_flyingDroneActor, new InternalMissionEnded());
 
             return this;
@@ -94,20 +95,19 @@ namespace Actors.DroneStates
                 node.Tell(new ExitMessage());
             }
 
+            // TODO: termina 
+
             return this;
         }
 
 
         private MissionPath GetCurrentPath()
         {
-            // TODO: effettua ASK ad attore volo
-            Point2D currentPosition = GetCurrentPosition();
-
             return new MissionPath(
-                    currentPosition,
-                    MissionPath.EndPoint,
-                    MissionPath.Speed
-                    );
+                GetCurrentPosition(),
+                MissionPath.EndPoint,
+                MissionPath.Speed
+                );
         }
 
         /// <summary>

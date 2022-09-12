@@ -120,8 +120,8 @@ namespace Actors.DroneStates
 
         internal virtual DroneActorState OnReceive(InternalFlyIsSafeMessage msg, IActorRef sender)
         {
-            // TODO: implementa rimuovendo un nodo dal flying set
-            throw new NotImplementedException();
+            FlyingMissionsMonitor.OnReceive(msg);
+            return this;
         }
 
         internal virtual DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
