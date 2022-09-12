@@ -31,7 +31,7 @@ namespace Actors.DroneStates
 
             // se non ho vicini, annullo i timeout e posso passare
             // direttamente allo stato successivo
-            return CheckIfIReceivedAllResponses();
+            return NextState();
         }
 
         internal override DroneActorState OnReceive(ConnectResponse msg, IActorRef sender)
@@ -44,7 +44,7 @@ namespace Actors.DroneStates
 
             _expectedConnectResponses.Remove(sender);
 
-            return CheckIfIReceivedAllResponses();
+            return NextState();
         }
 
         internal override DroneActorState OnReceive(FlyingResponse msg, IActorRef sender)
@@ -53,7 +53,7 @@ namespace Actors.DroneStates
 
             _expectedConnectResponses.Remove(sender);
 
-            return CheckIfIReceivedAllResponses();
+            return NextState();
         }
 
         internal override DroneActorState OnReceive(MetricMessage msg, IActorRef sender)
@@ -75,10 +75,10 @@ namespace Actors.DroneStates
         {
             _expectedConnectResponses.Remove(sender);
 
-            return CheckIfIReceivedAllResponses();
+            return NextState();
         }
 
-        private DroneActorState CheckIfIReceivedAllResponses()
+        private DroneActorState NextState()
         {
             // se non attendo altre risposte, posso passare allo stato successivo
             if (_expectedConnectResponses.Count == 0)
