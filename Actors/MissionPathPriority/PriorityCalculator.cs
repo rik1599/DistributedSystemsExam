@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Actors.MissionPathPriority
 {
     /// <summary>
-    /// Strumento per il calcolo della priorità di un nodo 
+    /// Strumento per il calcolo della priorità di un nodo.
     /// </summary>
     public class PriorityCalculator
     {
@@ -13,16 +13,14 @@ namespace Actors.MissionPathPriority
         private const float h2 = 1f;
         
         /// <summary>
-        /// Calcola la priorità di un certo nodo dato il suo ID, 
-        /// il suo conflict set e il suo flying set.
+        /// Calcola la priorità di una certa missione.
         /// </summary>
-        /// <param name="nodeRef">Il mio riferimento</param>
         /// <param name="thisMission">La missione di cui voglio calcolare la priorità</param>
         /// <param name="age">Il tempo che una missione ha già atteso</param>
         /// <param name="conflictSet">I nodi con cui sto negoziando</param>
         /// <param name="flyingSet">I nodi in volo di cui sto attendendo il termine</param>
         /// <returns></returns>
-        public static Priority CalculatePriority(IActorRef nodeRef, Mission thisMission, TimeSpan age, Mission[] conflictSet, FlyingMission[] flyingSet)
+        public static Priority CalculatePriority(Mission thisMission, TimeSpan age, Mission[] conflictSet, FlyingMission[] flyingSet)
         {
             // calcolo del massimo tempo di attesa di missioni in volo
             var maxFlyingMissionsWait = TimeSpan.Zero;
@@ -61,8 +59,8 @@ namespace Actors.MissionPathPriority
 
             return new Priority(
                 Math.Pow(ParseValue(age), k) - h1*ParseValue(maxFlyingMissionsWait) - h2*ParseValue(sumOfWaitsICause),
-                nodeRef
-                );
+                thisMission.NodeRef
+            );
         }
 
 
