@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using MathNet.Spatial.Euclidean;
 
 namespace Actors.Messages.Internal
 {
@@ -17,4 +18,20 @@ namespace Actors.Messages.Internal
             SafeMissionNodeRef = safeMissionNodeRef;
         }
     }
+
+    public class InternalUpdatePosition { }
+
+    public class InternalPositionRequest { }
+
+    public class InternalPositionResponse 
+    {
+        public Point2D Position { get; private set; }
+
+        public InternalPositionResponse(Point2D position)
+        {
+            Position = position;
+        }
+    }
+
+    public class InternalMissionEnded { }
 }
