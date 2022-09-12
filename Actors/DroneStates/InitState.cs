@@ -10,7 +10,6 @@ namespace Actors.DroneStates
 
         private ISet<IActorRef> _expectedConnectResponses;
 
-
         internal InitState(DroneActor droneActor, IActorRef droneActorRef, 
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
             : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
