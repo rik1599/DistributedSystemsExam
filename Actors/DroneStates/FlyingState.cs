@@ -33,7 +33,10 @@ namespace Actors.DroneStates
             }
 
             // TODO: avvia attore per la gestione del nodo in volo
-            // _flyingDroneActor = DroneActor.DroneContext.System.ActorOf();
+            _flyingDroneActor = DroneActor.DroneContext.ActorOf(
+                FlyingDroneActor.Props(DroneActor.ThisMission, DroneActorRef), "fly-actor");
+
+            DroneActor.DroneContext.WatchWith(_flyingDroneActor, new InternalMissionEnded());
 
             return this;
         }
@@ -83,6 +86,17 @@ namespace Actors.DroneStates
 
             return this;
         }
+
+        internal virtual DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
+        {
+            foreach(IActorRef node in DroneActor.Nodes)
+            {
+                node.Tell(new ExitMessage());
+            }
+
+            return this;
+        }
+
 
         private MissionPath GetCurrentPath()
         {

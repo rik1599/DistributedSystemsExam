@@ -13,11 +13,11 @@ namespace Actors
         private Point2D _position;
         private DateTime _lastUpdateTime;
 
-        public FlyingDroneActor(Mission mission, IActorRef supervisor, Point2D position)
+        public FlyingDroneActor(Mission mission, IActorRef supervisor)
         {
             _mission = mission;
             _supervisor = supervisor;
-            _position = position;
+            _position = mission.Path.StartPoint;
             _lastUpdateTime = DateTime.Now;
 
             Receive<InternalPositionRequest>(msg => OnReceive(msg));
@@ -47,9 +47,9 @@ namespace Actors
             }
         }
 
-        public static Props Props(Mission mission, IActorRef supervisor, Point2D position)
+        public static Props Props(Mission mission, IActorRef supervisor)
         {
-            return Akka.Actor.Props.Create(() => new FlyingDroneActor(mission, supervisor, position));
+            return Akka.Actor.Props.Create(() => new FlyingDroneActor(mission, supervisor));
         }
     }
 }
