@@ -1,4 +1,5 @@
 ﻿using Actors.Messages.External;
+using Actors.Messages.Internal;
 using Actors.MissionPathPriority;
 using Actors.MissionSets;
 using Akka.Actor;
@@ -61,6 +62,7 @@ namespace Actors.DroneStates
 
         #endregion
 
+        #region External Messages
 
         internal virtual DroneActorState OnReceive(ConnectRequest msg, IActorRef sender)
         {
@@ -93,7 +95,7 @@ namespace Actors.DroneStates
                     new WaitingMission(sender, MissionPath, Priority.InfinitePriority)
                     );
             }
-           
+
             return this;
         }
 
@@ -107,10 +109,29 @@ namespace Actors.DroneStates
         }
 
         internal abstract DroneActorState OnReceive(ConnectResponse msg, IActorRef sender);
-       
+
         internal abstract DroneActorState OnReceive(MetricMessage msg, IActorRef sender);
 
         internal abstract DroneActorState OnReceive(WaitMeMessage msg, IActorRef sender);
+
+        #endregion
+
+        #region Internal Messages
+
+        internal virtual DroneActorState OnReceive(InternalFlyIsSafeMessage msg, IActorRef sender)
+        {
+            // TODO: implementa rimuovendo un nodo dal flying set
+            throw new NotImplementedException();
+        }
+
+        internal virtual DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
+        {
+            // TODO: errore, normalmente non voglio ricevere un messaggio di questo tipo
+            return this;
+        }
+
+        #endregion
+
 
         internal abstract DroneActorState RunState();
     }

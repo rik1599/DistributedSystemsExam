@@ -84,6 +84,7 @@ namespace Actors.DroneStates
             return this;
         }
 
+
         private MissionPath GetCurrentPath()
         {
             // TODO: effettua ASK ad attore volo
