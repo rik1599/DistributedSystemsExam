@@ -20,7 +20,7 @@ namespace Actors.MissionPathPriority
         /// <param name="conflictSet">I nodi con cui sto negoziando</param>
         /// <param name="flyingSet">I nodi in volo di cui sto attendendo il termine</param>
         /// <returns></returns>
-        public static Priority CalculatePriority(Mission thisMission, TimeSpan age, Mission[] conflictSet, FlyingMission[] flyingSet)
+        public static Priority CalculatePriority(Mission thisMission, TimeSpan age, ISet<Mission> conflictSet, ISet<FlyingMission> flyingSet)
         {
             // calcolo del massimo tempo di attesa di missioni in volo
             var maxFlyingMissionsWait = TimeSpan.Zero;
