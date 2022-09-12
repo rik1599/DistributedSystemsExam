@@ -43,7 +43,7 @@ namespace Actors
             if (distanceToEnd.X >= 0 && distanceToEnd.Y >= 0)
             {
                 _supervisor.Tell(new InternalMissionEnded());
-                Context.Stop(Self);
+                Self.Tell(PoisonPill.Instance);
             }
         }
 
