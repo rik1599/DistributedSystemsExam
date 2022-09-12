@@ -9,6 +9,8 @@ namespace Actors
     public class DroneActor : ReceiveActor, IWithTimers
     {
         public ITimerScheduler Timers { get; set; }
+        internal IActorContext DroneContext { get; private set; }
+
         private readonly ILoggingAdapter _log = Context.GetLogger();
 
         internal DateTime TimeSpawn { get; private set; } = DateTime.Now;
@@ -26,9 +28,10 @@ namespace Actors
         {
             Nodes = others;
             ThisMission = new WaitingMission(Self, missionPath, Priority.NullPriority);
+            DroneContext = Context;
 
             // avvio lo stato iniziale
-            _droneState = InitState.CreateInitState(this, Self).RunState();                 
+            _droneState = DroneActorState.CreateInitState(this, Self).RunState();                 
 
             // la modalità di gestione dei messaggi dipende dallo stato del drone
             Receive<ConnectRequest> (msg => _droneState = _droneState.OnReceive(msg, Self));

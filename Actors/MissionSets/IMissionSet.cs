@@ -62,5 +62,15 @@ namespace Actors.MissionSets
         /// <param name="path"></param>
         /// <returns></returns>
         protected abstract M CreateMission(IActorRef nodeRef, MissionPath path);
+
+        public virtual ISet<IActorRef> GetNodes()
+        {
+            return Missions.Keys.ToHashSet();
+        }
+
+        public virtual ISet<M> GetMissions()
+        {
+            return Missions.Values.ToHashSet();
+        }
     }
 }

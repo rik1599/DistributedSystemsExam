@@ -41,10 +41,5 @@ namespace Actors.DroneStates
         {
             throw new NotImplementedException();
         }
-
-        internal override DroneActorState OnReceive(ExitMessage msg, IActorRef sender)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

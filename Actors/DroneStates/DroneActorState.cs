@@ -107,7 +107,6 @@ namespace Actors.DroneStates
         }
 
         internal abstract DroneActorState OnReceive(ConnectResponse msg, IActorRef sender);
-
        
         internal abstract DroneActorState OnReceive(MetricMessage msg, IActorRef sender);
 

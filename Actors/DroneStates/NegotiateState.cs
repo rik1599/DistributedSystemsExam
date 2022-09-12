@@ -7,52 +7,79 @@ namespace Actors.DroneStates
 {
     internal class NegotiateState : DroneActorState
     {
-        private ISet<IActorRef> _expectedMetrics;
-        private ISet<IActorRef> _expectedIntentions;
-        private Priority Priority;
+        private readonly ISet<IActorRef> _expectedMetrics;
+        private readonly ISet<IActorRef> _expectedIntentions;
+        private readonly Priority _priority;
 
         public NegotiateState(DroneActor droneActor, IActorRef droneActorRef, 
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
             : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
         {
-            _expectedMetrics = conflictSet.GetAllNodes();
+            _expectedMetrics = conflictSet.GetNodes();
             _expectedIntentions = new HashSet<IActorRef>();
-            Priority = PriorityCalculator.CalculatePriority(DroneActor.ThisMission, DroneActor.Age, );
+            _priority = PriorityCalculator.CalculatePriority(
+                DroneActor.ThisMission, 
+                DroneActor.Age, 
+                conflictSet.GetMissions(), 
+                flyingMissionsMonitor.GetFlyingMissions()
+            );
         }
 
         internal override DroneActorState RunState()
         {
-            
-        }
+            // invio richiesta di connessione a tutti i nodi noti
+            foreach (var node in _expectedMetrics)
+            {
+                node.Tell(new MetricMessage(_priority));
+            }
 
-        internal override DroneActorState OnReceive(ConnectRequest msg, IActorRef sender)
-        {
-            throw new NotImplementedException();
+            // TODO: far partire timeout
+
+            // se non ho vicini, annullo i timeout e posso passare
+            // direttamente allo stato successivo
+            return NextState();
         }
 
         internal override DroneActorState OnReceive(ConnectResponse msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            // TODO: errore
+            return this;
         }
 
         internal override DroneActorState OnReceive(FlyingResponse msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            _ = base.OnReceive(msg, sender);
+            _ = _expectedMetrics.Remove(sender);
+            _ = _expectedIntentions.Remove(sender);
+            return NextState();
         }
 
         internal override DroneActorState OnReceive(MetricMessage msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            _ = _expectedMetrics.Remove(sender);
+            var mission = ConflictSet.GetMission(sender);
+            mission!.Priority = msg.Priority;
+            return NextState();
         }
 
         internal override DroneActorState OnReceive(WaitMeMessage msg, IActorRef sender)
         {
-            throw new NotImplementedException();
+            _ = _expectedIntentions.Remove(sender);
+            return NextState();
         }
 
-        internal override DroneActorState OnReceive(ExitMessage msg, IActorRef sender)
+        private DroneActorState NextState()
         {
-            throw new NotImplementedException();
+            if (_expectedMetrics.Count > 0)
+                return this;
+
+            if (FlyingMissionsMonitor.GetFlyingMissions().Count == 0 && ConflictSet.GetGreaterPriorityMissions(_priority).Count == 0)
+                return CreateFlyingState(DroneActor, DroneActorRef, ConflictSet, FlyingMissionsMonitor);
+
+            if (_expectedIntentions.Count == 0)
+                return CreateWaitingState(DroneActor, DroneActorRef, ConflictSet, FlyingMissionsMonitor).RunState();
+            else 
+                return this;
         }
     }
 }

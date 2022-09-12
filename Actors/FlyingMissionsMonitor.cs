@@ -2,11 +2,6 @@
 using Actors.MissionPathPriority;
 using Actors.MissionSets;
 using Akka.Actor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Actors
 {
@@ -24,16 +19,15 @@ namespace Actors
     /// </summary>
     public class FlyingMissionsMonitor
     {
-        private Mission _thisMission;
+        private readonly Mission _thisMission;
 
-        private FlyingSet _flyingSet;
+        private readonly FlyingSet _flyingSet;
 
         /// <summary>
         /// Strumento che l'attore usa schedulare l'invio di
         /// un messaggio a se stesso.
         /// </summary>
-        private ITimerScheduler _timers;
-        
+        private readonly ITimerScheduler _timers;
 
         public FlyingMissionsMonitor(Mission thisMission, FlyingSet flyingSet, ITimerScheduler timers)
         {
@@ -91,6 +85,11 @@ namespace Actors
             }
 
             return false;
+        }
+
+        public ISet<FlyingMission> GetFlyingMissions()
+        {
+            return _flyingSet.GetMissions();
         }
     }
 }
