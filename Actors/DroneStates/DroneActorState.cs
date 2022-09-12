@@ -21,7 +21,9 @@ namespace Actors.DroneStates
         protected FlyingMissionsMonitor FlyingMissionsMonitor { get; set; }
 
 
-        // shortcut per la tratta Mission Path
+        /// <summary>
+        /// hortcut per la tratta della missione corrente
+        /// </summary>
         protected MissionPath MissionPath
         {
             get { return DroneActor.ThisMission.Path; }
