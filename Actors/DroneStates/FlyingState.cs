@@ -1,4 +1,5 @@
 ﻿using Actors.Messages.External;
+using Actors.Messages.Internal;
 using Actors.MissionPathPriority;
 using Actors.MissionSets;
 using Akka.Actor;
@@ -9,10 +10,19 @@ namespace Actors.DroneStates
 {
     internal class FlyingState : DroneActorState
     {
+        /// <summary>
+        /// Riferimento all'attore che sta gestendo il "volo fisico".
+        /// 
+        /// Viene avviato assieme alla procedura di volo e mi serve
+        /// per richiedere la posizione corrente.
+        /// </summary>
+        private IActorRef _flyingDroneActor; 
+        
         public FlyingState(DroneActor droneActor, IActorRef droneActorRef,
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
             : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
         {
+
         }
 
         internal override DroneActorState RunState()
@@ -23,6 +33,7 @@ namespace Actors.DroneStates
             }
 
             // TODO: avvia attore per la gestione del nodo in volo
+            // _flyingDroneActor = DroneActor.DroneContext.System.ActorOf();
 
             return this;
         }
@@ -85,9 +96,20 @@ namespace Actors.DroneStates
                     );
         }
 
+        /// <summary>
+        /// Richiedi la posizione all'attore che gestisce il volo 
+        /// (la richiesta viene effettuata tramite ASK, pertanto
+        /// potrebbe non ritornare immediatamente una risposta)
+        /// </summary>
+        /// <returns></returns>
         private Point2D GetCurrentPosition()
         {
-            throw new NotImplementedException();
+            Task<InternalPositionResponse> req = _flyingDroneActor
+                .Ask<InternalPositionResponse>(new InternalPositionRequest());
+
+            req.Wait();
+
+            return req.Result.Position;
         }
     }
 }
