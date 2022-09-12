@@ -9,27 +9,26 @@ namespace Actors.MissionPathPriority
     public class PriorityCalculator
     {
         private const float k = 1.2f;
+        private const float h1 = 1f;
+        private const float h2 = 1f;
         
         /// <summary>
         /// Calcola la priorità di un certo nodo dato il suo ID, 
         /// il suo conflict set e il suo flying set.
         /// </summary>
         /// <param name="nodeRef">Il mio riferimento</param>
-        /// <param name="mission"></param>
-        /// <param name="age"></param>
+        /// <param name="thisMission">La missione di cui voglio calcolare la priorità</param>
+        /// <param name="age">Il tempo che una missione ha già atteso</param>
         /// <param name="conflictSet">I nodi con cui sto negoziando</param>
         /// <param name="flyingSet">I nodi in volo di cui sto attendendo il termine</param>
-        /// <param name="nodeRef"></param>
-        /// <param name="conflictSet"></param>
-        /// <param name="flyingSet"></param>
         /// <returns></returns>
-        public static Priority CalculatePriority(IActorRef nodeRef, Mission mission, TimeSpan age, Mission[] conflictSet, FlyingMission[] flyingSet)
+        public static Priority CalculatePriority(IActorRef nodeRef, Mission thisMission, TimeSpan age, Mission[] conflictSet, FlyingMission[] flyingSet)
         {
             // calcolo del massimo tempo di attesa di missioni in volo
-            Double maxFlyingMissionsWait = 0f;
+            var maxFlyingMissionsWait = TimeSpan.Zero;
             foreach(var m in flyingSet)
             {
-                var remainingTime = ParseValue(m.GetRemainingTimeForSafeStart(mission));
+                var remainingTime = m.GetRemainingTimeForSafeStart(thisMission);
                 if (remainingTime > maxFlyingMissionsWait)
                 {
                     maxFlyingMissionsWait = remainingTime;
@@ -37,23 +36,31 @@ namespace Actors.MissionPathPriority
             }
 
             // calcolo della somma dei tempi che faccio attendere il mio conflict set
-            Double sumOfWaitsICause = 0f;
+            var sumOfWaitsICause = TimeSpan.Zero;
             foreach (var m in conflictSet)
             {
-                var conflictPoint = m.Path.ClosestConflictPoint(mission.Path);
+                var conflictPoint = m.Path.ClosestConflictPoint(thisMission.Path);
 
                 Debug.Assert(conflictPoint != null);
 
-                sumOfWaitsICause += ParseValue(
-                    // timeDist(mission.start, conflictPoint) - 
+                // comporto ad ogni nodo un tempo di attesa almeno tale
+                // alla differenza tra il mio tempo per raggiungere il
+                // punto di conflitto e il suo tempo
+
+                // NOTA: può essere anche un valore negativo, e in tal 
+                // caso mi fa guadagnare priorità.
+
+                sumOfWaitsICause = sumOfWaitsICause.Add(
+
+                    // timeDist(thisMission.start, conflictPoint) - 
                     //  timeDist(m.start, conflictPoint) 
-                    mission.Path.TimeDistance(conflictPoint.Value).Subtract(
-                        m.Path.TimeDistance(conflictPoint.Value)
-                        ));
+                    thisMission.Path.TimeDistance(conflictPoint.Value)
+                        .Subtract(m.Path.TimeDistance(conflictPoint.Value))
+                );
             }
 
             return new Priority(
-                Math.Pow(ParseValue(age), k) - maxFlyingMissionsWait - sumOfWaitsICause,
+                Math.Pow(ParseValue(age), k) - h1*ParseValue(maxFlyingMissionsWait) - h2*ParseValue(sumOfWaitsICause),
                 nodeRef
                 );
         }
