@@ -16,7 +16,7 @@ namespace Actors.MissionPathPriority
         public Point2D StartPoint { get; private set; }
         public Point2D EndPoint { get; private set; }
 
-        private LineSegment2D PathSegment { 
+        internal LineSegment2D PathSegment { 
             get { return new LineSegment2D(StartPoint, EndPoint); }
         }
         
@@ -27,6 +27,7 @@ namespace Actors.MissionPathPriority
         public float Speed { get; private set; }
 
         public const float MarginDistance = 5.0f;
+
 
         /// <summary>
         /// 
@@ -74,6 +75,7 @@ namespace Actors.MissionPathPriority
         /// <returns></returns>
         public TimeSpan TimeDistance(Point2D p)
         {
+            // (la velocità si esprime in unità al secondo)
             return TimeSpan.FromSeconds(
                 new Line2D(StartPoint, p).Length / Speed
                 );

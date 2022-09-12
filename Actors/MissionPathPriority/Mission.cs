@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using MathNet.Spatial.Euclidean;
+using System.Diagnostics;
 
 namespace Actors.MissionPathPriority
 {
@@ -65,7 +66,7 @@ namespace Actors.MissionPathPriority
         /// <exception cref="NotImplementedException"></exception>
         public TimeSpan GetRemainingTime()
         {
-            throw new NotImplementedException();
+            return GetRemainingTimeToPoint(Path.EndPoint);
         }
 
         /// <summary>
@@ -78,11 +79,15 @@ namespace Actors.MissionPathPriority
         /// <exception cref="NotImplementedException"></exception>
         public TimeSpan GetRemainingTimeToPoint(Point2D p)
         {
-            throw new NotImplementedException();
+            // il punto deve appartenere alla tratta (entro un margine)
+            Debug.Assert(Path.PathSegment.LineTo(p).Length <= MissionPath.MarginDistance);
+            
+            // timeDist(start, p) - [now - startTime]
+            return Path.TimeDistance(p).Subtract(DateTime.Now.Subtract(_startTime));
         }
 
         /// <summary>
-        /// Tempo rimanente che la missione passata in input deve 
+        /// Tempo rimanente che LA MISSIONE PASSATA IN INPUT deve 
         /// attendere per garantire che la partenza sia sicura.
         /// </summary>
         /// <param name="m"></param>
@@ -90,7 +95,14 @@ namespace Actors.MissionPathPriority
         /// <exception cref="NotImplementedException"></exception>
         public TimeSpan GetRemainingTimeForSafeStart(Mission m)
         {
-            throw new NotImplementedException();
+            Point2D? conflictPoint = m.Path.ClosestConflictPoint(Path);
+
+            if (conflictPoint == null) return TimeSpan.Zero;
+
+            // timeDist(start, p) - timeDist(m.start, p) - [now - startTime]
+            return Path.TimeDistance(conflictPoint.Value)
+                .Subtract(m.Path.TimeDistance(conflictPoint.Value))
+                .Subtract(DateTime.Now.Subtract(_startTime));
         }
     }
 }
