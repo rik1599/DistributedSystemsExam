@@ -90,19 +90,23 @@ namespace Actors.MissionPathPriority
         /// Tempo rimanente che LA MISSIONE PASSATA IN INPUT deve 
         /// attendere per garantire che la partenza sia sicura.
         /// </summary>
-        /// <param name="m"></param>
+        /// <param name="thisMission">
+        /// La missione in attesa (cioè la missione del nodo corrente)
+        /// </param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public TimeSpan GetRemainingTimeForSafeStart(Mission m)
+        public TimeSpan GetRemainingTimeForSafeStart(Mission thisMission)
         {
-            Point2D? conflictPoint = m.Path.ClosestConflictPoint(Path);
+            Point2D? conflictPoint = thisMission.Path.ClosestConflictPoint(Path);
 
             if (conflictPoint == null) return TimeSpan.Zero;
 
-            // timeDist(start, p) - timeDist(m.start, p) - [now - startTime]
+            // timeDist(start, p) - timeDist(thisMission.start, p) - [now - startTime] + margin
             return Path.TimeDistance(conflictPoint.Value)
-                .Subtract(m.Path.TimeDistance(conflictPoint.Value))
-                .Subtract(DateTime.Now.Subtract(_startTime));
+                .Subtract(thisMission.Path.TimeDistance(conflictPoint.Value))
+                .Subtract(DateTime.Now.Subtract(_startTime))
+                .Add(new TimeSpan(0, 0, (int) (MissionPath.MarginDistance * thisMission.Path.Speed))
+                );
         }
     }
 }
