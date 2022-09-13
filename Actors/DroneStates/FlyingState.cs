@@ -88,7 +88,7 @@ namespace Actors.DroneStates
             return this;
         }
 
-        internal virtual DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
+        internal override DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
         {
             foreach(IActorRef node in DroneActor.Nodes)
             {
@@ -118,12 +118,9 @@ namespace Actors.DroneStates
         /// <returns></returns>
         private Point2D GetCurrentPosition()
         {
-            Task<InternalPositionResponse> req = _flyingDroneActor
-                .Ask<InternalPositionResponse>(new InternalPositionRequest());
-
-            req.Wait();
-
-            return req.Result.Position;
+            return _flyingDroneActor
+                .Ask<InternalPositionResponse>(new InternalPositionRequest())
+                .Result.Position;
         }
     }
 }
