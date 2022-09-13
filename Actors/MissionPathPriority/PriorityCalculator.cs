@@ -22,20 +22,20 @@ namespace Actors.MissionPathPriority
         public static Priority CalculatePriority(Mission thisMission, TimeSpan age, ISet<WaitingMission> conflictSet, ISet<FlyingMission> flyingSet)
         {
             // calcolo del massimo tempo di attesa di missioni in volo
-            var maxFlyingMissionsWait = flyingSet.MinBy(m => m.GetRemainingTimeForSafeStart(thisMission));
+            // var maxFlyingMissionsWait = flyingSet.MinBy(m => m.GetRemainingTimeForSafeStart(thisMission));
 
-            //var maxFlyingMissionsWait = TimeSpan.Zero;
-            //foreach(var m in flyingSet)
-            //{
-            //    var remainingTime = m.GetRemainingTimeForSafeStart(thisMission);
-            //    if (remainingTime > maxFlyingMissionsWait)
-            //    {
-            //        maxFlyingMissionsWait = remainingTime;
-            //    }
-            //}
+            TimeSpan maxFlyingMissionsWait = TimeSpan.Zero;
+            foreach (var m in flyingSet)
+            {
+                var remainingTime = m.GetRemainingTimeForSafeStart(thisMission);
+                if (remainingTime > maxFlyingMissionsWait)
+                {
+                    maxFlyingMissionsWait = remainingTime;
+                }
+            }
 
             // calcolo della somma dei tempi che faccio attendere il mio conflict set
-            var sumOfWaitsICause = conflictSet.Aggregate(
+            TimeSpan sumOfWaitsICause = conflictSet.Aggregate(
                 TimeSpan.Zero,
                 (partialSum, mission) =>
                 {
@@ -69,7 +69,7 @@ namespace Actors.MissionPathPriority
 
             return new Priority(
                 Math.Pow(ParseValue(age), k)
-                    - h1 * conflictSet.Count * ParseValue(maxFlyingMissionsWait!.GetRemainingTimeForSafeStart(thisMission))
+                    - h1 * conflictSet.Count * ParseValue(maxFlyingMissionsWait)
                     - h2 * ParseValue(sumOfWaitsICause),
                 thisMission.NodeRef
             );
