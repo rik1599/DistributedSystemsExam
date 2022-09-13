@@ -32,6 +32,9 @@ namespace Actors.DroneStates
 
         internal override DroneActorState OnReceive(MetricMessage msg, IActorRef sender)
         {
+            // TODO: elimina se si tratta di un messaggio vecchio
+            // (cioè di una negoziazione già terminata)
+            
             return CreateNegotiateState(this).RunState().OnReceive(msg, sender);
         }
 
