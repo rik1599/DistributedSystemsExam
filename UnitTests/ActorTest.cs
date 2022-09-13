@@ -23,10 +23,10 @@ namespace UnitTests
             ExpectMsgFrom<ConnectRequest>(subject);
 
             subject.Tell(new ConnectResponse(missionB), TestActor);
-            ExpectMsgFrom<MetricMessage>(subject, TimeSpan.FromDays(1));
+            ExpectMsgFrom<MetricMessage>(subject);
 
             subject.Tell(new MetricMessage(Priority.NullPriority, 0));
-            ExpectMsgFrom<FlyingResponse>(subject, TimeSpan.FromDays(1));
+            ExpectMsgFrom<FlyingResponse>(subject);
 
             Sys.Terminate();
         }

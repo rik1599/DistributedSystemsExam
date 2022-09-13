@@ -65,7 +65,7 @@ namespace Actors.MissionPathPriority
 
             if (minDistanceSegment.Length < margin && 
                 PathSegment.TryIntersect(minDistanceSegment, out var minDistanceConflictPoint, Angle.FromRadians(0)))
-                return conflictPoint;
+                return minDistanceConflictPoint;
             else
                 return null;
         }
