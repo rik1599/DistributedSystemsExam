@@ -43,6 +43,32 @@ namespace UnitTests.ActorsTests
             Sys.Terminate();
         }
 
+        /// <summary>
+        /// Conflitto semplice vinto 2:
+        /// 
+        /// un drone spawna, non conosce nessun nodo, va in volo.
+        /// </summary>
+        [Fact]
+        public void SimpleConflictWin2()
+        {
+            var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
+            var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
+
+            // voglio simulare una situazione in cui il nodo all'inizio è solo
+            var nodes = new HashSet<IActorRef> { };
+            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+
+            // quando gli richiedo di connettersi, mi aspetto sia partito in volo
+            subject.Tell(new ConnectRequest(missionB), TestActor);
+            ExpectMsgFrom<FlyingResponse>(subject);
+
+
+            // mi aspetto un'uscita per missione completata
+            ExpectMsgFrom<MissionFinishedMessage>(subject, new TimeSpan(0, 0, 5));
+
+            Sys.Terminate();
+        }
+
 
         /// <summary>
         /// Conflitto semplice perso 1:
