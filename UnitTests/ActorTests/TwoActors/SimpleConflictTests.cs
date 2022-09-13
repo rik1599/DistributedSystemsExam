@@ -268,8 +268,5 @@ namespace UnitTests.ActorsTests.TwoActors
 
             Sys.Terminate();
         }
-
-
-
     }
 }

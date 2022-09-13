@@ -72,5 +72,44 @@ namespace UnitTests.ActorTests.TwoActors
         }
 
 
+        /// <summary>
+        /// Conflitto senza punto di intersezione 1:
+        /// 
+        /// un drone spawna, conosce un nodo, osserva il conflitto 
+        /// (anche se le tratte non si incrociano propriamente), 
+        /// lo perde e aspetta per volare (un tempo irrisorio).
+        /// </summary>
+        [Fact]
+        public void NotIntersectConflict1()
+        {
+            var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
+            var missionB = new MissionPath(new Point2D(15, 0), new Point2D(15, 14), 10.0f);
+
+            var nodes = new HashSet<IActorRef>
+            {
+                TestActor
+            };
+
+            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+
+            // mi aspetto una connessione (a cui rispondo con una tratta con
+            // conflitto, anche se senza intersezione)
+            ExpectMsgFrom<ConnectRequest>(subject);
+            subject.Tell(new ConnectResponse(missionB), TestActor);
+
+            // mi aspetto che mi richieda di negoziare (rispondo con priorità >)
+            var metricMsg = ExpectMsgFrom<MetricMessage>(subject);
+            subject.Tell(new MetricMessage(new Priority(metricMsg.Priority.MetricValue + 5, TestActor), 0));
+
+            // comunico mio volo (non troppo lungo)
+            subject.Tell(new FlyingResponse(missionB));
+
+            // Dopo una ragionevole attesa, mi aspetto un'uscita per missione completata
+            ExpectMsgFrom<MissionFinishedMessage>(subject, new TimeSpan(0, 0, 5));
+
+            Sys.Terminate();
+        }
+
+
     }
 }
