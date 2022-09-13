@@ -1,10 +1,5 @@
 ﻿using Akka.Actor;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Actors.MissionPathPriority
 {
@@ -20,7 +15,7 @@ namespace Actors.MissionPathPriority
         /// <summary>
         /// Misura della priorità di un nodo. E' un numero reale.
         /// </summary>
-        public Double MetricValue { get; private set; }
+        public double MetricValue { get; private set; }
 
         /// <summary>
         /// L'identificatore del nodo. In caso di parità di metrica 
@@ -46,6 +41,12 @@ namespace Actors.MissionPathPriority
         /// </summary>
         public static Priority NullPriority { get { return new NullPriority(); } }
 
+        internal Priority(double metricValue, IActorRef? nodeRef)
+        {
+            MetricValue = metricValue;
+            NodeRef = nodeRef;
+        }
+
         /// <summary>
         /// Confronta due priorità. Il confronto ritorna un numero positivo 
         /// se questa priorità è maggiore, un numero negativo se è minore. 
@@ -53,6 +54,7 @@ namespace Actors.MissionPathPriority
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
+        ///
         public virtual int CompareTo(Priority? other)
         {
             Debug.Assert(other != null);
@@ -66,36 +68,30 @@ namespace Actors.MissionPathPriority
             // con identificatore più piccolo
             return - NodeRef.CompareTo(other.NodeRef);
         }
-
-        internal Priority(double metricValue, IActorRef? nodeRef)
-        {
-            MetricValue = metricValue;
-            NodeRef = nodeRef;
-        }
     }
 
     internal class InfinitePriority : Priority
     {
-        internal InfinitePriority() : base(Double.MaxValue, null)
+        internal InfinitePriority() : base(double.MaxValue, null)
         {
         }
 
         public override int CompareTo(Priority? other)
         {
-            Debug.Assert(!(other is InfinitePriority));
+            Debug.Assert(other != InfinitePriority);
             return +1;
         }
     }
 
     internal class NullPriority : Priority
     {
-        internal NullPriority() : base(Double.MinValue, null)
+        internal NullPriority() : base(double.MinValue, null)
         {
         }
 
         public override int CompareTo(Priority? other)
         {
-            Debug.Assert(!(other is NullPriority));
+            Debug.Assert(other != NullPriority);
             return -1;
         }
     }

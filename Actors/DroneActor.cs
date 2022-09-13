@@ -12,15 +12,15 @@ namespace Actors
         public ITimerScheduler Timers { get; set; }
 
         private DroneActorState _droneState;
+        private readonly DateTime _timeSpawn = DateTime.Now;
 
         internal IActorContext DroneContext { get; private set; }
         internal ILoggingAdapter Log { get; } = Context.GetLogger();
         internal ISet<IActorRef> Nodes { get; private set; }
         internal Mission ThisMission { get; private set; }
-        internal DateTime TimeSpawn { get; private set; } = DateTime.Now;
         internal TimeSpan Age
         {
-            get { return DateTime.Now - TimeSpawn; }
+            get { return DateTime.Now - _timeSpawn; }
         }
 
         public DroneActor(ISet<IActorRef> others, MissionPath missionPath)

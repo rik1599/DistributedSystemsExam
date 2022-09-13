@@ -13,8 +13,8 @@ namespace Actors.MissionPathPriority
     /// </summary>
     public class MissionPath
     {
-        public Point2D StartPoint { get; private set; }
-        public Point2D EndPoint { get; private set; }
+        internal Point2D StartPoint { get; private set; }
+        internal Point2D EndPoint { get; private set; }
 
         internal LineSegment2D PathSegment { 
             get { return new LineSegment2D(StartPoint, EndPoint); }
@@ -24,9 +24,9 @@ namespace Actors.MissionPathPriority
         /// Velocità alla quale il drone si sposta. Si misura in 
         /// unità spaziali al secondo.
         /// </summary>
-        public float Speed { get; private set; }
+        internal float Speed { get; private set; }
 
-        public const float MarginDistance = 5.0f;
+        internal const float MarginDistance = 5.0f;
 
 
         /// <summary>
