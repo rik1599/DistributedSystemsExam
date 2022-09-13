@@ -24,7 +24,7 @@ namespace Actors.DroneStates
 
             foreach (var node in _expectedConnectResponses)
             {
-                node.Tell(connectRequest);
+                node.Tell(connectRequest, DroneActorRef);
             }
 
             // TODO: far partire timeout

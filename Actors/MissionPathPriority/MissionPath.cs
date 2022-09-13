@@ -58,9 +58,13 @@ namespace Actors.MissionPathPriority
         /// </returns>
         public Point2D? ClosestConflictPoint(MissionPath p, double margin = MarginDistance)
         {
+            if (PathSegment.TryIntersect(p.PathSegment, out var conflictPoint, Angle.FromRadians(0)))
+                return conflictPoint;
+
             var minDistanceSegment = new SegmentDistanceCalculator(PathSegment, p.PathSegment).ComputeMinDistance();
 
-            if (minDistanceSegment.Length < margin && PathSegment.TryIntersect(minDistanceSegment, out var conflictPoint, Angle.FromRadians(0)))
+            if (minDistanceSegment.Length < margin && 
+                PathSegment.TryIntersect(minDistanceSegment, out var minDistanceConflictPoint, Angle.FromRadians(0)))
                 return conflictPoint;
             else
                 return null;

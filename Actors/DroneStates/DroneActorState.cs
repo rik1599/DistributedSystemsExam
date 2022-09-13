@@ -6,7 +6,7 @@ using Akka.Actor;
 
 namespace Actors.DroneStates
 {
-    public abstract class DroneActorState
+    internal abstract class DroneActorState
     {
         protected DroneActor DroneActor { get; set; }
         protected IActorRef DroneActorRef { get; set; }
@@ -139,7 +139,6 @@ namespace Actors.DroneStates
         }
 
         #endregion
-
 
         internal abstract DroneActorState RunState();
     }

@@ -10,20 +10,18 @@ namespace Actors
     public class DroneActor : ReceiveActor, IWithTimers
     {
         public ITimerScheduler Timers { get; set; }
+
+        private DroneActorState _droneState;
+
         internal IActorContext DroneContext { get; private set; }
-
-        private readonly ILoggingAdapter _log = Context.GetLogger();
-
+        internal ILoggingAdapter Log { get; } = Context.GetLogger();
+        internal ISet<IActorRef> Nodes { get; private set; }
+        internal Mission ThisMission { get; private set; }
         internal DateTime TimeSpawn { get; private set; } = DateTime.Now;
         internal TimeSpan Age
         {
             get { return DateTime.Now - TimeSpawn; }
         }
-
-        internal ISet<IActorRef> Nodes { get; private set; }
-        internal Mission ThisMission { get; private set; }
-
-        private DroneActorState _droneState;
 
         public DroneActor(ISet<IActorRef> others, MissionPath missionPath)
         {
@@ -45,12 +43,12 @@ namespace Actors
         private void ReceiveExternalMessages()
         {
             // la modalità di gestione dei messaggi dipende dallo stato del drone
-            Receive<ConnectRequest>(msg => _droneState = _droneState.OnReceive(msg, Self));
-            Receive<ConnectResponse>(msg => _droneState = _droneState.OnReceive(msg, Self));
-            Receive<FlyingResponse>(msg => _droneState = _droneState.OnReceive(msg, Self));
-            Receive<MetricMessage>(msg => _droneState = _droneState.OnReceive(msg, Self));
-            Receive<WaitMeMessage>(msg => _droneState = _droneState.OnReceive(msg, Self));
-            Receive<ExitMessage>(msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<ConnectRequest> (msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<ConnectResponse>(msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<FlyingResponse> (msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<MetricMessage>  (msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<WaitMeMessage>  (msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<ExitMessage>    (msg => _droneState = _droneState.OnReceive(msg, Sender));
         }
 
         /// <summary>
@@ -59,8 +57,13 @@ namespace Actors
         /// </summary>
         private void ReceiveInternalMessage()
         {
-            Receive<InternalFlyIsSafeMessage>(msg => _droneState = _droneState.OnReceive(msg, Self));
-            Receive<InternalMissionEnded>(msg => _droneState = _droneState.OnReceive(msg, Self));
+            Receive<InternalFlyIsSafeMessage>(msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<InternalMissionEnded>    (msg => _droneState = _droneState.OnReceive(msg, Sender));
+        }
+
+        public static Props Props(ISet<IActorRef> others, MissionPath missionPath)
+        {
+            return Akka.Actor.Props.Create(() => new DroneActor(others, missionPath));
         }
     }
 }

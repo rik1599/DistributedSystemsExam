@@ -6,7 +6,7 @@ namespace Actors.MissionPathPriority
     /// <summary>
     /// Strumento per il calcolo della priorità di un nodo.
     /// </summary>
-    public class PriorityCalculator
+    internal class PriorityCalculator
     {
         private const float k = 1.2f;
         private const float h1 = 1f;
