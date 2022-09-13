@@ -47,10 +47,12 @@ namespace Actors.Messages.External
     public class MetricMessage
     {
         public Priority Priority { get; private set; }
+        public int RelativeRound { get; private set; }
 
-        public MetricMessage(Priority priority)
+        public MetricMessage(Priority priority, int relativeRound)
         {
             Priority = priority;
+            RelativeRound = relativeRound;
         }
     }
 

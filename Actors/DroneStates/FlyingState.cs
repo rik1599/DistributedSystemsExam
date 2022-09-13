@@ -70,7 +70,7 @@ namespace Actors.DroneStates
         {
             // TODO: aggiungi errore
 
-            sender.Tell(new MetricMessage(Priority.InfinitePriority));
+            sender.Tell(new MetricMessage(Priority.InfinitePriority, LastNegotiationRound));
             sender.Tell(new FlyingResponse(GetCurrentPath()));
 
             return this;

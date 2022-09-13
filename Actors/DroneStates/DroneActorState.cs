@@ -10,6 +10,7 @@ namespace Actors.DroneStates
     {
         protected DroneActor DroneActor { get; set; }
         protected IActorRef DroneActorRef { get; set; }
+        protected int LastNegotiationRound { get; set; }
 
         /// <summary>
         /// tool per la gestione delle tratte in conflitto (con cui posso negoziare)
@@ -37,6 +38,7 @@ namespace Actors.DroneStates
             DroneActorRef = droneActorRef;
             ConflictSet = conflictSet;
             FlyingMissionsMonitor = flyingMissionsMonitor;
+            LastNegotiationRound = 0;
         }
 
         protected DroneActorState(DroneActorState precedentState)
@@ -45,6 +47,7 @@ namespace Actors.DroneStates
             DroneActorRef = precedentState.DroneActorRef;
             ConflictSet = precedentState.ConflictSet;
             FlyingMissionsMonitor = precedentState.FlyingMissionsMonitor;
+            LastNegotiationRound = precedentState.LastNegotiationRound;
         }
 
         #region Factory methods

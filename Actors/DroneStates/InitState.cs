@@ -60,7 +60,7 @@ namespace Actors.DroneStates
         {
             // (sono ancora in stato di inizializzazione,
             // quindi non partecipo alle negoziazioni)
-            sender.Tell(new MetricMessage(Priority.NullPriority));
+            sender.Tell(new MetricMessage(Priority.NullPriority, LastNegotiationRound));
 
             return this;
         }
