@@ -109,5 +109,35 @@ namespace UnitTests.ActorsTests
 
             Sys.Terminate();
         }
+
+
+        /// <summary>
+        /// Conflitto semplice perso 3:
+        /// 
+        /// un drone spawna, conosce un nodo e scopre che è in volo, parte al termine
+        /// </summary>
+        [Fact]
+        public void SimpleConflictLoose3()
+        {
+            var missionA = new MissionPath(new Point2D(0, 25), new Point2D(25, 25), 10.0f);
+            var missionB = new MissionPath(new Point2D(5, 0), new Point2D(5, 30), 10.0f);
+
+            var nodes = new HashSet<IActorRef>
+            {
+                TestActor
+            };
+
+            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+
+            ExpectMsgFrom<ConnectRequest>(subject);
+
+            // rispondo al drone che sono in volo!
+            subject.Tell(new FlyingResponse(missionB));
+
+            // Dopo una ragionevole attesa (più lunga), mi aspetto un'uscita per missione completata
+            ExpectMsgFrom<MissionFinishedMessage>(subject, new TimeSpan(0, 0, 10));
+
+            Sys.Terminate();
+        }
     }
 }

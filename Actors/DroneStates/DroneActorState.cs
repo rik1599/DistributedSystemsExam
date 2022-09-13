@@ -100,7 +100,7 @@ namespace Actors.DroneStates
             {
                 FlyingMissionsMonitor.MakeMissionFly(
                     eventualMission ??
-                    new WaitingMission(sender, MissionPath, Priority.InfinitePriority)
+                    new WaitingMission(sender, msg.Path, Priority.InfinitePriority)
                     );
             }
 
