@@ -41,7 +41,7 @@ namespace Actors.MissionPathPriority
         /// </summary>
         public static Priority NullPriority { get { return new NullPriority(); } }
 
-        internal Priority(double metricValue, IActorRef? nodeRef)
+        public Priority(double metricValue, IActorRef? nodeRef)
         {
             MetricValue = metricValue;
             NodeRef = nodeRef;
