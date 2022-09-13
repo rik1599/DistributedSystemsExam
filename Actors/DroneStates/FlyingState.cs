@@ -16,7 +16,9 @@ namespace Actors.DroneStates
         /// Viene avviato assieme alla procedura di volo e mi serve
         /// per richiedere la posizione corrente.
         /// </summary>
-        private IActorRef _flyingDroneActor; 
+        private IActorRef _flyingDroneActor;
+
+        private bool _isMissionEnd = false;
         
         public FlyingState(DroneActor droneActor, IActorRef droneActorRef,
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
@@ -90,7 +92,16 @@ namespace Actors.DroneStates
 
         internal virtual DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
         {
-            foreach(IActorRef node in DroneActor.Nodes)
+            if (_isMissionEnd)
+            {
+                // messaggio duplicato
+                return this;
+            }
+
+            _isMissionEnd = true;
+
+            // comunico la mia uscita a tutti i nodi noti 
+            foreach (IActorRef node in DroneActor.Nodes)
             {
                 node.Tell(new ExitMessage());
             }
