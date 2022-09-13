@@ -16,17 +16,16 @@ namespace Actors.DroneStates
         /// </summary>
         private readonly Priority _priority;
 
-        public NegotiateState(DroneActor droneActor, IActorRef droneActorRef, 
-            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
-            : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
+        public NegotiateState(DroneActorState precedentState) 
+            : base(precedentState)
         {
-            _expectedMetrics = conflictSet.GetNodes();
+            _expectedMetrics = ConflictSet.GetNodes();
             _expectedIntentions = new HashSet<IActorRef>();
             _priority = PriorityCalculator.CalculatePriority(
                 DroneActor.ThisMission, 
                 DroneActor.Age, 
-                conflictSet.GetMissions(), 
-                flyingMissionsMonitor.GetFlyingMissions()
+                ConflictSet.GetMissions(), 
+                FlyingMissionsMonitor.GetFlyingMissions()
             );
         }
 
@@ -85,10 +84,16 @@ namespace Actors.DroneStates
 
         internal override DroneActorState OnReceive(InternalFlyIsSafeMessage msg, IActorRef sender)
         {
-            base.OnReceive(msg, sender);
+            _ = base.OnReceive(msg, sender);
 
             // controllo se grazie al termine del volo mi si è 
             // liberato qualcosa.
+            return NextState();
+        }
+
+        internal override DroneActorState OnReceive(ExitMessage msg, IActorRef sender)
+        {
+            _ = base.OnReceive(msg, sender);
             return NextState();
         }
 
@@ -101,13 +106,13 @@ namespace Actors.DroneStates
             // se ho ricevuto tutte le metriche, ho vinto tutte le negoziazioni
             // e non attendo droni in volo, posso partire
             if (FlyingMissionsMonitor.GetFlyingMissions().Count == 0 && ConflictSet.GetGreaterPriorityMissions(_priority).Count == 0)
-                return CreateFlyingState(DroneActor, DroneActorRef, ConflictSet, FlyingMissionsMonitor);
+                return CreateFlyingState(this).RunState();
 
             // se ho ricevuto tutte le metriche [, non ho vinto tutte le negoziazioni]
             // e ho ricevuto le intenzioni da tutti coloro che hanno metrica > me, 
             // entro in stato di attesa 
             if (_expectedIntentions.Count == 0)
-                return CreateWaitingState(DroneActor, DroneActorRef, ConflictSet, FlyingMissionsMonitor).RunState();
+                return CreateWaitingState(this, _priority).RunState();
             else 
                 return this;
         }

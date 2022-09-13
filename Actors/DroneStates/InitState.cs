@@ -85,8 +85,7 @@ namespace Actors.DroneStates
             {
                 // TODO: cancella il timeout su attesa messaggi
 
-                return CreateNegotiateState(DroneActor, DroneActorRef,
-                    ConflictSet, FlyingMissionsMonitor).RunState();
+                return CreateNegotiateState(this).RunState();
             }
 
             return this;

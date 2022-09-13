@@ -16,20 +16,15 @@ namespace Actors.DroneStates
         /// Viene avviato assieme alla procedura di volo e mi serve
         /// per richiedere la posizione corrente.
         /// </summary>
-        private IActorRef _flyingDroneActor;
+        private IActorRef? _flyingDroneActor;
 
         private bool _isMissionEnd = false;
         
-        public FlyingState(DroneActor droneActor, IActorRef droneActorRef,
-            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
-            : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
-        {
-
-        }
+        public FlyingState(DroneActorState precedentState): base(precedentState) {}
 
         internal override DroneActorState RunState()
         {
-            foreach (IActorRef node in ConflictSet.GetNodes())
+            foreach (var node in ConflictSet.GetNodes())
             {
                 node.Tell(new FlyingResponse(MissionPath));
             }

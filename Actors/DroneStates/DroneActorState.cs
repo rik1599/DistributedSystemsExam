@@ -39,6 +39,14 @@ namespace Actors.DroneStates
             FlyingMissionsMonitor = flyingMissionsMonitor;
         }
 
+        protected DroneActorState(DroneActorState precedentState)
+        {
+            DroneActor = precedentState.DroneActor;
+            DroneActorRef = precedentState.DroneActorRef;
+            ConflictSet = precedentState.ConflictSet;
+            FlyingMissionsMonitor = precedentState.FlyingMissionsMonitor;
+        }
+
         #region Factory methods
 
         public static DroneActorState CreateInitState(DroneActor droneActor, IActorRef droneActorRef)
@@ -48,17 +56,14 @@ namespace Actors.DroneStates
                 new FlyingMissionsMonitor(droneActor.ThisMission, new FlyingSet(), droneActor.Timers)
                 );
 
-        public static DroneActorState CreateNegotiateState(DroneActor droneActor, IActorRef droneActorRef, 
-            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
-            => new NegotiateState(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor);
+        public static DroneActorState CreateNegotiateState(DroneActorState precedentState)
+            => new NegotiateState(precedentState);
 
-        public static DroneActorState CreateWaitingState(DroneActor droneActor, IActorRef droneActorRef,
-            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
-            => new WaitingState(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor);
+        public static DroneActorState CreateWaitingState(DroneActorState precedentState, Priority priority)
+            => new WaitingState(precedentState, priority);
 
-        public static DroneActorState CreateFlyingState(DroneActor droneActor, IActorRef droneActorRef,
-            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
-            => new FlyingState(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor);
+        public static DroneActorState CreateFlyingState(DroneActorState precedentState)
+            => new FlyingState(precedentState);
 
         #endregion
 
@@ -88,7 +93,7 @@ namespace Actors.DroneStates
             WaitingMission? eventualMission = ConflictSet.RemoveMission(sender);
 
             // se ho conflitto, aggiungo il nodo alla lista di nodi in volo
-            if (MissionPath.ClosestConflictPoint(msg.Path) != null)
+            if (MissionPath.ClosestConflictPoint(msg.Path) is not null)
             {
                 FlyingMissionsMonitor.MakeMissionFly(
                     eventualMission ??
