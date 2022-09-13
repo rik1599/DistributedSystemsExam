@@ -1,17 +1,16 @@
-﻿using Akka.Actor;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Actors.MissionPathPriority
 {
     /// <summary>
     /// Strumento per il calcolo della priorità di un nodo.
     /// </summary>
-    internal class PriorityCalculator
+    internal static class PriorityCalculator
     {
         private const float k = 1.2f;
         private const float h1 = 1f;
         private const float h2 = 1f;
-        
+
         /// <summary>
         /// Calcola la priorità di una certa missione.
         /// </summary>
@@ -23,53 +22,64 @@ namespace Actors.MissionPathPriority
         public static Priority CalculatePriority(Mission thisMission, TimeSpan age, ISet<WaitingMission> conflictSet, ISet<FlyingMission> flyingSet)
         {
             // calcolo del massimo tempo di attesa di missioni in volo
-            var maxFlyingMissionsWait = TimeSpan.Zero;
-            foreach(var m in flyingSet)
-            {
-                var remainingTime = m.GetRemainingTimeForSafeStart(thisMission);
-                if (remainingTime > maxFlyingMissionsWait)
-                {
-                    maxFlyingMissionsWait = remainingTime;
-                }
-            }
+            var maxFlyingMissionsWait = flyingSet.MinBy(m => m.GetRemainingTimeForSafeStart(thisMission));
+
+            //var maxFlyingMissionsWait = TimeSpan.Zero;
+            //foreach(var m in flyingSet)
+            //{
+            //    var remainingTime = m.GetRemainingTimeForSafeStart(thisMission);
+            //    if (remainingTime > maxFlyingMissionsWait)
+            //    {
+            //        maxFlyingMissionsWait = remainingTime;
+            //    }
+            //}
 
             // calcolo della somma dei tempi che faccio attendere il mio conflict set
-            var sumOfWaitsICause = TimeSpan.Zero;
-            foreach (var m in conflictSet)
-            {
-                var conflictPoint = m.Path.ClosestConflictPoint(thisMission.Path);
+            var sumOfWaitsICause = conflictSet.Aggregate(
+                TimeSpan.Zero,
+                (partialSum, mission) =>
+                {
+                    var conflictPoint = mission.Path.ClosestConflictPoint(thisMission.Path);
+                    Debug.Assert(conflictPoint != null);
+                    return partialSum + thisMission.Path.TimeDistance(conflictPoint.Value) - mission.Path.TimeDistance(conflictPoint.Value);
+                });
 
-                Debug.Assert(conflictPoint != null);
+            //var sumOfWaitsICause = TimeSpan.Zero;
+            //foreach (var m in conflictSet)
+            //{
+            //    var conflictPoint = m.Path.ClosestConflictPoint(thisMission.Path);
 
-                // comporto ad ogni nodo un tempo di attesa almeno tale
-                // alla differenza tra il mio tempo per raggiungere il
-                // punto di conflitto e il suo tempo
+            //    Debug.Assert(conflictPoint != null);
 
-                // NOTA: può essere anche un valore negativo, e in tal 
-                // caso mi fa guadagnare priorità.
+            //    // comporto ad ogni nodo un tempo di attesa almeno tale
+            //    // alla differenza tra il mio tempo per raggiungere il
+            //    // punto di conflitto e il suo tempo
 
-                sumOfWaitsICause = sumOfWaitsICause.Add(
+            //    // NOTA: può essere anche un valore negativo, e in tal 
+            //    // caso mi fa guadagnare priorità.
 
-                    // timeDist(thisMission.start, conflictPoint) - 
-                    //  timeDist(m.start, conflictPoint) 
-                    thisMission.Path.TimeDistance(conflictPoint.Value)
-                        .Subtract(m.Path.TimeDistance(conflictPoint.Value))
-                );
-            }
+            //    sumOfWaitsICause = sumOfWaitsICause.Add(
+
+            //        // timeDist(thisMission.start, conflictPoint) - 
+            //        //  timeDist(m.start, conflictPoint) 
+            //        thisMission.Path.TimeDistance(conflictPoint.Value)
+            //            .Subtract(m.Path.TimeDistance(conflictPoint.Value))
+            //    );
+            //}
 
             return new Priority(
-                Math.Pow(ParseValue(age), k) 
-                    - h1 * conflictSet.Count * ParseValue(maxFlyingMissionsWait) 
+                Math.Pow(ParseValue(age), k)
+                    - h1 * conflictSet.Count * ParseValue(maxFlyingMissionsWait!.GetRemainingTimeForSafeStart(thisMission))
                     - h2 * ParseValue(sumOfWaitsICause),
                 thisMission.NodeRef
             );
         }
 
 
-        private static Double ParseValue(TimeSpan time)
+        private static double ParseValue(TimeSpan time)
         {
             // TODO: gestisci meglio l'estrazione dell'unità di misura corretta
-            return (double) time.TotalMinutes;
+            return (double)time.TotalMinutes;
         }
     }
 }
