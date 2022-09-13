@@ -71,4 +71,14 @@ namespace Actors.Messages.External
     {
 
     }
+
+    public class MissionFinishedMessage : ExitMessage
+    {
+
+    }
+
+    public class MissionCanceledMessage : ExitMessage
+    {
+
+    }
 }

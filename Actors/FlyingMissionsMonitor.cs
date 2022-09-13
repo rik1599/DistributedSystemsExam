@@ -48,10 +48,23 @@ namespace Actors
             // todo: "invalida" l'istanza di WaitingMission in modo che non
             // possa più essere utilizzata
 
-            // pianifico l'invio a me stesso di un messaggio che comunica 
-            _timers.StartSingleTimer(flyingMission,
-                new InternalFlyIsSafeMessage(flyingMission.NodeRef),
-                flyingMission.GetRemainingTimeForSafeStart(_thisMission));
+            var safeWaitTime = flyingMission.GetRemainingTimeForSafeStart(_thisMission);
+
+            if (safeWaitTime > TimeSpan.Zero)
+            {
+                // pianifico l'invio a me stesso di un messaggio (che arriva quando si libera la tratta)
+                _timers.StartSingleTimer(flyingMission,
+                    new InternalFlyIsSafeMessage(flyingMission.NodeRef),
+                    safeWaitTime
+                    );
+            }
+            else
+            {
+                _timers.StartSingleTimer(flyingMission,
+                    new InternalFlyIsSafeMessage(flyingMission.NodeRef),
+                    TimeSpan.Zero
+                    );
+            }   
         }
 
         /// <summary>

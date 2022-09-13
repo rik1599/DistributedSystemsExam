@@ -67,7 +67,7 @@ namespace Actors.MissionPathPriority
             return - NodeRef.CompareTo(other.NodeRef);
         }
 
-        internal Priority(double metricValue, IActorRef? nodeRef)
+        public Priority(double metricValue, IActorRef? nodeRef)
         {
             MetricValue = metricValue;
             NodeRef = nodeRef;

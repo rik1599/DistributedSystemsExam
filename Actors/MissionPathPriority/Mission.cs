@@ -101,12 +101,15 @@ namespace Actors.MissionPathPriority
 
             if (conflictPoint == null) return TimeSpan.Zero;
 
+            var timeDistFlyPoint = Path.TimeDistance(conflictPoint.Value);
+            var timeDistWaitPoint = thisMission.Path.TimeDistance(conflictPoint.Value);
+            var alreadyWaitedTime = DateTime.Now.Subtract(_startTime);
+            var marginTime = new TimeSpan(0, 0, (int)(MissionPath.MarginDistance / thisMission.Path.Speed));
+
+            var safeWaitTime = timeDistFlyPoint - timeDistWaitPoint - alreadyWaitedTime + marginTime;
+
             // timeDist(start, p) - timeDist(thisMission.start, p) - [now - startTime] + margin
-            return Path.TimeDistance(conflictPoint.Value)
-                .Subtract(thisMission.Path.TimeDistance(conflictPoint.Value))
-                .Subtract(DateTime.Now.Subtract(_startTime))
-                .Add(new TimeSpan(0, 0, (int) (MissionPath.MarginDistance * thisMission.Path.Speed))
-                );
+            return safeWaitTime;
         }
     }
 }
