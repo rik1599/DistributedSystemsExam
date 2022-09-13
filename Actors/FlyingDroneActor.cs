@@ -34,13 +34,14 @@ namespace Actors
         private void OnReceive(InternalUpdatePosition msg)
         {
             var elapsedTime = DateTime.Now - _lastUpdateTime;
-            var distance = (_mission.Path.Speed * elapsedTime.TotalSeconds) * _mission.Path.PathSegment.Direction;
+            var distanceTraveled = (_mission.Path.Speed * elapsedTime.TotalSeconds) * _mission.Path.PathSegment.Direction;
             
-            _position += distance;
+            _position += distanceTraveled;
             _lastUpdateTime = DateTime.Now;
 
-            var distanceToEnd = _position - _mission.Path.EndPoint;
-            if (distanceToEnd.X >= 0 && distanceToEnd.Y >= 0)
+            //Vettore punto di arrivo - punto attuale
+            var distanceToEnd = _mission.Path.PathSegment.EndPoint - _position;
+            if (distanceToEnd.Normalize().Equals(-_mission.Path.PathSegment.Direction, 1e-3) || distanceToEnd.Length == 0)
             {
                 _supervisor.Tell(new InternalMissionEnded());
                 Self.Tell(PoisonPill.Instance);

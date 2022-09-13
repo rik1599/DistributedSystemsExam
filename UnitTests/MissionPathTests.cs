@@ -42,5 +42,12 @@ namespace UnitTests
             Assert.NotNull(pc);
             Assert.True(pc is not null && pc.Value.Equals(new Point2D(1, 1), 0.0001));
         }
+
+        [Fact]
+        public void TestVector()
+        {
+            var vector = new Point2D(2,2) - new Point2D(1, 1);
+            Console.WriteLine(vector);
+        }
     }
 }
