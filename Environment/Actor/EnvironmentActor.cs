@@ -2,6 +2,8 @@
 using Actors;
 using Actors.MissionPathPriority;
 using Environment.PhisicalHost;
+using Actors.Utils;
+using Akka.Event;
 
 namespace Environment.Actor
 {
@@ -16,9 +18,12 @@ namespace Environment.Actor
     public class EnvironmentActor : ReceiveActor
     {
         private readonly ISet<IActorRef> _nodes;
+        private DebugLog _logger;
 
         public EnvironmentActor()
         {
+            _logger = new DebugLog(Context.GetLogger());
+
             _nodes = new HashSet<IActorRef>();
 
             Receive<SpawnMissionRequest>(msg => OnReceive(msg, Sender));
@@ -31,11 +36,14 @@ namespace Environment.Actor
             Context.Watch(droneRef);
             _nodes.Add(droneRef);
 
+            _logger.Info($"Spawnata missione su {droneRef} su richiesta di {sender}.");
+
             sender.Tell(new SpawnMissionResponse(droneRef));
         }
 
         private void OnReceive(Terminated msg, IActorRef sender)
         {
+            _logger.Info($"Missione del drone {sender} terminata.");
             _nodes.Remove(sender);
         }
             
