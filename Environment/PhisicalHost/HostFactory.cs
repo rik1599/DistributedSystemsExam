@@ -1,5 +1,8 @@
-﻿namespace Environment
+﻿namespace Environment.PhisicalHost
 {
+    /// <summary>
+    /// strumento per la generazione di host
+    /// </summary>
     public interface IHostFactory
     {
         Host Create(string hostName, int port);
