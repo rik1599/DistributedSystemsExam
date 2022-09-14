@@ -30,7 +30,7 @@ namespace Actors
             DroneContext = Context;
 
             // avvio lo stato iniziale
-            _droneState = DroneActorState.CreateInitState(this, Self).RunState();
+            _droneState = DroneActorState.CreateInitState(this).RunState();
 
             ReceiveExternalMessages();
             ReceiveInternalMessage();

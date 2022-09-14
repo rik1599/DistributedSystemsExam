@@ -20,11 +20,7 @@ namespace Actors.MissionSets
         /// <returns></returns>
         public IDictionary<IActorRef, WaitingMission> GetGreaterPriorityMissions(Priority p)
         {
-            return Missions.Where(pair =>
-            {
-                // estraggo le missioni di priorità maggiore 
-                return pair.Value.Priority.CompareTo(p) > 0;
-            }).ToDictionary(
+            return Missions.Where(pair => pair.Value.Priority.CompareTo(p) > 0).ToDictionary(
                 mission => mission.Key,
                 mission => mission.Value
                 );
@@ -38,11 +34,7 @@ namespace Actors.MissionSets
         /// <returns></returns>
         public IDictionary<IActorRef, WaitingMission> GetSmallerPriorityMissions(Priority p)
         {
-            return Missions.Where(pair =>
-            {
-                // estraggo le missioni di priorità minore
-                return pair.Value.Priority.CompareTo(p) < 0;
-            }).ToDictionary(
+            return Missions.Where(pair => pair.Value.Priority.CompareTo(p) < 0).ToDictionary(
                 mission => mission.Key,
                 mission => mission.Value
                 );
