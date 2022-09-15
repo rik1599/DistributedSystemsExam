@@ -80,7 +80,7 @@ namespace Actors.MissionPathPriority
         public TimeSpan GetRemainingTimeToPoint(Point2D p)
         {
             // il punto deve appartenere alla tratta (entro un margine)
-            Debug.Assert(Path.PathSegment.LineTo(p).Length <= MissionPath.MarginDistance);
+            Debug.Assert(Path.PathSegment().LineTo(p).Length <= MissionPath.MarginDistance);
             
             // timeDist(start, p) - [now - startTime]
             return Path.TimeDistance(p) - (DateTime.Now - _startTime);

@@ -1,10 +1,23 @@
 ﻿using Akka.Actor;
 
-namespace Environment
+namespace Environment.PhisicalHost
 {
+    /// <summary>
+    /// Una rappresentazione di una locazione fisica.
+    /// Permette di ricavare un indirizzo a partire da un host 
+    /// e da una porta.
+    /// </summary>
     public abstract class Host
     {
+        /// <summary>
+        /// L'indirizzo dell'host
+        /// </summary>
         protected string HostName { get; private set; }
+
+        /// <summary>
+        /// La porta dell'host (mettere 0 se si vuole dire
+        /// che viene scelta automaticamente dal sistema)
+        /// </summary>
         protected int Port { get; private set; }
 
         protected Host(string hostName, int port)
@@ -13,6 +26,10 @@ namespace Environment
             Port = port;
         }
 
+        /// <summary>
+        /// Ricava un indirizzo per il sistema
+        /// </summary>
+        /// <returns></returns>
         public abstract Address Parse();
 
         protected Address Parse(string protocol)
