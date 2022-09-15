@@ -27,7 +27,7 @@ namespace UnitTests.ActorsTests.TwoActors
 
             // voglio simulare una situazione in cui il nodo all'inizio è solo
             var nodes = new HashSet<IActorRef> { };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // quando gli richiedo di connettersi, mi aspetto sia partito in volo
             subject.Tell(new ConnectRequest(missionB), TestActor);
@@ -53,7 +53,7 @@ namespace UnitTests.ActorsTests.TwoActors
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(25, 25), 10.0f);
 
             var nodes = new HashSet<IActorRef> { TestActor };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta che non prevede conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -77,7 +77,7 @@ namespace UnitTests.ActorsTests.TwoActors
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(25, 25), 10.0f);
 
             var nodes = new HashSet<IActorRef> { TestActor };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta in volo che non prevede conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -106,7 +106,7 @@ namespace UnitTests.ActorsTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -143,7 +143,7 @@ namespace UnitTests.ActorsTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -179,7 +179,7 @@ namespace UnitTests.ActorsTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -215,7 +215,7 @@ namespace UnitTests.ActorsTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             ExpectMsgFrom<ConnectRequest>(subject);
 
@@ -243,7 +243,7 @@ namespace UnitTests.ActorsTests.TwoActors
 
             var nodes = new HashSet<IActorRef>{ TestActor };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -281,7 +281,7 @@ namespace UnitTests.ActorsTests.TwoActors
 
             var nodes = new HashSet<IActorRef> { TestActor };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);

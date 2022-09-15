@@ -36,7 +36,7 @@ namespace UnitTests.ActorTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             ExpectMsgFrom<ConnectRequest>(subject);
 
@@ -90,7 +90,7 @@ namespace UnitTests.ActorTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(SimpleDroneActor.Props(nodes, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con
             // conflitto, anche se senza intersezione)
