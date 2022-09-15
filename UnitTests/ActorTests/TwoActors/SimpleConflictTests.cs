@@ -241,10 +241,7 @@ namespace UnitTests.ActorsTests.TwoActors
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var nodes = new HashSet<IActorRef>
-            {
-                TestActor
-            };
+            var nodes = new HashSet<IActorRef>{ TestActor };
 
             var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
 
@@ -265,6 +262,54 @@ namespace UnitTests.ActorsTests.TwoActors
 
             // Dopo una ragionevole attesa, mi aspetto un'uscita per missione completata
             ExpectMsgFrom<MissionFinishedMessage>(subject, new TimeSpan(0, 0, 5));
+
+            Sys.Terminate();
+        }
+
+        /// <summary>
+        /// conflitto semplice dove due nodi hanno lo stesso ID
+        /// 
+        /// un drone spawna, conosce un nodo, osserva il conflitto, 
+        /// in negoziazione emerge che hanno lo stesso ID (dovrebbe vincere
+        /// chi ce l'ha più piccolo)
+        /// </summary>
+        [Fact]
+        public void SimpleConflictSameID1()
+        {
+            var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
+            var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
+
+            var nodes = new HashSet<IActorRef> { TestActor };
+
+            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+
+            // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
+            ExpectMsgFrom<ConnectRequest>(subject);
+            subject.Tell(new ConnectResponse(missionB), TestActor);
+
+            // mi aspetto che mi richieda di negoziare (rispondo con priorità >)
+            var metricMsg = ExpectMsgFrom<MetricMessage>(subject);
+
+            // gli rispondo con la stessa metrica ma ID diverso
+            subject.Tell(new MetricMessage(new Priority(metricMsg.Priority.MetricValue, TestActor), 0));
+
+            if (TestActor.CompareTo(subject) < 0)
+            {
+                // se ho l'ID minore, mi aspetto di vincere
+                Thread.Sleep(500);
+                subject.Tell(new FlyingResponse(missionB));
+
+                // Dopo una ragionevole attesa (più lunga), mi aspetto un'uscita per missione completata
+                ExpectMsgFrom<MissionFinishedMessage>(subject, new TimeSpan(0, 0, 10));
+
+            } else
+            {
+                // altrimenti mi aspetto che vinca lui
+
+                // Dopo una ragionevole attesa (più lunga), mi aspetto un'uscita per missione completata
+                ExpectMsgFrom<FlyingResponse>(subject);
+                ExpectMsgFrom<MissionFinishedMessage>(subject, new TimeSpan(0, 0, 5));
+            }
 
             Sys.Terminate();
         }
