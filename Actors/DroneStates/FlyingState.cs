@@ -96,7 +96,7 @@ namespace Actors.DroneStates
             _isMissionEnd = true;
 
             // comunico la mia uscita a tutti i nodi noti 
-            foreach (IActorRef node in DroneActor.Nodes)
+            foreach (var node in DroneActor.Nodes)
             {
                 node.Tell(new MissionFinishedMessage());
             }

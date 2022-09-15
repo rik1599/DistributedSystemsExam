@@ -8,11 +8,11 @@ namespace Actors.DroneStates
     internal class InitState : DroneActorState
     {
 
-        private ISet<IActorRef> _expectedConnectResponses;
+        private readonly ISet<IActorRef> _expectedConnectResponses;
 
-        internal InitState(DroneActor droneActor, IActorRef droneActorRef, 
+        internal InitState(DroneActor droneActor, 
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
-            : base(droneActor, droneActorRef, conflictSet, flyingMissionsMonitor)
+            : base(droneActor, conflictSet, flyingMissionsMonitor)
         {
             _expectedConnectResponses = DroneActor.Nodes.ToHashSet();
         }

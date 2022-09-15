@@ -83,7 +83,7 @@ namespace Actors.MissionPathPriority
             Debug.Assert(Path.PathSegment.LineTo(p).Length <= MissionPath.MarginDistance);
             
             // timeDist(start, p) - [now - startTime]
-            return Path.TimeDistance(p).Subtract(DateTime.Now.Subtract(_startTime));
+            return Path.TimeDistance(p) - (DateTime.Now - _startTime);
         }
 
         /// <summary>
@@ -103,13 +103,11 @@ namespace Actors.MissionPathPriority
 
             var timeDistFlyPoint = Path.TimeDistance(conflictPoint.Value);
             var timeDistWaitPoint = thisMission.Path.TimeDistance(conflictPoint.Value);
-            var alreadyWaitedTime = DateTime.Now.Subtract(_startTime);
-            var marginTime = new TimeSpan(0, 0, (int)(MissionPath.MarginDistance / thisMission.Path.Speed));
-
-            var safeWaitTime = timeDistFlyPoint - timeDistWaitPoint - alreadyWaitedTime + marginTime;
+            var alreadyWaitedTime = DateTime.Now - _startTime;
+            var marginTime = TimeSpan.FromSeconds((int)(MissionPath.MarginDistance / thisMission.Path.Speed));
 
             // timeDist(start, p) - timeDist(thisMission.start, p) - [now - startTime] + margin
-            return safeWaitTime;
+            return timeDistFlyPoint - timeDistWaitPoint - alreadyWaitedTime + marginTime;
         }
     }
 }

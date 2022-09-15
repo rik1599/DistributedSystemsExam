@@ -22,18 +22,14 @@ namespace Actors.MissionPathPriority
         public static Priority CalculatePriority(Mission thisMission, TimeSpan age, ISet<WaitingMission> conflictSet, ISet<FlyingMission> flyingSet)
         {
             // calcolo del massimo tempo di attesa di missioni in volo
-            // var maxFlyingMissionsWait = flyingSet.MinBy(m => m.GetRemainingTimeForSafeStart(thisMission));
-
-            TimeSpan maxFlyingMissionsWait = TimeSpan.Zero;
-            foreach (var m in flyingSet)
-            {
-                var remainingTime = m.GetRemainingTimeForSafeStart(thisMission);
-                if (remainingTime > maxFlyingMissionsWait)
+            var maxFlyingMissionsWait = flyingSet.Aggregate(
+                TimeSpan.Zero,
+                (partialMax, mission) =>
                 {
-                    maxFlyingMissionsWait = remainingTime;
-                }
-            }
-
+                    var remainingTime = mission.GetRemainingTimeForSafeStart(thisMission);
+                    return remainingTime > partialMax ? remainingTime : partialMax;
+                });
+            
             // calcolo della somma dei tempi che faccio attendere il mio conflict set
             TimeSpan sumOfWaitsICause = conflictSet.Aggregate(
                 TimeSpan.Zero,
@@ -43,29 +39,6 @@ namespace Actors.MissionPathPriority
                     Debug.Assert(conflictPoint != null);
                     return partialSum + thisMission.Path.TimeDistance(conflictPoint.Value) - mission.Path.TimeDistance(conflictPoint.Value);
                 });
-
-            //var sumOfWaitsICause = TimeSpan.Zero;
-            //foreach (var m in conflictSet)
-            //{
-            //    var conflictPoint = m.Path.ClosestConflictPoint(thisMission.Path);
-
-            //    Debug.Assert(conflictPoint != null);
-
-            //    // comporto ad ogni nodo un tempo di attesa almeno tale
-            //    // alla differenza tra il mio tempo per raggiungere il
-            //    // punto di conflitto e il suo tempo
-
-            //    // NOTA: può essere anche un valore negativo, e in tal 
-            //    // caso mi fa guadagnare priorità.
-
-            //    sumOfWaitsICause = sumOfWaitsICause.Add(
-
-            //        // timeDist(thisMission.start, conflictPoint) - 
-            //        //  timeDist(m.start, conflictPoint) 
-            //        thisMission.Path.TimeDistance(conflictPoint.Value)
-            //            .Subtract(m.Path.TimeDistance(conflictPoint.Value))
-            //    );
-            //}
 
             return new Priority(
                 Math.Pow(ParseValue(age), k)
