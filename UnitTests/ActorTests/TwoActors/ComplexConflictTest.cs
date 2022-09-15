@@ -1,14 +1,10 @@
 ﻿using Actors;
 using Actors.Messages.External;
+using Actors.Messages.Register;
 using Actors.MissionPathPriority;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using MathNet.Spatial.Euclidean;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UnitTests.ActorTests.TwoActors
 {
@@ -36,7 +32,9 @@ namespace UnitTests.ActorTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             ExpectMsgFrom<ConnectRequest>(subject);
 
@@ -90,7 +88,9 @@ namespace UnitTests.ActorTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             // mi aspetto una connessione (a cui rispondo con una tratta con
             // conflitto, anche se senza intersezione)

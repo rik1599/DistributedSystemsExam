@@ -4,6 +4,7 @@ using Akka.Actor;
 using Actors.MissionPathPriority;
 using MathNet.Spatial.Euclidean;
 using Actors.Messages.External;
+using Actors.Messages.Register;
 
 namespace UnitTests.ActorsTests.TwoActors
 {
@@ -26,16 +27,18 @@ namespace UnitTests.ActorsTests.TwoActors
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
             // voglio simulare una situazione in cui il nodo all'inizio è solo
-            var nodes = new HashSet<IActorRef> { };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var nodes = new HashSet<IActorRef>();
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            var msg = ExpectMsg<RegisterRequest>();
+            msg.Actor.Tell(new RegisterResponse(nodes), TestActor);
 
             // quando gli richiedo di connettersi, mi aspetto sia partito in volo
-            subject.Tell(new ConnectRequest(missionB), TestActor);
-            ExpectMsgFrom<FlyingResponse>(subject);
+            msg.Actor.Tell(new ConnectRequest(missionB), TestActor);
+            ExpectMsgFrom<FlyingResponse>(msg.Actor, TimeSpan.FromDays(1));
 
 
             // mi aspetto un'uscita per missione completata
-            ExpectMsgFrom<MissionFinishedMessage>(subject, new TimeSpan(0, 0, 5));
+            ExpectMsgFrom<MissionFinishedMessage>(msg.Actor, new TimeSpan(0, 0, 5));
 
             Sys.Terminate();
         }
@@ -53,7 +56,9 @@ namespace UnitTests.ActorsTests.TwoActors
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(25, 25), 10.0f);
 
             var nodes = new HashSet<IActorRef> { TestActor };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             // mi aspetto una connessione (a cui rispondo con una tratta che non prevede conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -77,7 +82,9 @@ namespace UnitTests.ActorsTests.TwoActors
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(25, 25), 10.0f);
 
             var nodes = new HashSet<IActorRef> { TestActor };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             // mi aspetto una connessione (a cui rispondo con una tratta in volo che non prevede conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -106,7 +113,9 @@ namespace UnitTests.ActorsTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -143,7 +152,9 @@ namespace UnitTests.ActorsTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -179,7 +190,9 @@ namespace UnitTests.ActorsTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -215,10 +228,11 @@ namespace UnitTests.ActorsTests.TwoActors
                 TestActor
             };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             ExpectMsgFrom<ConnectRequest>(subject);
-
             // rispondo al drone che sono in volo!
             subject.Tell(new FlyingResponse(missionB));
 
@@ -243,7 +257,9 @@ namespace UnitTests.ActorsTests.TwoActors
 
             var nodes = new HashSet<IActorRef>{ TestActor };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -281,7 +297,9 @@ namespace UnitTests.ActorsTests.TwoActors
 
             var nodes = new HashSet<IActorRef> { TestActor };
 
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(TestActor, missionA), "droneProva");
+            ExpectMsg<RegisterRequest>();
+            subject.Tell(new RegisterResponse(nodes), TestActor);
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
