@@ -1,8 +1,26 @@
-﻿namespace Actors
+﻿using Akka.Configuration;
+
+namespace Actors
 {
-    public static class Constants
+    public class Config
     {
-        public const string ActorSystemName = "DroneActorSystem";
-        public const float Speed = 2.0F;
+        public string ActorSystemName { get; set; } = "DroneActorSystem";
+
+        public string HoconConfig { get; set; } = @"
+akka {  
+    actor {
+        provider = remote
+    }
+    remote {
+        dot-netty.tcp {
+            port = 0
+            hostname = localhost
+        }
+    }
+}";
+        public Akka.Configuration.Config DroneConfig
+        {
+            get { return ConfigurationFactory.ParseString(HoconConfig); }
+        }
     }
 }

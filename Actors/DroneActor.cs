@@ -4,6 +4,8 @@ using Akka.Event;
 using Actors.Messages.External;
 using Actors.Messages.Internal;
 using Actors.DroneStates;
+using Actors.Messages;
+using Actors.Utils;
 
 namespace Actors
 {
@@ -15,7 +17,7 @@ namespace Actors
         private readonly DateTime _timeSpawn = DateTime.Now;
 
         internal IActorContext DroneContext { get; private set; }
-        internal ILoggingAdapter Log { get; } = Context.GetLogger();
+        internal DebugLog Log { get; } = new(Context.GetLogger());
         internal ISet<IActorRef> Nodes { get; private set; }
         internal Mission ThisMission { get; private set; }
         internal TimeSpan Age
@@ -23,17 +25,34 @@ namespace Actors
             get { return DateTime.Now - _timeSpawn; }
         }
 
-        public DroneActor(ISet<IActorRef> others, MissionPath missionPath)
+        public DroneActor(IActorRef repository, MissionPath missionPath)
         {
-            Nodes = others;
+            Nodes = new HashSet<IActorRef>();
             ThisMission = new WaitingMission(Self, missionPath, Priority.NullPriority);
             DroneContext = Context;
 
+            RegisterBehaviour(repository);
+
             // avvio lo stato iniziale
             _droneState = DroneActorState.CreateInitState(this).RunState();
+        }
 
-            ReceiveExternalMessages();
-            ReceiveInternalMessage();
+        private void RegisterBehaviour(IActorRef repository)
+        {
+            try
+            {
+                Nodes = 
+                    repository.Ask<RegisterResponse>(new RegisterRequest(), TimeSpan.FromSeconds(10))
+                    .Result.Nodes;
+
+                ReceiveExternalMessages();
+                ReceiveInternalMessage();
+            }
+            catch (AskTimeoutException)
+            {
+                Log.Info($"Timeout scaduto. Impossibile comunicare con il repository all'indirizzo {repository}");
+                Context.Stop(Self);
+            }
         }
 
         /// <summary>
@@ -61,9 +80,9 @@ namespace Actors
             Receive<InternalMissionEnded>    (msg => _droneState = _droneState.OnReceive(msg, Sender));
         }
 
-        public static Props Props(ISet<IActorRef> others, MissionPath missionPath)
+        public static Props Props(IActorRef environment, MissionPath missionPath)
         {
-            return Akka.Actor.Props.Create(() => new DroneActor(others, missionPath));
+            return Akka.Actor.Props.Create(() => new DroneActor(environment, missionPath));
         }
     }
 }
