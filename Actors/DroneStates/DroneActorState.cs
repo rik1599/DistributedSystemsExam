@@ -8,7 +8,7 @@ namespace Actors.DroneStates
 {
     internal abstract class DroneActorState
     {
-        protected DroneActor DroneActor { get; private set; }
+        protected DroneActor Actor { get; private set; }
         protected int LastNegotiationRound { get; set; }
 
         /// <summary>
@@ -24,16 +24,16 @@ namespace Actors.DroneStates
         /// <summary>
         /// shortcut per la tratta della missione corrente
         /// </summary>
-        protected MissionPath MissionPath { get => DroneActor.ThisMission.Path; }
+        protected MissionPath MissionPath { get => Actor.ThisMission.Path; }
 
         /// <summary>
         /// shortcut per il riferimento al nodo corrente
         /// </summary>
-        protected IActorRef DroneActorRef { get => DroneActor.DroneContext.Self; }
+        protected IActorRef ActorRef { get => Actor.DroneContext.Self; }
 
         protected DroneActorState(DroneActor droneActor, ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
         {
-            DroneActor = droneActor;
+            Actor = droneActor;
             ConflictSet = conflictSet;
             FlyingMissionsMonitor = flyingMissionsMonitor;
             LastNegotiationRound = 0;
@@ -41,7 +41,7 @@ namespace Actors.DroneStates
 
         protected DroneActorState(DroneActorState precedentState)
         {
-            DroneActor = precedentState.DroneActor;
+            Actor = precedentState.Actor;
             ConflictSet = precedentState.ConflictSet;
             FlyingMissionsMonitor = precedentState.FlyingMissionsMonitor;
             LastNegotiationRound = precedentState.LastNegotiationRound;
@@ -75,8 +75,8 @@ namespace Actors.DroneStates
             sender.Tell(new ConnectResponse(MissionPath));
 
             // se non conosco già il nodo, lo aggiungo alla lista
-            if (!DroneActor.Nodes.Contains(sender))
-                DroneActor.Nodes.Add(sender);
+            if (!Actor.Nodes.Contains(sender))
+                Actor.Nodes.Add(sender);
 
             // verifico se c'è conflitto (ed eventualmente aggiungo al conflict set)
             if (MissionPath.ClosestConflictPoint(msg.Path) != null)
@@ -108,7 +108,7 @@ namespace Actors.DroneStates
         {
             ConflictSet.RemoveMission(sender);
             FlyingMissionsMonitor.CancelMission(sender);
-            DroneActor.Nodes.Remove(sender);
+            Actor.Nodes.Remove(sender);
 
             return this;
         }
@@ -131,7 +131,6 @@ namespace Actors.DroneStates
 
         internal virtual DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
         {
-            // TODO: errore, normalmente non voglio ricevere un messaggio di questo tipo
             return this;
         }
 

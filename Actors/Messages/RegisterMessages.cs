@@ -1,13 +1,16 @@
 ﻿using Akka.Actor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Actors.Messages
+namespace Actors.Messages.Register
 {
-    public class RegisterRequest {}
+    public class RegisterRequest 
+    {
+        public IActorRef Actor { get; private set; }
+
+        public RegisterRequest(IActorRef actor)
+        {
+            Actor = actor;
+        }
+    }
 
     public class RegisterResponse
     {

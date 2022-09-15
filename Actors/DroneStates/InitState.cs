@@ -14,7 +14,7 @@ namespace Actors.DroneStates
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
             : base(droneActor, conflictSet, flyingMissionsMonitor)
         {
-            _expectedConnectResponses = DroneActor.Nodes.ToHashSet();
+            _expectedConnectResponses = Actor.Nodes.ToHashSet();
         }
 
         internal override DroneActorState RunState()
@@ -24,7 +24,7 @@ namespace Actors.DroneStates
 
             foreach (var node in _expectedConnectResponses)
             {
-                node.Tell(connectRequest, DroneActorRef);
+                node.Tell(connectRequest, ActorRef);
             }
 
             // TODO: far partire timeout

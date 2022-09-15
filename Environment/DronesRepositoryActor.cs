@@ -1,7 +1,7 @@
 ﻿using Akka.Actor;
 using Actors.Utils;
 using Akka.Event;
-using Actors.Messages;
+using Actors.Messages.Register;
 
 namespace Environment
 {
@@ -35,11 +35,11 @@ namespace Environment
 
         private void OnReceive(RegisterRequest msg)
         {
-            _logger.Info($"Registrazione del nodo {Sender} nel registro");
+            _logger.Info($"Registrazione del nodo {msg.Actor} nel registro");
             Sender.Tell(new RegisterResponse(_nodes.ToHashSet()), Self);
 
-            Context.Watch(Sender);
-            _nodes.Add(Sender);
+            Context.Watch(msg.Actor);
+            _nodes.Add(msg.Actor);
         }
 
         public static Props Props()

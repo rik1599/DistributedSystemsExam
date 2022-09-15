@@ -4,7 +4,7 @@ using Akka.Event;
 using Actors.Messages.External;
 using Actors.Messages.Internal;
 using Actors.DroneStates;
-using Actors.Messages;
+using Actors.Messages.Register;
 using Actors.Utils;
 
 namespace Actors
@@ -42,7 +42,7 @@ namespace Actors
             try
             {
                 Nodes = 
-                    repository.Ask<RegisterResponse>(new RegisterRequest(), TimeSpan.FromSeconds(10))
+                    repository.Ask<RegisterResponse>(new RegisterRequest(Self), TimeSpan.FromSeconds(10))
                     .Result.Nodes;
 
                 ReceiveExternalMessages();
@@ -62,12 +62,13 @@ namespace Actors
         private void ReceiveExternalMessages()
         {
             // la modalità di gestione dei messaggi dipende dallo stato del drone
-            Receive<ConnectRequest> (msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<ConnectRequest>(msg => _droneState = _droneState.OnReceive(msg, Sender));
             Receive<ConnectResponse>(msg => _droneState = _droneState.OnReceive(msg, Sender));
-            Receive<FlyingResponse> (msg => _droneState = _droneState.OnReceive(msg, Sender));
-            Receive<MetricMessage>  (msg => _droneState = _droneState.OnReceive(msg, Sender));
-            Receive<WaitMeMessage>  (msg => _droneState = _droneState.OnReceive(msg, Sender));
-            Receive<ExitMessage>    (msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<FlyingResponse>(msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<MetricMessage>(msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<WaitMeMessage>(msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<ExitMessage>(msg => _droneState = _droneState.OnReceive(msg, Sender));
+            Receive<MissionFinishedMessage>(msg => {});
         }
 
         /// <summary>
