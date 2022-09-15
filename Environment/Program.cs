@@ -23,7 +23,7 @@ akka {
 }
 "));
 
-var droneSystem = ActorSystem.Create("Drone", ConfigurationFactory.ParseString(@"
+var droneSystem = ActorSystem.Create(Actors.Constants.ActorSystemName, ConfigurationFactory.ParseString(@"
 akka {  
     actor {
         provider = remote
@@ -31,8 +31,7 @@ akka {
     remote {
         dot-netty.tcp {
             port = 8081
-            hostname = 0.0.0.0
-            public-hostname = localhost
+            hostname = localhost
         }
     }
 }
@@ -44,7 +43,7 @@ Console.WriteLine("Creazione attore ambiente.");
 
 var environment = envSystem.ActorOf(Props.Create(() => new EnvironmentActor()));
 
-Console.ReadKey();
+// Console.ReadKey();
 Console.WriteLine("Spawn missione.");
 
 
