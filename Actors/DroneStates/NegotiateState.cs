@@ -36,8 +36,8 @@ namespace Actors.DroneStates
             _expectedMetrics = ConflictSet.GetNodes();
             _expectedIntentions = new HashSet<IActorRef>();
             _priority = PriorityCalculator.CalculatePriority(
-                DroneActor.ThisMission, 
-                DroneActor.Age, 
+                Actor.ThisMission, 
+                Actor.Age, 
                 ConflictSet.GetMissions(), 
                 FlyingMissionsMonitor.GetFlyingMissions()
             );
@@ -160,7 +160,7 @@ namespace Actors.DroneStates
         {
             foreach (var msg in _metricMessages)
             {
-                DroneActorRef.Tell(msg.MetricMessage, msg.Sender);
+                ActorRef.Tell(msg.MetricMessage, msg.Sender);
             }
         }
     }

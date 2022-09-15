@@ -1,6 +1,8 @@
 ﻿using Actors.Messages.Internal;
 using Actors.MissionPathPriority;
+using Actors.Utils;
 using Akka.Actor;
+using Akka.Event;
 using MathNet.Spatial.Euclidean;
 
 namespace Actors
@@ -12,6 +14,8 @@ namespace Actors
         private readonly IActorRef _supervisor;
         private Point2D _position;
         private DateTime _lastUpdateTime;
+
+        private readonly DebugLog _logger = new(Context.GetLogger()); 
 
         public FlyingDroneActor(Mission mission, IActorRef supervisor)
         {
@@ -44,6 +48,7 @@ namespace Actors
             if (distanceToEnd.Normalize().Equals(-_mission.Path.PathSegment().Direction, 1e-3) || distanceToEnd.Length == 0)
             {
                 _supervisor.Tell(new InternalMissionEnded());
+                _logger.Warning("Viaggio finito");
                 Self.Tell(PoisonPill.Instance);
             }
         }
