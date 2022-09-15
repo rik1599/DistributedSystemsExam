@@ -60,7 +60,7 @@ namespace Actors.DTO
             return ConflictSet.Where(mission => mission.Priority.CompareTo(CurrentPriority) < 0).ToHashSet();
         }
 
-        public virtual bool IsConnected() => false;
+        public virtual bool IsConnected() => true;
 
         public virtual bool IsFlying() => false;
     }
@@ -82,6 +82,8 @@ namespace Actors.DTO
         }
 
         public IReadOnlySet<IActorRef> MissingConnections { get; internal set; }
+
+        public override bool IsConnected() => false;
     }
 
     public class DroneNegotiateStateDTO : DroneStateDTO
@@ -133,5 +135,7 @@ namespace Actors.DTO
         public Point2D CurrentPosition { get; internal set; }
         public TimeSpan DoneFlyingTime { get; internal set; }
         public TimeSpan RemainingFlyingTime { get; internal set; }
+
+        public override bool IsFlying() => true;
     }
 }
