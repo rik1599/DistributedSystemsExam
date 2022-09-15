@@ -8,11 +8,11 @@ namespace Actors
     sealed class DroneActorContext
     {
         private readonly DateTime _timeSpawn = DateTime.Now;
-        internal ITimerScheduler Timers { get; private set; }
-        internal IActorContext Context { get; private set; }
+        internal ITimerScheduler Timers { get; }
+        internal IActorContext Context { get; }
         internal DebugLog Log { get; }
-        internal ISet<IActorRef> Nodes { get; private set; }
-        internal Mission ThisMission { get; private set; }
+        internal ISet<IActorRef> Nodes { get; }
+        internal Mission ThisMission { get; }
         internal TimeSpan Age
         {
             get { return DateTime.Now - _timeSpawn; }

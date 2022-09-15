@@ -52,12 +52,12 @@ namespace Actors
             Receive<InternalMissionEnded>    (msg => _droneState = _droneState!.OnReceive(msg, Sender));
         }
 
-        public static Props Props(IActorRef register, MissionPath missionPath)
+        public static Props Props(IActorRef repository, MissionPath missionPath)
         {
-            return Akka.Actor.Props.Create(() => new RegisterDroneActor(register, missionPath));
+            return Akka.Actor.Props.Create(() => new RegisterDroneActor(repository, missionPath));
         }
 
-        public static Props Props(IReadOnlySet<IActorRef> nodes, MissionPath missionPath)
+        public static Props Props(ISet<IActorRef> nodes, MissionPath missionPath)
         {
             return Akka.Actor.Props.Create(() => new SimpleDroneActor(nodes, missionPath));
         }
@@ -71,28 +71,22 @@ namespace Actors
     /// </summary>
     internal class RegisterDroneActor : DroneActor
     {
-        public RegisterDroneActor(IActorRef register, MissionPath missionPath)
-        {
-            RegisterBehaviour(register, missionPath);
-        }
-
         /// <summary>
         /// Procedura iniziale di connessione ad un repository
         /// per reperire tutti i possibili nodi.
         /// </summary>
-        /// <param name="register"></param>
-        private void RegisterBehaviour(IActorRef register, MissionPath missionPath)
+        public RegisterDroneActor(IActorRef repository, MissionPath missionPath)
         {
             try
             {
-                Task<RegisterResponse> t = register.Ask<RegisterResponse>(new RegisterRequest(Self), TimeSpan.FromSeconds(10));
+                Task<RegisterResponse> t = repository.Ask<RegisterResponse>(new RegisterRequest(Self), TimeSpan.FromSeconds(10));
                 t.Wait();
 
                 AlgorithmRunBehaviour(t.Result.Nodes, missionPath);
             }
             catch (AskTimeoutException)
             {
-                Context.GetLogger().Info($"Timeout scaduto. Impossibile comunicare con il repository all'indirizzo {register}");
+                Context.GetLogger().Info($"Timeout scaduto. Impossibile comunicare con il repository all'indirizzo {repository}");
                 Context.Stop(Self);
             }
         }
@@ -103,7 +97,7 @@ namespace Actors
     /// </summary>
     internal class SimpleDroneActor : DroneActor
     {
-        public SimpleDroneActor(IReadOnlySet<IActorRef> nodes, MissionPath missionPath)
+        public SimpleDroneActor(ISet<IActorRef> nodes, MissionPath missionPath)
         {
             AlgorithmRunBehaviour(nodes.ToHashSet(), missionPath);
         }

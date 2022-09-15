@@ -10,9 +10,8 @@ namespace Actors.Utils
     /// </summary>
     public class DebugLog
     {
-        private ILoggingAdapter _logger;
+        private readonly ILoggingAdapter _logger;
         private bool _forceDeactivate = false;
-
 
         public DebugLog(ILoggingAdapter logger, bool forceDeactivate = false)
         {
