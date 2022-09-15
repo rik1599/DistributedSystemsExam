@@ -1,6 +1,4 @@
-﻿
-
-using Actors;
+﻿using Actors;
 using Actors.Messages.External;
 using Actors.Messages.Register;
 using Actors.MissionPathPriority;
@@ -27,7 +25,7 @@ namespace UnitTests.ActorTests.Register
             var register = Sys.ActorOf(DronesRepositoryActor.Props());
 
             // voglio simulare una situazione in cui il nodo all'inizio è solo
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // quando gli richiedo di connettersi, mi aspetto sia partito in volo
             subject.Tell(new ConnectRequest(missionB), TestActor);
@@ -57,7 +55,7 @@ namespace UnitTests.ActorTests.Register
             var missionA = new MissionPath(Point2D.Origin, new Point2D(0, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(25, 25), 10.0f);
 
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta che non prevede conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -86,7 +84,7 @@ namespace UnitTests.ActorTests.Register
             var missionA = new MissionPath(Point2D.Origin, new Point2D(0, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(25, 25), 10.0f);
 
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta in volo che non prevede conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -115,7 +113,7 @@ namespace UnitTests.ActorTests.Register
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -152,7 +150,7 @@ namespace UnitTests.ActorTests.Register
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -188,7 +186,7 @@ namespace UnitTests.ActorTests.Register
             var missionA = new MissionPath(new Point2D(0, 25), new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(5, 0), new Point2D(5, 30), 10.0f);
 
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -224,7 +222,7 @@ namespace UnitTests.ActorTests.Register
             var missionA = new MissionPath(new Point2D(0, 25), new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(5, 0), new Point2D(5, 30), 10.0f);
 
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             ExpectMsgFrom<ConnectRequest>(subject);
 
@@ -255,7 +253,7 @@ namespace UnitTests.ActorTests.Register
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -296,7 +294,7 @@ namespace UnitTests.ActorTests.Register
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var subject = Sys.ActorOf(RegisterDroneActor.Props(register, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);

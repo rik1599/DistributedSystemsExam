@@ -8,7 +8,7 @@ namespace Actors.DroneStates
 {
     internal abstract class DroneActorState
     {
-        protected DroneActor Actor { get; private set; }
+        protected DroneActorContext Context { get; private set; }
         protected int LastNegotiationRound { get; set; }
 
         /// <summary>
@@ -24,36 +24,36 @@ namespace Actors.DroneStates
         /// <summary>
         /// shortcut per la tratta della missione corrente
         /// </summary>
-        protected MissionPath MissionPath { get => Actor.ThisMission.Path; }
+        protected MissionPath MissionPath { get => Context.ThisMission.Path; }
 
         /// <summary>
         /// shortcut per il riferimento al nodo corrente
         /// </summary>
-        protected IActorRef ActorRef { get => Actor.DroneContext.Self; }
+        protected IActorRef ActorRef { get => Context.Context.Self; }
 
-        protected DroneActorState(DroneActor droneActor, ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
+        protected DroneActorState(DroneActorContext context, ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
         {
-            Actor = droneActor;
+            Context = context;
             ConflictSet = conflictSet;
             FlyingMissionsMonitor = flyingMissionsMonitor;
             LastNegotiationRound = 0;
         }
 
-        protected DroneActorState(DroneActorState precedentState)
+        protected DroneActorState(DroneActorState state)
         {
-            Actor = precedentState.Actor;
-            ConflictSet = precedentState.ConflictSet;
-            FlyingMissionsMonitor = precedentState.FlyingMissionsMonitor;
-            LastNegotiationRound = precedentState.LastNegotiationRound;
+            Context = state.Context;
+            ConflictSet = state.ConflictSet;
+            FlyingMissionsMonitor = state.FlyingMissionsMonitor;
+            LastNegotiationRound = state.LastNegotiationRound;
         }
 
         #region Factory methods
 
-        public static DroneActorState CreateInitState(DroneActor droneActor)
+        public static DroneActorState CreateInitState(DroneActorContext context)
             => new InitState(
-                droneActor, 
+                context, 
                 new ConflictSet(), 
-                new FlyingMissionsMonitor(droneActor.ThisMission, new FlyingSet(), droneActor.Timers)
+                new FlyingMissionsMonitor(context.ThisMission, new FlyingSet(), context.Timers)
                 );
 
         public static DroneActorState CreateNegotiateState(DroneActorState precedentState)
@@ -75,8 +75,8 @@ namespace Actors.DroneStates
             sender.Tell(new ConnectResponse(MissionPath));
 
             // se non conosco già il nodo, lo aggiungo alla lista
-            if (!Actor.Nodes.Contains(sender))
-                Actor.Nodes.Add(sender);
+            if (!Context.Nodes.Contains(sender))
+                Context.Nodes.Add(sender);
 
             // verifico se c'è conflitto (ed eventualmente aggiungo al conflict set)
             if (MissionPath.ClosestConflictPoint(msg.Path) != null)
@@ -108,7 +108,7 @@ namespace Actors.DroneStates
         {
             ConflictSet.RemoveMission(sender);
             FlyingMissionsMonitor.CancelMission(sender);
-            Actor.Nodes.Remove(sender);
+            Context.Nodes.Remove(sender);
 
             return this;
         }

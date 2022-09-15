@@ -33,7 +33,7 @@ for (int i = 0; i < 1; i++)
     drones.Add(droneSystem);
 
     var mission = new MissionPath(Point2D.Origin, new Point2D(10, 30), 10f);
-    droneSystem.ActorOf(RegisterDroneActor.Props(repository, mission));
+    droneSystem.ActorOf(DroneActor.Props(repository, mission));
 
     Console.ReadKey();
 }

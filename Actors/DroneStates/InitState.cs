@@ -10,11 +10,11 @@ namespace Actors.DroneStates
 
         private readonly ISet<IActorRef> _expectedConnectResponses;
 
-        internal InitState(DroneActor droneActor, 
+        internal InitState(DroneActorContext context, 
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
-            : base(droneActor, conflictSet, flyingMissionsMonitor)
+            : base(context, conflictSet, flyingMissionsMonitor)
         {
-            _expectedConnectResponses = Actor.Nodes.ToHashSet();
+            _expectedConnectResponses = Context.Nodes.ToHashSet();
         }
 
         internal override DroneActorState RunState()

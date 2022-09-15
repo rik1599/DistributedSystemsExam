@@ -24,18 +24,18 @@ namespace Actors.DroneStates
 
         internal override DroneActorState RunState()
         {
-            Actor.Log.Info("Sto partendo");
+            Context.Log.Info("Sto partendo");
             foreach (var node in ConflictSet.GetNodes())
             {
                 node.Tell(new FlyingResponse(MissionPath));
             }
 
             // Avvio un attore figlio che gestisce il processo del volo
-            _flyingDroneActor = Actor.DroneContext.ActorOf(
-                FlyingDroneActor.Props(Actor.ThisMission, ActorRef), "fly-actor");
+            _flyingDroneActor = Context.Context.ActorOf(
+                FlyingDroneActor.Props(Context.ThisMission, ActorRef), "fly-actor");
 
             // lo supervisiono (in modo da rilevare quando e come termina)
-            Actor.DroneContext.WatchWith(_flyingDroneActor, new InternalMissionEnded());
+            Context.Context.WatchWith(_flyingDroneActor, new InternalMissionEnded());
 
             return this;
         }
@@ -45,8 +45,8 @@ namespace Actors.DroneStates
             sender.Tell(new FlyingResponse(GetCurrentPath()));
 
             // se non conosco già il nodo, lo aggiungo alla lista
-            if (!Actor.Nodes.Contains(sender))
-                Actor.Nodes.Add(sender);
+            if (!Context.Nodes.Contains(sender))
+                Context.Nodes.Add(sender);
 
             return this;
         }
@@ -97,12 +97,12 @@ namespace Actors.DroneStates
             _isMissionEnd = true;
 
             // comunico la mia uscita a tutti i nodi noti 
-            foreach (var node in Actor.Nodes)
+            foreach (var node in Context.Nodes)
             {
                 node.Tell(new MissionFinishedMessage());
             }
 
-            Actor.Log.Error("Mission ENDED! Killing myself");
+            Context.Log.Error("Mission ENDED! Killing myself");
             ActorRef.Tell(PoisonPill.Instance, ActorRefs.NoSender);
 
             return this;
