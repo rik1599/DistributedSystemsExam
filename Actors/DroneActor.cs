@@ -56,7 +56,6 @@ namespace Actors
             Receive<MetricMessage>(msg => _droneState = _droneState.OnReceive(msg, Sender));
             Receive<WaitMeMessage>(msg => _droneState = _droneState.OnReceive(msg, Sender));
             Receive<ExitMessage>(msg => _droneState = _droneState.OnReceive(msg, Sender));
-            Receive<MissionFinishedMessage>(msg => {});
         }
 
         /// <summary>
