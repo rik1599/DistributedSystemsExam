@@ -13,18 +13,14 @@ namespace Actors.MissionPathPriority
     /// </summary>
     public class MissionPath
     {
-        internal Point2D StartPoint { get; private set; }
-        internal Point2D EndPoint { get; private set; }
-
-        internal LineSegment2D PathSegment { 
-            get { return new LineSegment2D(StartPoint, EndPoint); }
-        }
+        public Point2D StartPoint { get; private set; }
+        public Point2D EndPoint { get; private set; }
         
         /// <summary>
         /// Velocità alla quale il drone si sposta. Si misura in 
         /// unità spaziali al secondo.
         /// </summary>
-        internal float Speed { get; private set; }
+        public float Speed { get; private set; }
 
         internal const float MarginDistance = 5.0f;
 
@@ -58,16 +54,21 @@ namespace Actors.MissionPathPriority
         /// </returns>
         public Point2D? ClosestConflictPoint(MissionPath p, double margin = MarginDistance)
         {
-            if (PathSegment.TryIntersect(p.PathSegment, out var conflictPoint, Angle.FromRadians(0)))
+            if (PathSegment().TryIntersect(p.PathSegment(), out var conflictPoint, Angle.FromRadians(0)))
                 return conflictPoint;
 
-            var minDistanceSegment = new SegmentDistanceCalculator(PathSegment, p.PathSegment).ComputeMinDistance();
+            var minDistanceSegment = new SegmentDistanceCalculator(PathSegment(), p.PathSegment()).ComputeMinDistance();
 
             if (minDistanceSegment.Length < margin && 
-                PathSegment.TryIntersect(minDistanceSegment, out var minDistanceConflictPoint, Angle.FromRadians(0)))
+                PathSegment().TryIntersect(minDistanceSegment, out var minDistanceConflictPoint, Angle.FromRadians(0)))
                 return minDistanceConflictPoint;
             else
                 return null;
+        }
+
+        public LineSegment2D PathSegment()
+        {
+            return new LineSegment2D(StartPoint, EndPoint);
         }
 
         /// <summary>

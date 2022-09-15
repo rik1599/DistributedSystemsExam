@@ -56,8 +56,7 @@ namespace Environment.Actor
         private IActorRef SpawnMissionActor(MissionPath path, Host host)
         {
             return Context.System.ActorOf(
-                Props
-                    .Create(() => new DroneActor(_nodes.ToHashSet(), path))
+                DroneActor.Props(_nodes.ToHashSet(), path)
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(host.Parse())))
                 );
         }

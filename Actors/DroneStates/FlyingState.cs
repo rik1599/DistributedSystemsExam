@@ -24,6 +24,7 @@ namespace Actors.DroneStates
 
         internal override DroneActorState RunState()
         {
+            DroneActor.Log.Info("Sto partendo");
             foreach (var node in ConflictSet.GetNodes())
             {
                 node.Tell(new FlyingResponse(MissionPath));
