@@ -4,13 +4,8 @@ using Actors.MissionPathPriority;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using MathNet.Spatial.Euclidean;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace UnitTests.ActorTests.TwoActors
+namespace UnitTests.ActorTests
 {
     /// <summary>
     /// Rappresentazione di situazioni più elaborate di vario genere, 
@@ -46,7 +41,7 @@ namespace UnitTests.ActorTests.TwoActors
             // mi aspetto come messaggio una metrica (di valore nullo e di round 0)
             MetricMessage metricMsg = ExpectMsgFrom<MetricMessage>(subject);
             Assert.Equal(double.MinValue, metricMsg.Priority.MetricValue);
-            Assert.Equal(0, metricMsg.RelativeRound); 
+            Assert.Equal(0, metricMsg.RelativeRound);
 
             // termino la negoziazione con un wait me
             subject.Tell(new WaitMeMessage());
