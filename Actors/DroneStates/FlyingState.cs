@@ -19,8 +19,19 @@ namespace Actors.DroneStates
         private IActorRef? _flyingDroneActor;
 
         private bool _isMissionEnd = false;
+
+        /// <summary>
+        /// Ultimo valore della posizione del drone registrato. Si tiene
+        /// così in caso che la missione termini (e l'attore per la gestione
+        /// del volo non sia più disponibile) si possa ritornare
+        /// qualcosa quando viene chiamato il metodo GetCurrentPosition.
+        /// </summary>
+        private Point2D _lastPositionCache; 
         
-        public FlyingState(DroneActorState precedentState): base(precedentState) {}
+        public FlyingState(DroneActorState precedentState): base(precedentState) 
+        {
+            _lastPositionCache = MissionPath.StartPoint;
+        }
 
         internal override DroneActorState RunState()
         {
@@ -88,14 +99,15 @@ namespace Actors.DroneStates
 
         internal override DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
         {
+            // se il messaggio duplicato, non faccio nulla
             if (_isMissionEnd)
-            {
-                // messaggio duplicato
                 return this;
-            }
 
             _isMissionEnd = true;
 
+            // cancello il mio riferimento all'attore che gestisce il volo
+            _flyingDroneActor = null;   
+            
             return CreateExitState(this, true, "Mission ENDED! Killing myself").RunState();
         }
 
@@ -117,9 +129,23 @@ namespace Actors.DroneStates
         /// <returns></returns>
         private Point2D GetCurrentPosition()
         {
-            return _flyingDroneActor
-                .Ask<InternalPositionResponse>(new InternalPositionRequest())
-                .Result.Position;
+            // se l'attore del volo non esiste, uso il valore in cache
+            if (_flyingDroneActor is null)
+                return _lastPositionCache;
+
+            Task<InternalPositionResponse> t = _flyingDroneActor.Ask<InternalPositionResponse>(
+                new InternalPositionRequest(), new TimeSpan(0, 0, 10));
+
+            t.Wait();
+
+            if (t.IsCompleted)
+            {
+                _lastPositionCache = t.Result.Position;
+            }
+
+            // (se non sono riuscito a contattare l'attore, 
+            // uso il valore in cache)
+            return _lastPositionCache;
         }
     }
 }
