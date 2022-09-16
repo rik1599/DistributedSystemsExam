@@ -6,7 +6,7 @@ using Akka.Actor;
 
 namespace Actors.DroneStates
 {
-    internal class WaitingState : DroneActorState
+    public class WaitingState : DroneActorState
     {
         private readonly Priority _priority;
 

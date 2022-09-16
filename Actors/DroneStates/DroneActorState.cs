@@ -6,7 +6,7 @@ using Akka.Actor;
 
 namespace Actors.DroneStates
 {
-    internal abstract class DroneActorState
+    public abstract class DroneActorState
     {
         protected DroneActorContext ActorContext { get; }
         protected int LastNegotiationRound { get; set; }

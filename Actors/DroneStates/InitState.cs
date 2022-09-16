@@ -6,7 +6,7 @@ using Akka.Actor;
 
 namespace Actors.DroneStates
 {
-    internal class InitState : DroneActorState
+    public class InitState : DroneActorState
     {
 
         private const string _timeoutKeyName = "connectResponse-timeout";

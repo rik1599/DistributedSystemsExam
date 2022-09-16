@@ -18,7 +18,7 @@ namespace Actors.DroneStates
         }
     }
 
-    internal class NegotiateState : DroneActorState
+    public class NegotiateState : DroneActorState
     {
         private readonly ISet<IActorRef> _expectedMetrics;
         private readonly ISet<IActorRef> _expectedIntentions;
