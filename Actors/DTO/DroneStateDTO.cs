@@ -37,9 +37,6 @@ namespace Actors.DTO
             CurrentPriority = priority;
         }
 
-
-
-
         /// <summary>
         /// Le missioni con priorità maggiore della mia
         /// </summary>
@@ -58,15 +55,23 @@ namespace Actors.DTO
             return ConflictSet.Where(mission => mission.Priority.CompareTo(CurrentPriority) < 0).ToHashSet();
         }
 
+        public virtual TimeSpan TotalWaitTime() => Age;
+
+        public virtual TimeSpan TotalFlyTime() => TimeSpan.Zero;
+
+        public virtual Point2D CurrentPosition() => Path.StartPoint;
+
         public virtual bool IsConnected() => true;
 
         public virtual bool IsFlying() => false;
+
+        public virtual bool IsFinished() => false;
     }
 
-    public class DroneInitStateDTO : DroneStateDTO
+    public class InitStateDTO : DroneStateDTO
     {
 
-        public DroneInitStateDTO(Mission thisMission, TimeSpan age, 
+        public InitStateDTO(Mission thisMission, TimeSpan age, 
             IReadOnlySet<IActorRef> knownNodes, 
             IReadOnlySet<IActorRef> missingConnections, 
             IReadOnlySet<WaitingMission> conflictSet, 
@@ -84,9 +89,10 @@ namespace Actors.DTO
         public override bool IsConnected() => false;
     }
 
-    public class DroneNegotiateStateDTO : DroneStateDTO
+    public class NegotiateStateDTO
+        : DroneStateDTO
     {
-        public DroneNegotiateStateDTO(Mission thisMission, TimeSpan age, 
+        public NegotiateStateDTO(Mission thisMission, TimeSpan age, 
             IReadOnlySet<IActorRef> knownNodes, 
             IReadOnlySet<WaitingMission> conflictSet, 
             IReadOnlySet<FlyingMission> flyingConflictMissions, 
@@ -98,9 +104,9 @@ namespace Actors.DTO
         }
     }
 
-    public class DroneWaitingStateDTO : DroneStateDTO
+    public class WaitingStateDTO : DroneStateDTO
     {
-        public DroneWaitingStateDTO(Mission thisMission, TimeSpan age,
+        public WaitingStateDTO(Mission thisMission, TimeSpan age,
             IReadOnlySet<IActorRef> knownNodes,
             IReadOnlySet<WaitingMission> conflictSet,
             IReadOnlySet<FlyingMission> flyingConflictMissions,
@@ -112,15 +118,16 @@ namespace Actors.DTO
         }
     }
 
-    public class DroneFlyingStateDTO : DroneStateDTO 
+    public class FlyingStateDTO : DroneStateDTO 
     {
-        public Point2D CurrentPosition { get; internal set; }
-        public TimeSpan DoneFlyingTime { get; internal set; }
-        public TimeSpan RemainingFlyingTime { get; internal set; }
 
-        public override bool IsFlying() => true;
+        private Point2D _currentPosition;
+        private TimeSpan _flyTime;
 
-        public DroneFlyingStateDTO(Mission thisMission, TimeSpan age, 
+
+        public TimeSpan ExtimatedRemainingFlyingTime { get; internal set; }
+
+        public FlyingStateDTO(Mission thisMission, TimeSpan age, 
             IReadOnlySet<IActorRef> knownNodes, 
             int negotiationsCount, 
             Point2D currentPosition, 
@@ -131,9 +138,30 @@ namespace Actors.DTO
                   new HashSet<WaitingMission>(), new HashSet<FlyingMission>(), 
                   negotiationsCount, Priority.InfinitePriority)
         {
-            CurrentPosition = currentPosition;
-            DoneFlyingTime = doneFlyingTime;
-            RemainingFlyingTime = remainingFlyingTime;
+            _currentPosition = currentPosition;
+            _flyTime = doneFlyingTime;
+            ExtimatedRemainingFlyingTime = remainingFlyingTime;
         }
+
+        public override bool IsFlying() => true;
+        public override TimeSpan TotalFlyTime() => _flyTime;
+        public override Point2D CurrentPosition() => _currentPosition;
+    }
+
+    public class EndStateDTO : DroneStateDTO
+    {
+        public EndStateDTO(Mission thisMission, TimeSpan age,
+            IReadOnlySet<IActorRef> knownNodes,
+            IReadOnlySet<WaitingMission> conflictSet,
+            IReadOnlySet<FlyingMission> flyingConflictMissions,
+            int negotiationsCount, Priority lastCalculatedPriority)
+            : base(thisMission, age, knownNodes,
+                  conflictSet, flyingConflictMissions,
+                  negotiationsCount, lastCalculatedPriority)
+        {
+        }
+
+        public override bool IsFinished() => false;
+        public override Point2D CurrentPosition() => Path.StartPoint;
     }
 }
