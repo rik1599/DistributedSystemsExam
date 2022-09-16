@@ -34,4 +34,14 @@ namespace Actors.Messages.Internal
     }
 
     public class InternalMissionEnded { }
+
+    internal class InternalTimeoutEnded
+    {
+        public string TimerKey { get; }
+
+        public InternalTimeoutEnded(string timerKey)
+        {
+            TimerKey = timerKey;
+        }
+    }
 }

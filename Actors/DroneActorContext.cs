@@ -2,13 +2,14 @@
 using Actors.Utils;
 using Akka.Actor;
 using Akka.Event;
+using Actors.Messages.Internal;
 
 namespace Actors
 {
     sealed class DroneActorContext
     {
         private readonly DateTime _timeSpawn = DateTime.Now;
-        internal ITimerScheduler Timers { get; }
+        private ITimerScheduler _timers;
         internal IActorContext Context { get; }
         internal DebugLog Log { get; }
         internal ISet<IActorRef> Nodes { get; }
@@ -24,7 +25,20 @@ namespace Actors
             Log = new(context.GetLogger());
             Nodes = nodes;
             ThisMission = thisMission;
-            Timers = timers;
+            _timers = timers;
+        }
+
+        internal void StartMessageTimeout(string key, int count)
+        {
+            _timers.StartSingleTimer(
+                key, 
+                new InternalTimeoutEnded(key),
+                count * TimeSpan.FromSeconds(10));
+        }
+
+        internal void CancelMessageTimeout(string key)
+        {
+            _timers.Cancel(key);
         }
     }
 }

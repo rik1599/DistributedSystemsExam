@@ -25,6 +25,9 @@ namespace Actors.DroneStates
         private readonly IDictionary<IActorRef, int> _negotiationRounds;
         private readonly IList<MetricSenderPair> _metricMessages;
 
+        private const string _metricTimeoutKey = "metricMessage-timeout";
+        private const string _intentionsTimeoutKey = "intentionMessage-timeout";
+
         /// <summary>
         /// Priorità utilizzata in questo singolo round di negoziazione
         /// </summary>
@@ -48,16 +51,16 @@ namespace Actors.DroneStates
         internal override DroneActorState RunState()
         {
             LastNegotiationRound++;
-            // invio richiesta di connessione a tutti i nodi noti
-            foreach (var node in _expectedMetrics)
+            if (_expectedMetrics.Count > 0)
             {
-                node.Tell(new MetricMessage(_priority, LastNegotiationRound));
+                foreach (var node in _expectedMetrics)
+                {
+                    node.Tell(new MetricMessage(_priority, LastNegotiationRound));
+                }
+
+                ActorContext.StartMessageTimeout(_metricTimeoutKey, _expectedIntentions.Count);
             }
 
-            // TODO: far partire timeout
-
-            // se non ho vicini, annullo i timeout e posso passare
-            // direttamente allo stato successivo
             return NextState();
         }
 
@@ -99,9 +102,6 @@ namespace Actors.DroneStates
 
             if (_priority.CompareTo(mission!.Priority) < 0)
             {
-                // se questo nodo ha vinto la negoziazione con me, 
-                // mi aspetto un messaggio che comunichi le sue intenzioni
-
                 _expectedIntentions.Add(sender);
             }
 
@@ -118,9 +118,6 @@ namespace Actors.DroneStates
         internal override DroneActorState OnReceive(InternalFlyIsSafeMessage msg, IActorRef sender)
         {
             _ = base.OnReceive(msg, sender);
-
-            // controllo se grazie al termine del volo mi si è 
-            // liberato qualcosa.
             return NextState();
         }
 
@@ -135,11 +132,17 @@ namespace Actors.DroneStates
             // attendo tutte le metriche
             if (_expectedMetrics.Count > 0)
                 return this;
+            else
+            {
+                ActorContext.CancelMessageTimeout(_metricTimeoutKey);
+                ActorContext.StartMessageTimeout(_intentionsTimeoutKey, _expectedIntentions.Count);
+            }
 
             // se ho ricevuto tutte le metriche, ho vinto tutte le negoziazioni
             // e non attendo droni in volo, posso partire
             if (FlyingMissionsMonitor.GetFlyingMissions().Count == 0 && ConflictSet.GetGreaterPriorityMissions(_priority).Count == 0)
             {
+                ActorContext.CancelMessageTimeout(_intentionsTimeoutKey);
                 ResendMetricsToMailBox();
                 return CreateFlyingState(this).RunState();
             }
@@ -149,6 +152,7 @@ namespace Actors.DroneStates
             // entro in stato di attesa 
             if (_expectedIntentions.Count == 0)
             {
+                ActorContext.CancelMessageTimeout(_intentionsTimeoutKey);
                 ResendMetricsToMailBox();
                 return CreateWaitingState(this, _priority).RunState();
             }

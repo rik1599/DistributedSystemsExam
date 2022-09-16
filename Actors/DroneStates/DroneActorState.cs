@@ -49,11 +49,11 @@ namespace Actors.DroneStates
 
         #region Factory methods
 
-        public static DroneActorState CreateInitState(DroneActorContext context)
+        public static DroneActorState CreateInitState(DroneActorContext context, ITimerScheduler timer)
             => new InitState(
                 context, 
                 new ConflictSet(), 
-                new FlyingMissionsMonitor(context.ThisMission, new FlyingSet(), context.Timers)
+                new FlyingMissionsMonitor(context.ThisMission, new FlyingSet(), timer)
                 );
 
         public static DroneActorState CreateNegotiateState(DroneActorState precedentState)
@@ -131,6 +131,17 @@ namespace Actors.DroneStates
 
         internal virtual DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
         {
+            return this;
+        }
+
+        internal virtual DroneActorState OnReceive(InternalTimeoutEnded msg, IActorRef sender)
+        {
+            ActorContext.Log.Error($"ERRORE: timeout {msg.TimerKey} scaduto!");
+            foreach (var node in ActorContext.Nodes)
+            {
+                node.Tell(new ExitMessage(), ActorRef);
+            }
+            ActorContext.Context.Stop(ActorRef);
             return this;
         }
 

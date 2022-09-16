@@ -1,4 +1,5 @@
 ﻿using Actors.Messages.External;
+using Actors.Messages.Internal;
 using Actors.MissionPathPriority;
 using Actors.MissionSets;
 using Akka.Actor;
@@ -8,6 +9,7 @@ namespace Actors.DroneStates
     internal class InitState : DroneActorState
     {
 
+        private const string _timeoutKeyName = "connectResponse-timeout";
         private readonly ISet<IActorRef> _expectedConnectResponses;
 
         internal InitState(DroneActorContext context, 
@@ -19,15 +21,18 @@ namespace Actors.DroneStates
 
         internal override DroneActorState RunState()
         {
-            // invio richiesta di connessione a tutti i nodi noti
-            var connectRequest = new ConnectRequest(MissionPath);
-
-            foreach (var node in _expectedConnectResponses)
+            if (_expectedConnectResponses.Count > 0)
             {
-                node.Tell(connectRequest, ActorRef);
-            }
+                // invio richiesta di connessione a tutti i nodi noti
+                var connectRequest = new ConnectRequest(MissionPath);
 
-            // TODO: far partire timeout
+                foreach (var node in _expectedConnectResponses)
+                {
+                    node.Tell(connectRequest, ActorRef);
+                }
+
+                ActorContext.StartMessageTimeout(_timeoutKeyName, _expectedConnectResponses.Count);
+            }
 
             // se non ho vicini, annullo i timeout e posso passare
             // direttamente allo stato successivo
@@ -83,8 +88,7 @@ namespace Actors.DroneStates
             // se non attendo altre risposte, posso passare allo stato successivo
             if (_expectedConnectResponses.Count == 0)
             {
-                // TODO: cancella il timeout su attesa messaggi
-
+                ActorContext.CancelMessageTimeout(_timeoutKeyName);
                 return CreateNegotiateState(this).RunState();
             }
 

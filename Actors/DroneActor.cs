@@ -21,7 +21,7 @@ namespace Actors
         {
             // avvio lo stato iniziale
             var droneContext = new DroneActorContext(Context, nodes, new WaitingMission(Self, missionPath, Priority.NullPriority), Timers!);
-            _droneState = DroneActorState.CreateInitState(droneContext).RunState();
+            _droneState = DroneActorState.CreateInitState(droneContext, Timers!).RunState();
 
             ReceiveExternalMessages();
             ReceiveInternalMessage();
@@ -50,6 +50,7 @@ namespace Actors
         {
             Receive<InternalFlyIsSafeMessage>(msg => _droneState = _droneState!.OnReceive(msg, Sender));
             Receive<InternalMissionEnded>    (msg => _droneState = _droneState!.OnReceive(msg, Sender));
+            Receive<InternalTimeoutEnded>    (msg => _droneState = _droneState!.OnReceive(msg, Sender));
         }
 
         public static Props Props(IActorRef repository, MissionPath missionPath)
