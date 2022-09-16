@@ -26,7 +26,11 @@ namespace Actors.DroneStates
         /// del volo non sia più disponibile) si possa ritornare
         /// qualcosa quando viene chiamato il metodo GetCurrentPosition.
         /// </summary>
-        private Point2D _lastPositionCache; 
+        private Point2D _lastPositionCache;
+
+        private DateTime _startTime;
+        internal TimeSpan DoneFlyTime() => _startTime - DateTime.Now;
+        internal TimeSpan RemainingFlyTime() => MissionPath.ExpectedDuration() - DoneFlyTime();
         
         public FlyingState(DroneActorState precedentState): base(precedentState) 
         {
@@ -127,7 +131,7 @@ namespace Actors.DroneStates
         /// potrebbe non ritornare immediatamente una risposta)
         /// </summary>
         /// <returns></returns>
-        private Point2D GetCurrentPosition()
+        internal Point2D GetCurrentPosition()
         {
             // se l'attore del volo non esiste, uso il valore in cache
             if (_flyingDroneActor is null)

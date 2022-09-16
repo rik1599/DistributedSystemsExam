@@ -33,6 +33,8 @@ namespace Actors.DroneStates
         /// </summary>
         private readonly Priority _priority;
 
+        internal Priority GetPriority() => _priority;
+
         public NegotiateState(DroneActorState precedentState) 
             : base(precedentState)
         {

@@ -4,7 +4,7 @@ using MathNet.Spatial.Euclidean;
 
 namespace Actors.DTO
 {
-    public abstract class DroneStateDTO
+    public class DroneStateDTO
     {
         public MissionPath Path { get; }
         public TimeSpan Age { get; }
@@ -142,14 +142,18 @@ namespace Actors.DTO
         public override Point2D CurrentPosition() => _currentPosition;
     }
 
-    public class EndStateDTO : DroneStateDTO
+    public class ExitStateDTO : DroneStateDTO
     {
         private readonly bool _isMissionAccomplished;
+        
         public DroneStateDTO PrecedentState { get; }
 
-        internal EndStateDTO(DroneActorContext droneContext,
+        public String Motivation { get; }
+
+        internal ExitStateDTO(DroneActorContext droneContext,
             int negotiationsCount,
             bool isMissionAccomplished, 
+            String motivation, 
             DroneStateDTO precedentState)
             : base(droneContext,
                   new HashSet<WaitingMission>(), new HashSet<FlyingMission>(),
@@ -157,6 +161,7 @@ namespace Actors.DTO
         {
             _isMissionAccomplished = isMissionAccomplished;
             PrecedentState = precedentState;
+            Motivation = motivation;
         }
 
         public override bool IsMissionAccomplished() => _isMissionAccomplished;

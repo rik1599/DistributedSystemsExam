@@ -9,6 +9,8 @@ namespace Actors.DroneStates
     public class WaitingState : DroneActorState
     {
         private readonly Priority _priority;
+        internal Priority GetPriority() => _priority;
+
 
         public WaitingState(DroneActorState precedentState, Priority priority): base(precedentState)
         {

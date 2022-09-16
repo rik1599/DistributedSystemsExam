@@ -12,6 +12,8 @@ namespace Actors.DroneStates
         private const string _timeoutKeyName = "connectResponse-timeout";
         private readonly ISet<IActorRef> _expectedConnectResponses;
 
+        internal IReadOnlySet<IActorRef> GetMissingConnectResponses() => _expectedConnectResponses.ToHashSet();
+
         internal InitState(DroneActorContext context, 
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
             : base(context, conflictSet, flyingMissionsMonitor)
