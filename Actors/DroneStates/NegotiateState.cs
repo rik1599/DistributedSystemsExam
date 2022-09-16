@@ -58,7 +58,7 @@ namespace Actors.DroneStates
                     node.Tell(new MetricMessage(_priority, LastNegotiationRound));
                 }
 
-                ActorContext.StartMessageTimeout(_metricTimeoutKey, _expectedIntentions.Count);
+                ActorContext.StartMessageTimeout(_metricTimeoutKey, _expectedMetrics.Count);
             }
 
             return NextState();

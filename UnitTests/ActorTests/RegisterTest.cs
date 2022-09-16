@@ -1,18 +1,15 @@
 ﻿using Actors;
-using Akka.TestKit.Xunit2;
-using Akka.Actor;
-using Actors.MissionPathPriority;
-using MathNet.Spatial.Euclidean;
 using Actors.Messages.External;
+using Actors.Messages.Register;
+using Actors.MissionPathPriority;
+using Akka.Actor;
+using Akka.TestKit.Xunit2;
+using Environment;
+using MathNet.Spatial.Euclidean;
 
-namespace UnitTests.ActorsTests.TwoActors
+namespace UnitTests.ActorTests
 {
-    /// <summary>
-    /// Rappresentazione di situazioni nelle quali un nuovo nodo 
-    /// spawna e deve gestirsi dei semplici conflitti (con un unico
-    /// altro nodo).
-    /// </summary>
-    public class SimpleConflictTests : TestKit
+    public class RegisterTest : TestKit
     {
         /// <summary>
         /// cielo libero 1:
@@ -25,9 +22,10 @@ namespace UnitTests.ActorsTests.TwoActors
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
+            var repository = Sys.ActorOf(DronesRepositoryActor.Props());
+
             // voglio simulare una situazione in cui il nodo all'inizio è solo
-            var nodes = new HashSet<IActorRef> { };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(repository, missionA), "droneProva");
 
             // quando gli richiedo di connettersi, mi aspetto sia partito in volo
             subject.Tell(new ConnectRequest(missionB), TestActor);
@@ -49,11 +47,15 @@ namespace UnitTests.ActorsTests.TwoActors
         [Fact]
         public void FreeSky2()
         {
+            // mi registro
+            var register = Sys.ActorOf(DronesRepositoryActor.Props());
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
+
             var missionA = new MissionPath(Point2D.Origin, new Point2D(0, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(25, 25), 10.0f);
 
-            var nodes = new HashSet<IActorRef> { TestActor };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta che non prevede conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -68,16 +70,21 @@ namespace UnitTests.ActorsTests.TwoActors
         /// <summary>
         /// cielo libero 3:
         /// 
-        /// un drone spawna, conosce un nodo in volo ma non problematico, va in volo a sua volta.
+        /// un drone spawna, conosce un nodo in volo e in conflitto ma 
+        /// probabilmente safe in tempi ragionevoli, va in volo a sua volta.
         /// </summary>
         [Fact]
         public void FreeSky3()
         {
+            // mi registro
+            var register = Sys.ActorOf(DronesRepositoryActor.Props());
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
+
             var missionA = new MissionPath(Point2D.Origin, new Point2D(0, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(25, 25), 10.0f);
 
-            var nodes = new HashSet<IActorRef> { TestActor };
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta in volo che non prevede conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -98,15 +105,15 @@ namespace UnitTests.ActorsTests.TwoActors
         [Fact]
         public void SimpleConflictWin1()
         {
+            // mi registro
+            var register = Sys.ActorOf(DronesRepositoryActor.Props());
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
+
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var nodes = new HashSet<IActorRef>
-            {
-                TestActor
-            };
-
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -135,15 +142,15 @@ namespace UnitTests.ActorsTests.TwoActors
         [Fact]
         public void SimpleConflictLoose1()
         {
+            // mi registro
+            var register = Sys.ActorOf(DronesRepositoryActor.Props());
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
+
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var nodes = new HashSet<IActorRef>
-            {
-                TestActor
-            };
-
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -171,15 +178,15 @@ namespace UnitTests.ActorsTests.TwoActors
         [Fact]
         public void SimpleConflictLoose2()
         {
+            // mi registro
+            var register = Sys.ActorOf(DronesRepositoryActor.Props());
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
+
             var missionA = new MissionPath(new Point2D(0, 25), new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(5, 0), new Point2D(5, 30), 10.0f);
 
-            var nodes = new HashSet<IActorRef>
-            {
-                TestActor
-            };
-
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -207,15 +214,15 @@ namespace UnitTests.ActorsTests.TwoActors
         [Fact]
         public void SimpleConflictLoose3()
         {
+            // mi registro
+            var register = Sys.ActorOf(DronesRepositoryActor.Props());
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
+
             var missionA = new MissionPath(new Point2D(0, 25), new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(5, 0), new Point2D(5, 30), 10.0f);
 
-            var nodes = new HashSet<IActorRef>
-            {
-                TestActor
-            };
-
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             ExpectMsgFrom<ConnectRequest>(subject);
 
@@ -238,12 +245,15 @@ namespace UnitTests.ActorsTests.TwoActors
         [Fact]
         public void SimpleConflictLoose4()
         {
+            // mi registro
+            var register = Sys.ActorOf(DronesRepositoryActor.Props());
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
+
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var nodes = new HashSet<IActorRef>{ TestActor };
-
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -276,12 +286,15 @@ namespace UnitTests.ActorsTests.TwoActors
         [Fact]
         public void SimpleConflictSameMetric1()
         {
+            // mi registro
+            var register = Sys.ActorOf(DronesRepositoryActor.Props());
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
+
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            var nodes = new HashSet<IActorRef> { TestActor };
-
-            var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA), "droneProva");
+            var subject = Sys.ActorOf(DroneActor.Props(register, missionA), "droneProva");
 
             // mi aspetto una connessione (a cui rispondo con una tratta con conflitto)
             ExpectMsgFrom<ConnectRequest>(subject);
@@ -302,7 +315,8 @@ namespace UnitTests.ActorsTests.TwoActors
                 // Dopo una ragionevole attesa (più lunga), mi aspetto un'uscita per missione completata
                 ExpectMsgFrom<MissionFinishedMessage>(subject, new TimeSpan(0, 0, 10));
 
-            } else
+            }
+            else
             {
                 // altrimenti mi aspetto che vinca lui
 
