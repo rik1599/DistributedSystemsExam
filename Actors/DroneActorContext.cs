@@ -9,7 +9,8 @@ namespace Actors
     sealed class DroneActorContext
     {
         private readonly DateTime _timeSpawn = DateTime.Now;
-        private ITimerScheduler _timers;
+        private readonly ITimerScheduler _timers;
+
         internal IActorContext Context { get; }
         internal DebugLog Log { get; }
         internal ISet<IActorRef> Nodes { get; }
