@@ -8,32 +8,32 @@ namespace Actors.DroneStates
 {
     internal abstract class DroneActorState
     {
-        protected DroneActorContext Context { get; private set; }
+        protected DroneActorContext ActorContext { get; }
         protected int LastNegotiationRound { get; set; }
 
         /// <summary>
         /// tool per la gestione delle tratte in conflitto (con cui posso negoziare)
         /// </summary>
-        protected ConflictSet ConflictSet { get; private set; }
+        protected ConflictSet ConflictSet { get; }
 
         /// <summary>
         /// Tool per la gestione delle tratte in volo (che devo attendere)
         /// </summary>
-        protected FlyingMissionsMonitor FlyingMissionsMonitor { get; private set; }
+        protected FlyingMissionsMonitor FlyingMissionsMonitor { get; }
 
         /// <summary>
         /// shortcut per la tratta della missione corrente
         /// </summary>
-        protected MissionPath MissionPath { get => Context.ThisMission.Path; }
+        protected MissionPath MissionPath { get => ActorContext.ThisMission.Path; }
 
         /// <summary>
         /// shortcut per il riferimento al nodo corrente
         /// </summary>
-        protected IActorRef ActorRef { get => Context.Context.Self; }
+        protected IActorRef ActorRef { get => ActorContext.Context.Self; }
 
         protected DroneActorState(DroneActorContext context, ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
         {
-            Context = context;
+            ActorContext = context;
             ConflictSet = conflictSet;
             FlyingMissionsMonitor = flyingMissionsMonitor;
             LastNegotiationRound = 0;
@@ -41,7 +41,7 @@ namespace Actors.DroneStates
 
         protected DroneActorState(DroneActorState state)
         {
-            Context = state.Context;
+            ActorContext = state.ActorContext;
             ConflictSet = state.ConflictSet;
             FlyingMissionsMonitor = state.FlyingMissionsMonitor;
             LastNegotiationRound = state.LastNegotiationRound;
@@ -75,8 +75,8 @@ namespace Actors.DroneStates
             sender.Tell(new ConnectResponse(MissionPath));
 
             // se non conosco già il nodo, lo aggiungo alla lista
-            if (!Context.Nodes.Contains(sender))
-                Context.Nodes.Add(sender);
+            if (!ActorContext.Nodes.Contains(sender))
+                ActorContext.Nodes.Add(sender);
 
             // verifico se c'è conflitto (ed eventualmente aggiungo al conflict set)
             if (MissionPath.ClosestConflictPoint(msg.Path) != null)
@@ -108,7 +108,7 @@ namespace Actors.DroneStates
         {
             ConflictSet.RemoveMission(sender);
             FlyingMissionsMonitor.CancelMission(sender);
-            Context.Nodes.Remove(sender);
+            ActorContext.Nodes.Remove(sender);
 
             return this;
         }

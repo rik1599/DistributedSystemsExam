@@ -9,9 +9,9 @@ namespace Actors.DTO
     /// </summary>
     public class MissionDTO
     {
-        public IActorRef NodeRef { get; private set; }
+        public IActorRef NodeRef { get; }
         
-        public MissionPath MissionPath { get; private set; }
+        public MissionPath MissionPath { get; }
 
         protected MissionDTO(Mission mission)
         {
@@ -35,7 +35,7 @@ namespace Actors.DTO
     /// </summary>
     public class FlyingMissionDTO : MissionDTO
     {
-        public TimeSpan RemainingTimeForSafeStart { get; private set; }
+        public TimeSpan RemainingTimeForSafeStart { get; }
 
         internal FlyingMissionDTO(Mission mission, TimeSpan remainingTimeForSafeStart) : base(mission)
         {
@@ -48,7 +48,7 @@ namespace Actors.DTO
     /// </summary>
     public class WaitingMissionDTO : MissionDTO
     {
-        public Priority Priority { get; private set; }
+        public Priority Priority { get; }
 
         internal WaitingMissionDTO(Mission mission, Priority priority) : base(mission)
         {

@@ -7,7 +7,7 @@ namespace Actors.Messages.External
     /// </summary>
     public class ConnectRequest
     {
-        public MissionPath Path { get; private set; }
+        public MissionPath Path { get; }
 
         public ConnectRequest(MissionPath path)
         {
@@ -20,7 +20,7 @@ namespace Actors.Messages.External
     /// </summary>
     public class ConnectResponse
     {
-        public MissionPath Path { get; private set; }
+        public MissionPath Path { get; }
 
         public ConnectResponse(MissionPath path)
         {
@@ -33,7 +33,7 @@ namespace Actors.Messages.External
     /// </summary>
     public class FlyingResponse
     {
-        public MissionPath Path { get; private set; }
+        public MissionPath Path { get; }
 
         public FlyingResponse(MissionPath path)
         {
@@ -46,8 +46,8 @@ namespace Actors.Messages.External
     /// </summary>
     public class MetricMessage
     {
-        public Priority Priority { get; private set; }
-        public int RelativeRound { get; private set; }
+        public Priority Priority { get; }
+        public int RelativeRound { get; }
 
         public MetricMessage(Priority priority, int relativeRound)
         {

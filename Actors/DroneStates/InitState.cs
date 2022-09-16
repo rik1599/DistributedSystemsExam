@@ -14,7 +14,7 @@ namespace Actors.DroneStates
             ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
             : base(context, conflictSet, flyingMissionsMonitor)
         {
-            _expectedConnectResponses = Context.Nodes.ToHashSet();
+            _expectedConnectResponses = ActorContext.Nodes.ToHashSet();
         }
 
         internal override DroneActorState RunState()

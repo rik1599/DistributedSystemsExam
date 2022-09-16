@@ -15,13 +15,13 @@ namespace Actors.MissionPathPriority
         /// <summary>
         /// Misura della priorità di un nodo. E' un numero reale.
         /// </summary>
-        public double MetricValue { get; private set; }
+        public double MetricValue { get; }
 
         /// <summary>
         /// L'identificatore del nodo. In caso di parità di metrica 
         /// la priorità più alta ce l'ha il nodo con ID minore.
         /// </summary>
-        public IActorRef? NodeRef { get; private set; }
+        public IActorRef? NodeRef { get; }
 
         /// <summary>
         /// Priorità di un nodo che ha precedenza su tutti gli altri. 
