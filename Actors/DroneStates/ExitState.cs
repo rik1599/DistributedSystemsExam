@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Actors.DroneStates
 {
-    public class ExitState : DroneActorState
+    internal class ExitState : DroneActorState
     {
         internal readonly DroneActorState PrecedentState;
         internal bool IsMissionAccomplished { get; }

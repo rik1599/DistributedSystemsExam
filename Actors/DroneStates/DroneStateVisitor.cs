@@ -18,11 +18,11 @@ namespace Actors.DroneStates
     /// </summary>
     public abstract class DroneStateVisitor
     {
-        public abstract void Visit(DroneActorState state);
-        public virtual void Visit(InitState state) { Visit((DroneActorState) state); }
-        public virtual void Visit(NegotiateState state) { Visit((DroneActorState) state); }
-        public virtual void Visit(WaitingState state) { Visit((DroneActorState) state); }
-        public virtual void Visit(FlyingState state) { Visit((DroneActorState) state); }
-        public virtual void Visit(ExitState state) { Visit((DroneActorState) state); }
+        internal abstract void Visit(DroneActorState state);
+        internal virtual void Visit(InitState state) { Visit((DroneActorState) state); }
+        internal virtual void Visit(NegotiateState state) { Visit((DroneActorState) state); }
+        internal virtual void Visit(WaitingState state) { Visit((DroneActorState) state); }
+        internal virtual void Visit(FlyingState state) { Visit((DroneActorState) state); }
+        internal virtual void Visit(ExitState state) { Visit((DroneActorState) state); }
     }
 }

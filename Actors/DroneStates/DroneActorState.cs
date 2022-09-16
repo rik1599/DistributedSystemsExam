@@ -8,18 +8,18 @@ namespace Actors.DroneStates
 {
     public abstract class DroneActorState
     {
-        protected DroneActorContext ActorContext { get; }
-        protected int LastNegotiationRound { get; set; }
+        internal DroneActorContext ActorContext { get; }
+        internal int LastNegotiationRound { get; set; }
 
         /// <summary>
         /// tool per la gestione delle tratte in conflitto (con cui posso negoziare)
         /// </summary>
-        protected ConflictSet ConflictSet { get; }
+        internal ConflictSet ConflictSet { get; }
 
         /// <summary>
         /// Tool per la gestione delle tratte in volo (che devo attendere)
         /// </summary>
-        protected FlyingMissionsMonitor FlyingMissionsMonitor { get; }
+        internal FlyingMissionsMonitor FlyingMissionsMonitor { get; }
 
         /// <summary>
         /// shortcut per la tratta della missione corrente
@@ -31,7 +31,7 @@ namespace Actors.DroneStates
         /// </summary>
         protected IActorRef ActorRef { get => ActorContext.Context.Self; }
 
-        protected DroneActorState(DroneActorContext context, ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
+        internal DroneActorState(DroneActorContext context, ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
         {
             ActorContext = context;
             ConflictSet = conflictSet;
@@ -49,23 +49,23 @@ namespace Actors.DroneStates
 
         #region Factory methods
 
-        public static DroneActorState CreateInitState(DroneActorContext context, ITimerScheduler timer)
+        internal static DroneActorState CreateInitState(DroneActorContext context, ITimerScheduler timer)
             => new InitState(
                 context, 
                 new ConflictSet(), 
                 new FlyingMissionsMonitor(context.ThisMission, new FlyingSet(), timer)
                 );
 
-        public static DroneActorState CreateNegotiateState(DroneActorState precedentState)
+        internal static DroneActorState CreateNegotiateState(DroneActorState precedentState)
             => new NegotiateState(precedentState);
 
-        public static DroneActorState CreateWaitingState(DroneActorState precedentState, Priority priority)
+        internal static DroneActorState CreateWaitingState(DroneActorState precedentState, Priority priority)
             => new WaitingState(precedentState, priority);
 
-        public static DroneActorState CreateFlyingState(DroneActorState precedentState)
+        internal static DroneActorState CreateFlyingState(DroneActorState precedentState)
             => new FlyingState(precedentState);
 
-        public static DroneActorState CreateExitState(DroneActorState precedentState, bool isMissionAccomplished, String motivation) 
+        internal static DroneActorState CreateExitState(DroneActorState precedentState, bool isMissionAccomplished, String motivation) 
             => new ExitState(precedentState, isMissionAccomplished, motivation);
 
         #endregion
@@ -146,5 +146,10 @@ namespace Actors.DroneStates
         #endregion
 
         internal abstract DroneActorState RunState();
+
+        public void PerformVisit(DroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

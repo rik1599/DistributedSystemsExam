@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace Actors.DroneStates
 {
-    public class FlyingState : DroneActorState
+    internal class FlyingState : DroneActorState
     {
         /// <summary>
         /// Riferimento all'attore che sta gestendo il "volo fisico".
