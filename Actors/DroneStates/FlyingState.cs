@@ -96,16 +96,7 @@ namespace Actors.DroneStates
 
             _isMissionEnd = true;
 
-            // comunico la mia uscita a tutti i nodi noti 
-            foreach (var node in ActorContext.Nodes)
-            {
-                node.Tell(new MissionFinishedMessage());
-            }
-
-            ActorContext.Log.Error("Mission ENDED! Killing myself");
-            ActorRef.Tell(PoisonPill.Instance, ActorRefs.NoSender);
-
-            return this;
+            return CreateExitState(this).RunState();
         }
 
 

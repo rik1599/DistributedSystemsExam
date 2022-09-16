@@ -65,6 +65,9 @@ namespace Actors.DroneStates
         public static DroneActorState CreateFlyingState(DroneActorState precedentState)
             => new FlyingState(precedentState);
 
+        public static DroneActorState CreateExitState(DroneActorState precedentState) 
+            => new ExitState(precedentState);
+
         #endregion
 
         #region External Messages
