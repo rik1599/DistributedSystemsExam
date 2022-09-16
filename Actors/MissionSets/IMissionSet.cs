@@ -15,7 +15,7 @@ namespace Actors.MissionSets
         /// <summary>
         /// Tutte le missioni della collezione
         /// </summary>
-        protected IDictionary<IActorRef, M> Missions { get; private set; } = new Dictionary<IActorRef, M>();
+        protected IDictionary<IActorRef, M> Missions { get; } = new Dictionary<IActorRef, M>();
 
         /// <summary>
         /// Cerca una missione nel set attraverso il nome del suo nodo

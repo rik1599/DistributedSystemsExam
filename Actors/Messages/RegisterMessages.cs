@@ -4,7 +4,7 @@ namespace Actors.Messages.Register
 {
     public class RegisterRequest 
     {
-        public IActorRef Actor { get; private set; }
+        public IActorRef Actor { get; }
 
         public RegisterRequest(IActorRef actor)
         {
@@ -14,7 +14,7 @@ namespace Actors.Messages.Register
 
     public class RegisterResponse
     {
-        public ISet<IActorRef> Nodes { get; private set; }
+        public ISet<IActorRef> Nodes { get; }
 
         public RegisterResponse(ISet<IActorRef> nodes)
         {

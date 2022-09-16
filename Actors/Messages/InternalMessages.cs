@@ -11,7 +11,7 @@ namespace Actors.Messages.Internal
     /// </summary>
     public class InternalFlyIsSafeMessage
     {
-        public IActorRef SafeMissionNodeRef { get; set; }
+        public IActorRef SafeMissionNodeRef { get; }
 
         public InternalFlyIsSafeMessage(IActorRef safeMissionNodeRef)
         {
@@ -25,7 +25,7 @@ namespace Actors.Messages.Internal
 
     public class InternalPositionResponse 
     {
-        public Point2D Position { get; private set; }
+        public Point2D Position { get; }
 
         public InternalPositionResponse(Point2D position)
         {

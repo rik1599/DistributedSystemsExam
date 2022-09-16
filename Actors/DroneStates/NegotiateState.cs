@@ -8,8 +8,8 @@ namespace Actors.DroneStates
 {
     internal struct MetricSenderPair
     {
-        public IActorRef Sender { get; private set; }
-        public MetricMessage MetricMessage { get; private set; }
+        public IActorRef Sender { get; }
+        public MetricMessage MetricMessage { get; }
 
         public MetricSenderPair(IActorRef sender, MetricMessage metricMessage)
         {
@@ -36,8 +36,8 @@ namespace Actors.DroneStates
             _expectedMetrics = ConflictSet.GetNodes();
             _expectedIntentions = new HashSet<IActorRef>();
             _priority = PriorityCalculator.CalculatePriority(
-                Context.ThisMission, 
-                Context.Age, 
+                ActorContext.ThisMission, 
+                ActorContext.Age, 
                 ConflictSet.GetMissions(), 
                 FlyingMissionsMonitor.GetFlyingMissions()
             );

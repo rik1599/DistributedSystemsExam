@@ -1,20 +1,18 @@
 ﻿using Actors.MissionPathPriority;
 using Akka.Actor;
 using MathNet.Spatial.Euclidean;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 namespace Actors.DTO
-{   
+{
     public abstract class DroneStateDTO
     {
-        public MissionPath Path { get; private set; }
-        public TimeSpan Age { get; private set; }
-        public IReadOnlySet<IActorRef> KnownNodes { get; private set; }
-        public IReadOnlySet<WaitingMissionDTO> ConflictSet { get; private set; }
-        public IReadOnlySet<FlyingMissionDTO> FlyingConflictMissions { get; private set; }
-        public int NegotiationsCount { get; private set; } = 0;
-        public Priority CurrentPriority { get; private set; }
+        public MissionPath Path { get; }
+        public TimeSpan Age { get; }
+        public IReadOnlySet<IActorRef> KnownNodes { get; }
+        public IReadOnlySet<WaitingMissionDTO> ConflictSet { get; }
+        public IReadOnlySet<FlyingMissionDTO> FlyingConflictMissions { get; }
+        public int NegotiationsCount { get; } = 0;
+        public Priority CurrentPriority { get; }
 
         protected DroneStateDTO(Mission thisMission, TimeSpan age, 
             IReadOnlySet<IActorRef> knownNodes, 
@@ -116,6 +114,12 @@ namespace Actors.DTO
 
     public class DroneFlyingStateDTO : DroneStateDTO 
     {
+        public Point2D CurrentPosition { get; internal set; }
+        public TimeSpan DoneFlyingTime { get; internal set; }
+        public TimeSpan RemainingFlyingTime { get; internal set; }
+
+        public override bool IsFlying() => true;
+
         public DroneFlyingStateDTO(Mission thisMission, TimeSpan age, 
             IReadOnlySet<IActorRef> knownNodes, 
             int negotiationsCount, 
@@ -131,11 +135,5 @@ namespace Actors.DTO
             DoneFlyingTime = doneFlyingTime;
             RemainingFlyingTime = remainingFlyingTime;
         }
-
-        public Point2D CurrentPosition { get; internal set; }
-        public TimeSpan DoneFlyingTime { get; internal set; }
-        public TimeSpan RemainingFlyingTime { get; internal set; }
-
-        public override bool IsFlying() => true;
     }
 }
