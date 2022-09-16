@@ -65,8 +65,8 @@ namespace Actors.DroneStates
         public static DroneActorState CreateFlyingState(DroneActorState precedentState)
             => new FlyingState(precedentState);
 
-        public static DroneActorState CreateExitState(DroneActorState precedentState) 
-            => new ExitState(precedentState);
+        public static DroneActorState CreateExitState(DroneActorState precedentState, bool isMissionAccomplished, String motivation) 
+            => new ExitState(precedentState, isMissionAccomplished, motivation);
 
         #endregion
 
@@ -139,13 +139,8 @@ namespace Actors.DroneStates
 
         internal virtual DroneActorState OnReceive(InternalTimeoutEnded msg, IActorRef sender)
         {
-            ActorContext.Log.Error($"ERRORE: timeout {msg.TimerKey} scaduto!");
-            foreach (var node in ActorContext.Nodes)
-            {
-                node.Tell(new ExitMessage(), ActorRef);
-            }
-            ActorContext.Context.Stop(ActorRef);
-            return this;
+
+            return CreateExitState(this, false, $"ERRORE: timeout {msg.TimerKey} scaduto!").RunState();
         }
 
         #endregion

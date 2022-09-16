@@ -96,7 +96,7 @@ namespace Actors.DroneStates
 
             _isMissionEnd = true;
 
-            return CreateExitState(this).RunState();
+            return CreateExitState(this, true, "Mission ENDED! Killing myself").RunState();
         }
 
 
