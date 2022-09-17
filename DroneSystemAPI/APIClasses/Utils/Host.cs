@@ -47,9 +47,11 @@
         {
             return $"{GetSystemAddress(systemName)}/{actorSpace}/actorName"; 
         }
+
+        public static Host GetTestHost() => new TestHost();
     }
 
-    public class TestHost : Host
+    internal class TestHost : Host
     {
         public TestHost() : base("", -1, AkkaProtocol.LOCAL)
         {

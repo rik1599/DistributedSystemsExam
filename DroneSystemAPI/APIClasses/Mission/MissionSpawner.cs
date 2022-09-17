@@ -44,12 +44,12 @@ namespace DroneSystemAPI.APIClasses.Mission
         /// </summary>
         /// <param name="host">host dove cercare il drone</param>
         /// <returns></returns>
-        public IMissionAPI? TryConnectToExistent(Host host)
+        public IMissionAPI? TryConnectToExistent(Host host, String missionName)
         {
             ActorProvider actorProvider = new ActorProvider();
             var actorRef = actorProvider.TryGetExistentActor(
                 _localSystem,
-                Address.Parse(host.GetSystemAddress(_config.DroneActorName)),
+                Address.Parse(host.GetSystemAddress(missionName)),
                 _config.DroneSystemName);
 
             return (actorRef is null) ? null : _missionAPIFactory.GetMissionAPI(actorRef);

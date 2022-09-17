@@ -9,6 +9,7 @@ using Actors.DTO;
 using DroneSystemAPI.APIClasses.Register;
 using DroneSystemAPI.APIClasses.Mission;
 using DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI;
+using DroneSystemAPI.APIClasses.Utils;
 
 namespace UnitTests.API
 {
@@ -48,6 +49,40 @@ namespace UnitTests.API
             // richiedo ad entrambe lo stato
             DroneStateDTO stateA = a.GetCurrentStatus().Result;
             DroneStateDTO stateB = b.GetCurrentStatus().Result;
+
+            Sys.Terminate();
+        }
+
+        [Fact]
+        public void ConnectToExistingMission()
+        {
+            // TODO: aggiusta!
+            
+            var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
+
+            DroneSystemConfig config = new DroneSystemConfig();
+            config.RegisterSystemName = "test";
+            config.DroneSystemName = "test";
+
+            // creo il registro
+            RegisterAPI register = new RegisterProvider(Sys).SpawnHere();
+
+            // spawno una missione manualmente
+            var realRef = Sys.ActorOf(
+                DroneActor.Props(register.ActorRef, missionA)
+                    .WithDeploy(Deploy.None.WithScope(new RemoteScope(
+                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.DroneSystemName))
+                        ))),
+                "DroneA");
+
+
+            // uso il tool per ricavare un'istanza dell'API e le richiedo lo stato
+            MissionSpawner spawner = new MissionSpawner(Sys,
+                register, SimpleMissionAPI.Factory(), config);
+
+            IMissionAPI? a = spawner.TryConnectToExistent(Host.GetTestHost(), "DroneA");
+            Assert.NotNull(a);
+            Assert.IsType<DroneStateDTO>(a!.GetCurrentStatus());
 
             Sys.Terminate();
         }

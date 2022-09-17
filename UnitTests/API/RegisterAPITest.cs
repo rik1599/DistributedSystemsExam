@@ -38,7 +38,7 @@ namespace UnitTests.API
 
             // spawn del registro (in remoto) usando il provider
             var registerProvider = new RegisterProvider(Sys, config);
-            RegisterAPI register = registerProvider.SpawnRemote(new TestHost());
+            RegisterAPI register = registerProvider.SpawnRemote(Host.GetTestHost());
 
             Assert.NotNull(register);
             _checkRegister(register);
@@ -56,13 +56,13 @@ namespace UnitTests.API
             var realRef = Sys.ActorOf(
                 DronesRepositoryActor.Props()
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(new TestHost().GetSystemAddress(config.RegisterSystemName))
+                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.RegisterSystemName))
                         ))),
                 config.RegisterActorName);
 
             // connessione (usando il provider)
             var registerProvider = new RegisterProvider(Sys, config);
-            RegisterAPI? register = registerProvider.TryConnectToExistent(new TestHost());
+            RegisterAPI? register = registerProvider.TryConnectToExistent(Host.GetTestHost());
 
             Assert.NotNull(register);
             _checkRegister(register!);
