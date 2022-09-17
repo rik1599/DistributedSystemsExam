@@ -25,7 +25,7 @@ akka {
 Console.WriteLine("Creazione attore ambiente.");
 var repository = envSystem.ActorOf(DronesRepositoryActor.Props());
 
-var droneConfiguration = new Actors.Config();
+var droneConfiguration = new Actors.DroneSystemConfig();
 List<ActorSystem> drones = new();
 for (int i = 0; i < 1; i++)
 {

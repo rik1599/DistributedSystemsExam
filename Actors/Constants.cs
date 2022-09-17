@@ -2,9 +2,13 @@
 
 namespace Actors
 {
-    public class Config
+    public class DroneSystemConfig
     {
         public string ActorSystemName { get; set; } = "DroneActorSystem";
+
+
+        public string RegisterSystemName { get; set; } = "RegisterActorSystem";
+        public string RegisterActorName { get; set; } = "Register";
 
         public string HoconConfig { get; set; } = @"
 akka {  
