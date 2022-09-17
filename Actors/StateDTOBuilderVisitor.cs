@@ -36,7 +36,7 @@ namespace Actors
 
         internal override void Visit(WaitingState state)
         {
-            StateDTO = new NegotiateStateDTO(
+            StateDTO = new WaitingStateDTO(
                 state.ActorContext,
                 state.ConflictSet.GetMissions().ToHashSet(),
                 state.FlyingMissionsMonitor.GetFlyingMissions().ToHashSet(),

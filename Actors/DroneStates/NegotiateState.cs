@@ -77,7 +77,8 @@ namespace Actors.DroneStates
             _ = base.OnReceive(msg, sender);
             _ = _expectedMetrics.Remove(sender);
             _ = _expectedIntentions.Remove(sender);
-            return NextState();
+            var s = NextState();
+            return s;
         }
 
         internal override DroneActorState OnReceive(MetricMessage msg, IActorRef sender)
