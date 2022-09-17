@@ -148,12 +148,12 @@ namespace Actors.DTO
         
         public DroneStateDTO PrecedentState { get; }
 
-        public String Motivation { get; }
+        public string Motivation { get; }
 
         internal ExitStateDTO(DroneActorContext droneContext,
             int negotiationsCount,
             bool isMissionAccomplished, 
-            String motivation, 
+            string motivation, 
             DroneStateDTO precedentState)
             : base(droneContext,
                   new HashSet<WaitingMission>(), new HashSet<FlyingMission>(),

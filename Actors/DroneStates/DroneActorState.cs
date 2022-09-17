@@ -65,7 +65,7 @@ namespace Actors.DroneStates
         internal static DroneActorState CreateFlyingState(DroneActorState precedentState)
             => new FlyingState(precedentState);
 
-        internal static DroneActorState CreateExitState(DroneActorState precedentState, bool isMissionAccomplished, String motivation) 
+        internal static DroneActorState CreateExitState(DroneActorState precedentState, bool isMissionAccomplished, string motivation) 
             => new ExitState(precedentState, isMissionAccomplished, motivation);
 
         #endregion

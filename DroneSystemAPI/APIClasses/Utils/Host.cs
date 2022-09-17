@@ -2,11 +2,11 @@
 {
     public class AkkaProtocol
     {
-        public static readonly AkkaProtocol TCP = new AkkaProtocol("akka.tcp");
-        public static readonly AkkaProtocol UDP = new AkkaProtocol("akka.udp");
-        public static readonly AkkaProtocol LOCAL = new AkkaProtocol("akka");
+        public static readonly AkkaProtocol TCP = new ("akka.tcp");
+        public static readonly AkkaProtocol UDP = new ("akka.udp");
+        public static readonly AkkaProtocol LOCAL = new ("akka");
 
-        public String ProtocolName { get; }
+        public string ProtocolName { get; }
 
         private AkkaProtocol(string protocolName)
         {
@@ -21,7 +21,7 @@
     
     public class Host
     {
-        public String HostName { get; }
+        public string HostName { get; }
         public int Port { get; }
         public AkkaProtocol Protocol { get; } = AkkaProtocol.TCP;
 
@@ -38,14 +38,14 @@
             Protocol = protocol;
         }
 
-        public virtual String GetSystemAddress(String systemName)
+        public virtual string GetSystemAddress(string systemName)
         {
             return $"{Protocol}://{systemName}@{HostName}:{Port}";
         }
 
-        public String GetActorAddress(String systemName, String actorName, String actorSpace = "user")
+        public string GetActorAddress(string systemName, string actorName, string actorSpace = "user")
         {
-            return $"{GetSystemAddress(systemName)}/{actorSpace}/actorName"; 
+            return $"{GetSystemAddress(systemName)}/{actorSpace}/{actorName}"; 
         }
 
         public static Host GetTestHost() => new TestHost();

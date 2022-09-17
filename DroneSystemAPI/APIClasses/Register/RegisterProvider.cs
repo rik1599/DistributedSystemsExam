@@ -53,8 +53,7 @@ namespace DroneSystemAPI.APIClasses.Register
         /// <returns></returns>
         public RegisterAPI SpawnHere()
         {
-            ActorProvider actorProvider = new ActorProvider();
-            var actorRef = actorProvider.SpawnLocally(
+            var actorRef = ActorProvider.SpawnLocally(
                 _localSystem, 
                 DronesRepositoryActor.Props(), 
                 _config.RegisterActorName);
@@ -69,8 +68,7 @@ namespace DroneSystemAPI.APIClasses.Register
         /// <returns></returns>
         public RegisterAPI SpawnRemote(Host host)
         {
-            ActorProvider actorProvider = new ActorProvider();
-            var actorRef = actorProvider.SpawnRemote(
+            var actorRef = ActorProvider.SpawnRemote(
                 _localSystem, 
                 Address.Parse(host.GetSystemAddress(_config.RegisterSystemName)), 
                 DronesRepositoryActor.Props(), 

@@ -14,9 +14,9 @@ namespace Actors.DroneStates
     {
         internal readonly DroneActorState PrecedentState;
         internal bool IsMissionAccomplished { get; }
-        internal String Motivation { get; }
+        internal string Motivation { get; }
         
-        public ExitState(DroneActorState prececentState, bool isMissionFinished, String motivation)
+        public ExitState(DroneActorState prececentState, bool isMissionFinished, string motivation)
             : base(prececentState)
         {
             PrecedentState = prececentState;

@@ -3,18 +3,13 @@ using Actors.MissionPathPriority;
 using Akka.Actor;
 using DroneSystemAPI.APIClasses.Register;
 using DroneSystemAPI.APIClasses.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DroneSystemAPI.APIClasses.Mission
 {
     public class MissionSpawner
     {
         private readonly ActorSystem _localSystem;
-        private readonly DroneSystemConfig _config = new DroneSystemConfig();
+        private readonly DroneSystemConfig _config = new();
 
         /// <summary>
         /// Il registro indicato alle misioni generate
@@ -44,10 +39,9 @@ namespace DroneSystemAPI.APIClasses.Mission
         /// </summary>
         /// <param name="host">host dove cercare il drone</param>
         /// <returns></returns>
-        public IMissionAPI? TryConnectToExistent(Host host, String missionName)
+        public IMissionAPI? TryConnectToExistent(Host host, string missionName)
         {
-            ActorProvider actorProvider = new ActorProvider();
-            var actorRef = actorProvider.TryGetExistentActor(
+            var actorRef = new ActorProvider().TryGetExistentActor(
                 _localSystem,
                 Address.Parse(host.GetSystemAddress(missionName)),
                 _config.DroneSystemName);
@@ -56,10 +50,9 @@ namespace DroneSystemAPI.APIClasses.Mission
         }
 
 
-        public IMissionAPI SpawnHere(MissionPath missionPath, String missionName)
+        public IMissionAPI SpawnHere(MissionPath missionPath, string missionName)
         {
-            ActorProvider actorProvider = new ActorProvider();
-            var actorRef = actorProvider.SpawnLocally(
+            var actorRef = ActorProvider.SpawnLocally(
                 _localSystem,
                 DroneActor.Props(_register.ActorRef, missionPath),
                 missionName);
@@ -68,10 +61,9 @@ namespace DroneSystemAPI.APIClasses.Mission
         }
 
 
-        public IMissionAPI SpawnRemote(Host host, MissionPath missionPath, String missionName)
+        public IMissionAPI SpawnRemote(Host host, MissionPath missionPath, string missionName)
         {
-            ActorProvider actorProvider = new ActorProvider();
-            var actorRef = actorProvider.SpawnRemote(
+            var actorRef = ActorProvider.SpawnRemote(
                 _localSystem,
                 Address.Parse(host.GetSystemAddress(_config.DroneSystemName)),
                 DroneActor.Props(_register.ActorRef, missionPath),
