@@ -9,11 +9,11 @@ namespace DroneSystemAPI.APIClasses.Register
 {
     public class RegisterAPI
     {
-        public IActorRef RegisterRef { get; }
+        public IActorRef ActorRef { get; }
 
         public RegisterAPI(IActorRef registerRef)
         {
-            RegisterRef = registerRef;
+            ActorRef = registerRef;
         }
     }
 }

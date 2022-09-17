@@ -1,10 +1,5 @@
 ﻿using Akka.Actor;
-using Akka.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DroneSystemAPI.APIClasses.Utils
 {
@@ -19,6 +14,8 @@ namespace DroneSystemAPI.APIClasses.Utils
         public static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0, 0, 10);
         private readonly TimeSpan _timeout = DEFAULT_TIMEOUT;
 
+        public ActorProvider() { }
+
         public ActorProvider(TimeSpan timeout) 
         {
             _timeout = timeout;
@@ -28,8 +25,13 @@ namespace DroneSystemAPI.APIClasses.Utils
         {
             try
             {
-                return deployerSystem.ActorSelection(systemAddress.System + "/user/" + actorName).ResolveOne(_timeout).Result;
+                var address = systemAddress.ToString() + "/user/" + actorName;
+                return deployerSystem.ActorSelection(address).ResolveOne(_timeout).Result;
+
             } catch (ActorNotFoundException e)
+            {
+                return null;
+            } catch (System.AggregateException e)
             {
                 return null;
             }
