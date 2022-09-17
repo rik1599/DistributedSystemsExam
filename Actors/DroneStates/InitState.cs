@@ -95,6 +95,11 @@ namespace Actors.DroneStates
             }
 
             return this;
-        } 
+        }
+
+        public override void PerformVisit(DroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

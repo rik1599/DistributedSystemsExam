@@ -147,9 +147,6 @@ namespace Actors.DroneStates
 
         internal abstract DroneActorState RunState();
 
-        public void PerformVisit(DroneStateVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        public abstract void PerformVisit(DroneStateVisitor visitor);
     }
 }

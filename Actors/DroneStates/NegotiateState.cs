@@ -169,5 +169,10 @@ namespace Actors.DroneStates
                 ActorRef.Tell(msg.MetricMessage, msg.Sender);
             }
         }
+
+        public override void PerformVisit(DroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

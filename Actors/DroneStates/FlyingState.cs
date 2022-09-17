@@ -151,5 +151,10 @@ namespace Actors.DroneStates
             // uso il valore in cache)
             return _lastPositionCache;
         }
+
+        public override void PerformVisit(DroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

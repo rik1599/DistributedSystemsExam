@@ -91,5 +91,10 @@ namespace Actors.DroneStates
         {
             return PrecedentState.OnReceive(msg, sender);
         }
+
+        public override void PerformVisit(DroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

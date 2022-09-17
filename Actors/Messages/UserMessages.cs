@@ -18,8 +18,7 @@ namespace Actors.Messages.User
     /// <summary>
     /// Stato corrente (ritornato come DTO)
     /// </summary>
-    public class GetStatusResponse
-    {
+    public class GetStatusResponse     {
         public DroneStateDTO StateDTO { get; }
 
         public GetStatusResponse(DroneStateDTO stateDTO) 

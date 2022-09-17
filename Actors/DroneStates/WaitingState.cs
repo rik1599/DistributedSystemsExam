@@ -67,5 +67,10 @@ namespace Actors.DroneStates
                 return CreateFlyingState(this).RunState();
             else return this;
         }
+
+        public override void PerformVisit(DroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }
