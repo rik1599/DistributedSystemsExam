@@ -13,17 +13,6 @@ namespace Actors
     {
         public DroneStateDTO? StateDTO { get; private set; }
 
-        internal override void Visit(DroneActorState state)
-        {
-            StateDTO = new DroneStateDTO(
-                state.ActorContext, 
-                state.ConflictSet.GetMissions().ToHashSet(),
-                state.FlyingMissionsMonitor.GetFlyingMissions().ToHashSet(),
-                state.LastNegotiationRound, 
-                Priority.NullPriority
-                );
-        }
-
         internal override void Visit(InitState state)
         {
             StateDTO = new InitStateDTO(

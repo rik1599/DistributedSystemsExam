@@ -5,6 +5,8 @@ using Actors.Messages.External;
 using Actors.Messages.Internal;
 using Actors.DroneStates;
 using Actors.Messages.Register;
+using Actors.Messages.User;
+using Actors.DTO;
 
 namespace Actors
 {
@@ -25,6 +27,7 @@ namespace Actors
 
             ReceiveExternalMessages();
             ReceiveInternalMessage();
+            HandleStatusRequests();
         }
 
         /// <summary>
@@ -51,6 +54,16 @@ namespace Actors
             Receive<InternalFlyIsSafeMessage>(msg => _droneState = _droneState!.OnReceive(msg, Sender));
             Receive<InternalMissionEnded>    (msg => _droneState = _droneState!.OnReceive(msg, Sender));
             Receive<InternalTimeoutEnded>    (msg => _droneState = _droneState!.OnReceive(msg, Sender));
+        }
+
+        private void HandleStatusRequests()
+        {
+            Receive<GetStatusRequest>(msg =>
+            {
+                StateDTOBuilderVisitor visitor = new StateDTOBuilderVisitor();
+                _droneState!.PerformVisit(visitor);
+                Sender.Tell(new GetStatusResponse(visitor.StateDTO!));
+            });
         }
 
         public static Props Props(IActorRef repository, MissionPath missionPath)
