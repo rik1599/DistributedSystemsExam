@@ -29,7 +29,7 @@ var droneConfiguration = new Actors.DroneSystemConfig();
 List<ActorSystem> drones = new();
 for (int i = 0; i < 1; i++)
 {
-    var droneSystem = ActorSystem.Create(droneConfiguration.ActorSystemName, droneConfiguration.DroneConfig);
+    var droneSystem = ActorSystem.Create(droneConfiguration.DroneSystemName, droneConfiguration.DroneConfig);
     drones.Add(droneSystem);
 
     var mission = new MissionPath(Point2D.Origin, new Point2D(10, 30), 10f);

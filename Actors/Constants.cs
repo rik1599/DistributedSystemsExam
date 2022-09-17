@@ -4,8 +4,8 @@ namespace Actors
 {
     public class DroneSystemConfig
     {
-        public string ActorSystemName { get; set; } = "DroneActorSystem";
-
+        public string DroneSystemName { get; set; } = "DroneActorSystem";
+        public string DroneActorName { get; set; } = "Drone";
 
         public string RegisterSystemName { get; set; } = "RegisterActorSystem";
         public string RegisterActorName { get; set; } = "Register";

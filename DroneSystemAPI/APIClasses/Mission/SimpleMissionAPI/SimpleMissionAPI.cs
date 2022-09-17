@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI
 {
-    internal class SimpleMissionAPI : IMissionAPI
+    public class SimpleMissionAPI : IMissionAPI
     {
         public static readonly TimeSpan DEFAULT_TIMEOUT = new TimeSpan(0, 0, 10);
 
@@ -34,23 +34,21 @@ namespace DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI
             Task<GetStatusResponse> t = GetDroneRef()
                 .Ask<GetStatusResponse>(new GetStatusRequest(), _timeout);
 
-
-            return new Task<DroneStateDTO>(() =>
+            t.Wait();
+            if (t.IsFaulted || !t.IsCompleted)
             {
-                t.Wait();
-                if (t.IsFaulted || !t.IsCompleted)
-                {
-                    throw new MissionIsUnreachableException();
-                }
+                throw new MissionIsUnreachableException();
+            }
 
-                return t.Result.StateDTO;
-            }).Result;        
+            return t.Result.StateDTO;
         }
 
         public Task Cancel()
         {
             throw new NotImplementedException();
         }
+
+        public static IMissionAPIFactory Factory() => new SimpleMissionAPIFactory();
     }
 
     internal class SimpleMissionAPIFactory : IMissionAPIFactory

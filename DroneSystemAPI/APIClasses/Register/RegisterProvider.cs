@@ -32,9 +32,9 @@ namespace DroneSystemAPI.APIClasses.Register
         }
 
         /// <summary>
-        /// Prova a ottenere un registro esistente (situato sull'host indicato)
-        /// e, se non esiste, prova a spawnarne un nuovo.
+        /// Prova a ottenere un registro esistente.
         /// </summary>
+        /// <param name="host">host dove cercare il registro</param>
         /// <returns></returns>
         public RegisterAPI? TryConnectToExistent(Host host)
         {
