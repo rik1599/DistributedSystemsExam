@@ -35,6 +35,9 @@ namespace Actors.DroneStates
                 node.Tell(new MissionFinishedMessage());
             }
 
+            // notifico cambio di stato
+            PerformVisit(ChangeStateNotifier);
+
             // a seconda se ho terminato correttamente o no, mi invio 
             // una poison pill oppure 
             if (IsMissionAccomplished)
@@ -92,7 +95,7 @@ namespace Actors.DroneStates
             return PrecedentState.OnReceive(msg, sender);
         }
 
-        public override void PerformVisit(DroneStateVisitor visitor)
+        public override void PerformVisit(IDroneStateVisitor visitor)
         {
             visitor.Visit(this);
         }

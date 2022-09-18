@@ -7,6 +7,8 @@ using Actors.DroneStates;
 using Actors.Messages.Register;
 using Actors.Messages.User;
 using Actors.DTO;
+using Actors.Messages.StateChangeNotifier;
+using Actors.StateChangeNotifier;
 
 namespace Actors
 {
@@ -16,18 +18,33 @@ namespace Actors
 
         private DroneActorState? _droneState;
 
+        private NotificationProtocol? _notificationProtocol;
+
+        /// <summary>
+        /// Eventuale riferimento a chi mi ha spawnato
+        /// </summary>
+        private IActorRef? _spawner;
+
         /// <summary>
         /// Algoritmo di schedulazione delle partenze
         /// </summary>
         protected void AlgorithmRunBehaviour(ISet<IActorRef> nodes, MissionPath missionPath)
         {
-            // avvio lo stato iniziale
             var droneContext = new DroneActorContext(Context, nodes, new WaitingMission(Self, missionPath, Priority.NullPriority), Timers!);
-            _droneState = DroneActorState.CreateInitState(droneContext, Timers!).RunState();
+
+            // avvio il servizio di notifica
+            _notificationProtocol = new NotificationProtocol(droneContext, 
+                _spawner is null ? null : new HashSet<IActorRef>() { _spawner }
+                );
+
+            // avvio lo stato iniziale
+            _droneState = DroneActorState.CreateInitState(droneContext, Timers!,
+                _notificationProtocol.GetStateChangeNotifierVisitor()).RunState();
 
             ReceiveExternalMessages();
             ReceiveInternalMessage();
             HandleStatusRequests();
+            HandleNotificationProtocol();
         }
 
         /// <summary>
@@ -64,6 +81,11 @@ namespace Actors
                 _droneState!.PerformVisit(visitor);
                 Sender.Tell(new GetStatusResponse(visitor.StateDTO!));
             });
+        }
+
+        private void HandleNotificationProtocol()
+        {
+            Receive<INotificationProtocolMessage>(msg => _notificationProtocol!.OnReceive(msg));
         }
 
         public static Props Props(IActorRef repository, MissionPath missionPath)

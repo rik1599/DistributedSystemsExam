@@ -23,6 +23,10 @@ namespace Actors.DroneStates
             {
                 node.Tell(new WaitMeMessage());
             }
+
+            // notifico cambio di stato
+            PerformVisit(ChangeStateNotifier);
+
             return this;
         }
 
@@ -68,7 +72,7 @@ namespace Actors.DroneStates
             else return this;
         }
 
-        public override void PerformVisit(DroneStateVisitor visitor)
+        public override void PerformVisit(IDroneStateVisitor visitor)
         {
             visitor.Visit(this);
         }

@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Environment\Environment.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="APIClasses\Mission\ObserverMissionAPI\" />
+  </ItemGroup>
+
 </Project>

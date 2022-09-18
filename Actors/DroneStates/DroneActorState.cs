@@ -22,6 +22,11 @@ namespace Actors.DroneStates
         internal FlyingMissionsMonitor FlyingMissionsMonitor { get; }
 
         /// <summary>
+        /// Strumento da utilizzare per notificare un cambio di stato
+        /// </summary>
+        protected IDroneStateVisitor ChangeStateNotifier { get; }
+
+        /// <summary>
         /// shortcut per la tratta della missione corrente
         /// </summary>
         protected MissionPath MissionPath { get => ActorContext.ThisMission.Path; }
@@ -31,12 +36,13 @@ namespace Actors.DroneStates
         /// </summary>
         protected IActorRef ActorRef { get => ActorContext.Context.Self; }
 
-        internal DroneActorState(DroneActorContext context, ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor)
+        internal DroneActorState(DroneActorContext context, ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor, IDroneStateVisitor changeStateNotifier)
         {
             ActorContext = context;
             ConflictSet = conflictSet;
             FlyingMissionsMonitor = flyingMissionsMonitor;
             LastNegotiationRound = 0;
+            ChangeStateNotifier = changeStateNotifier;
         }
 
         protected DroneActorState(DroneActorState state)
@@ -45,15 +51,17 @@ namespace Actors.DroneStates
             ConflictSet = state.ConflictSet;
             FlyingMissionsMonitor = state.FlyingMissionsMonitor;
             LastNegotiationRound = state.LastNegotiationRound;
+            ChangeStateNotifier = state.ChangeStateNotifier;
         }
 
         #region Factory methods
 
-        internal static DroneActorState CreateInitState(DroneActorContext context, ITimerScheduler timer)
+        internal static DroneActorState CreateInitState(DroneActorContext context, ITimerScheduler timer, IDroneStateVisitor changeStateNotifier)
             => new InitState(
                 context, 
                 new ConflictSet(), 
-                new FlyingMissionsMonitor(context.ThisMission, new FlyingSet(), timer)
+                new FlyingMissionsMonitor(context.ThisMission, new FlyingSet(), timer),
+                changeStateNotifier
                 );
 
         internal static DroneActorState CreateNegotiateState(DroneActorState precedentState)
@@ -147,6 +155,6 @@ namespace Actors.DroneStates
 
         internal abstract DroneActorState RunState();
 
-        public abstract void PerformVisit(DroneStateVisitor visitor);
+        public abstract void PerformVisit(IDroneStateVisitor visitor);
     }
 }

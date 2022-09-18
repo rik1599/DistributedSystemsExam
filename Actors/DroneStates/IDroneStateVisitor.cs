@@ -16,7 +16,7 @@ namespace Actors.DroneStates
     /// Implementare le visitie per ciascun stato ed estendere
     /// con gli opportuni getters per estrarre l'output.
     /// </summary>
-    public abstract class DroneStateVisitor
+    public abstract class IDroneStateVisitor
     {
         internal abstract void Visit(InitState state);
         internal abstract void Visit(NegotiateState state);

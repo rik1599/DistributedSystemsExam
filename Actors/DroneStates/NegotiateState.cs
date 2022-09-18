@@ -63,6 +63,9 @@ namespace Actors.DroneStates
                 ActorContext.StartMessageTimeout(_metricTimeoutKey, _expectedMetrics.Count);
             }
 
+            // notifico cambio di stato
+            PerformVisit(ChangeStateNotifier);
+
             return NextState();
         }
 
@@ -171,7 +174,7 @@ namespace Actors.DroneStates
             }
         }
 
-        public override void PerformVisit(DroneStateVisitor visitor)
+        public override void PerformVisit(IDroneStateVisitor visitor)
         {
             visitor.Visit(this);
         }

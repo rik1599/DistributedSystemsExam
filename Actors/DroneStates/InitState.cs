@@ -15,8 +15,9 @@ namespace Actors.DroneStates
         internal IReadOnlySet<IActorRef> GetMissingConnectResponses() => _expectedConnectResponses.ToHashSet();
 
         internal InitState(DroneActorContext context, 
-            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor) 
-            : base(context, conflictSet, flyingMissionsMonitor)
+            ConflictSet conflictSet, FlyingMissionsMonitor flyingMissionsMonitor, 
+            IDroneStateVisitor changeStateNotifier) 
+            : base(context, conflictSet, flyingMissionsMonitor, changeStateNotifier)
         {
             _expectedConnectResponses = ActorContext.Nodes.ToHashSet();
         }
@@ -35,6 +36,9 @@ namespace Actors.DroneStates
 
                 ActorContext.StartMessageTimeout(_timeoutKeyName, _expectedConnectResponses.Count);
             }
+
+            // notifico cambio di stato
+            PerformVisit(ChangeStateNotifier);
 
             // se non ho vicini, annullo i timeout e posso passare
             // direttamente allo stato successivo
@@ -97,7 +101,7 @@ namespace Actors.DroneStates
             return this;
         }
 
-        public override void PerformVisit(DroneStateVisitor visitor)
+        public override void PerformVisit(IDroneStateVisitor visitor)
         {
             visitor.Visit(this);
         }

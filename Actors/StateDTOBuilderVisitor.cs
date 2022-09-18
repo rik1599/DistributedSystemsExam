@@ -1,15 +1,9 @@
 ﻿using Actors.DroneStates;
 using Actors.DTO;
-using Actors.MissionPathPriority;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Actors
 {
-    internal class StateDTOBuilderVisitor : DroneStateVisitor
+    internal class StateDTOBuilderVisitor : IDroneStateVisitor
     {
         public DroneStateDTO? StateDTO { get; private set; }
 

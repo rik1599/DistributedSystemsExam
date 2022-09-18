@@ -52,6 +52,9 @@ namespace Actors.DroneStates
             // lo supervisiono (in modo da rilevare quando e come termina)
             ActorContext.Context.WatchWith(_flyingDroneActor, new InternalMissionEnded());
 
+            // notifico cambio di stato
+            PerformVisit(ChangeStateNotifier);
+
             return this;
         }
 
@@ -152,7 +155,7 @@ namespace Actors.DroneStates
             return _lastPositionCache;
         }
 
-        public override void PerformVisit(DroneStateVisitor visitor)
+        public override void PerformVisit(IDroneStateVisitor visitor)
         {
             visitor.Visit(this);
         }
