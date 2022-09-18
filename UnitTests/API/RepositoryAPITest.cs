@@ -7,7 +7,7 @@ using DroneSystemAPI.APIClasses.Register;
 
 namespace UnitTests.API
 {
-    public class RegisterAPITest : TestKit
+    public class RepositoryAPITest : TestKit
     {
         /// <summary>
         /// Creo un registro in locale usando le API
@@ -21,8 +21,8 @@ namespace UnitTests.API
             };
 
             // spawn del registro usando il provider
-            var registerProvider = new RegisterProvider(Sys, config);
-            RegisterAPI register = registerProvider.SpawnHere();
+            var registerProvider = new RepositoryProvider(Sys, config);
+            RepositoryAPI register = registerProvider.SpawnHere();
 
             Assert.NotNull(register);
             CheckRegister(register);
@@ -39,8 +39,8 @@ namespace UnitTests.API
             };
 
             // spawn del registro (in remoto) usando il provider
-            var registerProvider = new RegisterProvider(Sys, config);
-            RegisterAPI register = registerProvider.SpawnRemote(Host.GetTestHost());
+            var registerProvider = new RepositoryProvider(Sys, config);
+            RepositoryAPI register = registerProvider.SpawnRemote(Host.GetTestHost());
 
             Assert.NotNull(register);
             CheckRegister(register);
@@ -65,8 +65,8 @@ namespace UnitTests.API
                 config.RegisterActorName);
 
             // connessione (usando il provider)
-            var registerProvider = new RegisterProvider(Sys, config);
-            RegisterAPI? register = registerProvider.TryConnectToExistent(Host.GetTestHost());
+            var registerProvider = new RepositoryProvider(Sys, config);
+            RepositoryAPI? register = registerProvider.TryConnectToExistent(Host.GetTestHost());
 
             Assert.NotNull(register);
             CheckRegister(register!);
@@ -78,7 +78,7 @@ namespace UnitTests.API
         /// Controlla se il registro funziona
         /// </summary>
         /// <param name="register"></param>
-        private void CheckRegister(RegisterAPI register)
+        private void CheckRegister(RepositoryAPI register)
         {
             register.ActorRef.Tell(new RegisterRequest(TestActor), TestActor);
             ExpectMsgFrom<RegisterResponse>(register.ActorRef);

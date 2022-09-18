@@ -14,21 +14,21 @@ namespace DroneSystemAPI.APIClasses.Mission
         /// <summary>
         /// Il registro indicato alle misioni generate
         /// </summary>
-        private readonly RegisterAPI _register;
+        private readonly RepositoryAPI _register;
 
         /// <summary>
         /// Lo strumento da utilizzare per generare le missioni
         /// </summary>
         private readonly IMissionAPIFactory _missionAPIFactory;
 
-        public MissionSpawner(ActorSystem localSystem, RegisterAPI register, IMissionAPIFactory missionAPIFactory)
+        public MissionSpawner(ActorSystem localSystem, RepositoryAPI register, IMissionAPIFactory missionAPIFactory)
         {
             _localSystem = localSystem;
             _register = register;
             _missionAPIFactory = missionAPIFactory;
         }
 
-        public MissionSpawner(ActorSystem localSystem, RegisterAPI register, IMissionAPIFactory missionAPIFactory, DroneSystemConfig config) 
+        public MissionSpawner(ActorSystem localSystem, RepositoryAPI register, IMissionAPIFactory missionAPIFactory, DroneSystemConfig config) 
             : this(localSystem, register, missionAPIFactory)
         {
             _config = config;

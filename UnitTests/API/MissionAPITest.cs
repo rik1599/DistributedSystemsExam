@@ -36,7 +36,7 @@ namespace UnitTests.API
             };
 
             // creo il registro
-            RegisterAPI register = new RegisterProvider(Sys).SpawnHere();
+            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
 
             // creo il tool per lo spawn di missioni
             MissionSpawner spawner = new (Sys, 
@@ -68,7 +68,7 @@ namespace UnitTests.API
             };
 
             // creo il registro
-            RegisterAPI register = new RegisterProvider(Sys).SpawnHere();
+            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
 
             // spawno una missione manualmente
             var realRef = Sys.ActorOf(
@@ -106,7 +106,7 @@ namespace UnitTests.API
             };
 
             // creo il registro
-            RegisterAPI register = new RegisterProvider(Sys).SpawnHere();
+            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
 
             // uso il tool per spawnare in remoto una missione
             // e ricavare un'istanza dell'API

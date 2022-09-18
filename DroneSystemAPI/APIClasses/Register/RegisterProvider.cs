@@ -4,23 +4,21 @@ using DroneSystemAPI.APIClasses.Utils;
 
 namespace DroneSystemAPI.APIClasses.Register
 {
-
-
     /// <summary>
     /// Strumento per il reperimento o per lo spawn di un registro dei nodi.
     /// </summary>
-    public class RegisterProvider
+    public class RepositoryProvider
     {
         private readonly ActorSystem _localSystem;
 
         private readonly DroneSystemConfig _config = new();
        
-        public RegisterProvider(ActorSystem localSystem)
+        public RepositoryProvider(ActorSystem localSystem)
         {
             _localSystem = localSystem; 
         }
 
-        public RegisterProvider(ActorSystem localSystem, DroneSystemConfig config) : this(localSystem)
+        public RepositoryProvider(ActorSystem localSystem, DroneSystemConfig config) : this(localSystem)
         {
             _config = config;
         }
@@ -30,7 +28,7 @@ namespace DroneSystemAPI.APIClasses.Register
         /// </summary>
         /// <param name="host">host dove cercare il registro</param>
         /// <returns></returns>
-        public RegisterAPI? TryConnectToExistent(Host host)
+        public RepositoryAPI? TryConnectToExistent(Host host)
         {
             ActorProvider actorProvider = new ();
             var actorRef = actorProvider.TryGetExistentActor(
@@ -38,21 +36,21 @@ namespace DroneSystemAPI.APIClasses.Register
                 Address.Parse(host.GetSystemAddress(_config.RegisterSystemName)),
                 _config.RegisterActorName);
 
-            return (actorRef is null) ? null : new RegisterAPI(actorRef);
+            return (actorRef is null) ? null : new RepositoryAPI(actorRef);
         }
 
         /// <summary>
         /// Crea localmente (nel sistema indicato come locale) un registro
         /// </summary>
         /// <returns></returns>
-        public RegisterAPI SpawnHere()
+        public RepositoryAPI SpawnHere()
         {
             var actorRef = ActorProvider.SpawnLocally(
                 _localSystem, 
                 DronesRepositoryActor.Props(), 
                 _config.RegisterActorName);
 
-            return new RegisterAPI(actorRef);
+            return new RepositoryAPI(actorRef);
         }
 
         /// <summary>
@@ -60,7 +58,7 @@ namespace DroneSystemAPI.APIClasses.Register
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public RegisterAPI SpawnRemote(Host host)
+        public RepositoryAPI SpawnRemote(Host host)
         {
             var actorRef = ActorProvider.SpawnRemote(
                 _localSystem, 
@@ -68,7 +66,7 @@ namespace DroneSystemAPI.APIClasses.Register
                 DronesRepositoryActor.Props(), 
                 _config.RegisterActorName);
 
-            return new RegisterAPI(actorRef);
+            return new RepositoryAPI(actorRef);
         }
     }
 }
