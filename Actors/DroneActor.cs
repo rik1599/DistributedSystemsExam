@@ -25,6 +25,11 @@ namespace Actors
         /// </summary>
         private IActorRef? _spawner;
 
+        public DroneActor(IActorRef? spawner = null)
+        {
+            _spawner = spawner;
+        }
+
         /// <summary>
         /// Algoritmo di schedulazione delle partenze
         /// </summary>
@@ -88,14 +93,14 @@ namespace Actors
             Receive<INotificationProtocolMessage>(msg => _notificationProtocol!.OnReceive(msg));
         }
 
-        public static Props Props(IActorRef repository, MissionPath missionPath)
+        public static Props Props(IActorRef repository, MissionPath missionPath, IActorRef? spawner=null)
         {
-            return Akka.Actor.Props.Create(() => new RegisterDroneActor(repository, missionPath));
+            return Akka.Actor.Props.Create(() => new RegisterDroneActor(repository, missionPath, spawner));
         }
 
-        public static Props Props(ISet<IActorRef> nodes, MissionPath missionPath)
+        public static Props Props(ISet<IActorRef> nodes, MissionPath missionPath, IActorRef? spawner = null)
         {
-            return Akka.Actor.Props.Create(() => new SimpleDroneActor(nodes, missionPath));
+            return Akka.Actor.Props.Create(() => new SimpleDroneActor(nodes, missionPath, spawner));
         }
     }
 
@@ -111,7 +116,7 @@ namespace Actors
         /// Procedura iniziale di connessione ad un repository
         /// per reperire tutti i possibili nodi.
         /// </summary>
-        public RegisterDroneActor(IActorRef repository, MissionPath missionPath)
+        public RegisterDroneActor(IActorRef repository, MissionPath missionPath, IActorRef? spawner = null) : base(spawner)
         {
             try
             {
@@ -133,7 +138,7 @@ namespace Actors
     /// </summary>
     internal class SimpleDroneActor : DroneActor
     {
-        public SimpleDroneActor(ISet<IActorRef> nodes, MissionPath missionPath)
+        public SimpleDroneActor(ISet<IActorRef> nodes, MissionPath missionPath, IActorRef? spawner = null) : base(spawner)
         {
             AlgorithmRunBehaviour(nodes.ToHashSet(), missionPath);
         }
