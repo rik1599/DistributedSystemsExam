@@ -34,6 +34,9 @@ namespace DroneSystemAPI.APIClasses.Utils
             {
                 return null;
             }
+
+            // TODO: valutare se vale la pena propagare all'esterno
+            //      le eccezioni per dare un idea del tipo di errore
         }
 
         public static IActorRef SpawnLocally(ActorSystem localActorSystem, Props actorProps, string actorName)

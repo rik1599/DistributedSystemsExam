@@ -70,7 +70,7 @@ namespace UnitTests.API
             RegisterAPI register = new RegisterProvider(Sys).SpawnHere();
 
             // spawno una missione manualmente
-            _ = Sys.ActorOf(
+            var realRef = Sys.ActorOf(
                 DroneActor.Props(register.ActorRef, missionA)
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(
                         Address.Parse(Host.GetTestHost().GetSystemAddress(config.DroneSystemName))
@@ -84,7 +84,7 @@ namespace UnitTests.API
 
             IMissionAPI? a = spawner.TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
-            Assert.IsType<DroneStateDTO>(a!.GetCurrentStatus());
+            Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
 
             Sys.Terminate();
         }

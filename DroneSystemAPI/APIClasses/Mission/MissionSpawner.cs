@@ -43,8 +43,8 @@ namespace DroneSystemAPI.APIClasses.Mission
         {
             var actorRef = new ActorProvider().TryGetExistentActor(
                 _localSystem,
-                Address.Parse(host.GetSystemAddress(missionName)),
-                _config.DroneSystemName);
+                Address.Parse(host.GetSystemAddress(_config.DroneSystemName)),
+                missionName);
 
             return (actorRef is null) ? null : _missionAPIFactory.GetMissionAPI(actorRef);
         }
