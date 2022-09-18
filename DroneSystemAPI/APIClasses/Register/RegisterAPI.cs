@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace DroneSystemAPI.APIClasses.Register
 {
-    public class RegisterAPI
+    public class RepositoryAPI
     {
         public IActorRef ActorRef { get; }
 
-        public RegisterAPI(IActorRef registerRef)
+        public RepositoryAPI(IActorRef registerRef)
         {
             ActorRef = registerRef;
         }

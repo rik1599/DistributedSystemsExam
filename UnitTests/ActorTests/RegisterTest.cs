@@ -4,7 +4,6 @@ using Actors.Messages.Register;
 using Actors.MissionPathPriority;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
-using Environment;
 using MathNet.Spatial.Euclidean;
 
 namespace UnitTests.ActorTests
