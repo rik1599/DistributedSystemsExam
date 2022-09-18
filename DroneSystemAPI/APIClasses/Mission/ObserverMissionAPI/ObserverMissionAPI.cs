@@ -71,6 +71,9 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
                 throw new MissionIsUnreachableException();
             }
         }
+
+        public static IMissionAPIFactory Factory(ActorSystem localSystem)
+            => new ObserverMissionAPIFactory(localSystem);
     }
 
     public class ObserverMissionAPIFactory : IMissionAPIFactory
