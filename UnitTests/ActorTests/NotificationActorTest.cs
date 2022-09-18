@@ -1,16 +1,11 @@
 ﻿using Actors;
 using Actors.DTO;
-using Actors.Messages.External;
 using Actors.Messages.StateChangeNotifier;
 using Actors.MissionPathPriority;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using MathNet.Spatial.Euclidean;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace UnitTests.ActorTests
 {  
