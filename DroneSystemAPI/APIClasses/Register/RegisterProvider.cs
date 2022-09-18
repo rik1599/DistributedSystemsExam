@@ -17,9 +17,9 @@ namespace DroneSystemAPI.APIClasses.Register
     /// </summary>
     public class RegisterProvider
     {
-        private ActorSystem _localSystem;
+        private readonly ActorSystem _localSystem;
 
-        private DroneSystemConfig _config = new DroneSystemConfig();
+        private readonly DroneSystemConfig _config = new();
        
         public RegisterProvider(ActorSystem localSystem)
         {
@@ -38,7 +38,7 @@ namespace DroneSystemAPI.APIClasses.Register
         /// <returns></returns>
         public RegisterAPI? TryConnectToExistent(Host host)
         {
-            ActorProvider actorProvider = new ActorProvider();
+            ActorProvider actorProvider = new ();
             var actorRef = actorProvider.TryGetExistentActor(
                 _localSystem, 
                 Address.Parse(host.GetSystemAddress(_config.RegisterSystemName)),
