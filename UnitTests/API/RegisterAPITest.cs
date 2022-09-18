@@ -3,6 +3,7 @@ using Actors.Messages.Register;
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.TestKit.Xunit2;
+using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Register;
 using DroneSystemAPI.APIClasses.Utils;
 using Environment;

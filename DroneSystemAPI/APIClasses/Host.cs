@@ -1,4 +1,4 @@
-﻿namespace DroneSystemAPI.APIClasses.Utils
+﻿namespace DroneSystemAPI.APIClasses
 {
     public class AkkaProtocol
     {
