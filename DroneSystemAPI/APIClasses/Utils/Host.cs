@@ -48,12 +48,17 @@
             return $"{GetSystemAddress(systemName)}/{actorSpace}/{actorName}"; 
         }
 
+        /// <summary>
+        /// Ottieni un'istzanza di Host (locale) da utilizzare 
+        /// PER I TEST. 
+        /// </summary>
+        /// <returns></returns>
         public static Host GetTestHost() => new TestHost();
     }
 
     internal class TestHost : Host
     {
-        public TestHost() : base("", -1, AkkaProtocol.LOCAL)
+        public TestHost() : base("localhost", 0, AkkaProtocol.LOCAL)
         {
         }
 
