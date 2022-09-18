@@ -2,10 +2,7 @@
 using Actors.MissionPathPriority;
 using Akka.Actor;
 using Akka.Configuration;
-using Environment;
 using MathNet.Spatial.Euclidean;
-
-Console.WriteLine("Creazione ambiente deployer e drone.");
 
 var envSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
 akka {  
@@ -22,10 +19,9 @@ akka {
 }
 "));
 
-Console.WriteLine("Creazione attore ambiente.");
 var repository = envSystem.ActorOf(DronesRepositoryActor.Props());
 
-var droneConfiguration = new Actors.DroneSystemConfig();
+var droneConfiguration = new DroneSystemConfig();
 List<ActorSystem> drones = new();
 for (int i = 0; i < 1; i++)
 {

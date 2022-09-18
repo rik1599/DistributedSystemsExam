@@ -1,12 +1,9 @@
 ﻿using Actors;
 using Actors.Messages.Register;
 using Akka.Actor;
-using Akka.Configuration;
 using Akka.TestKit.Xunit2;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Register;
-using DroneSystemAPI.APIClasses.Utils;
-using Environment;
 
 namespace UnitTests.API
 {
@@ -18,15 +15,17 @@ namespace UnitTests.API
         [Fact]
         public void SpawnRegisterLocally()
         {
-            var config = new DroneSystemConfig();
-            config.RegisterSystemName = Sys.Name;
+            var config = new DroneSystemConfig
+            {
+                RegisterSystemName = Sys.Name
+            };
 
             // spawn del registro usando il provider
             var registerProvider = new RegisterProvider(Sys, config);
             RegisterAPI register = registerProvider.SpawnHere();
 
             Assert.NotNull(register);
-            _checkRegister(register);
+            CheckRegister(register);
 
             Sys.Terminate();
         }
@@ -34,15 +33,17 @@ namespace UnitTests.API
         [Fact]
         public void SpawnRegisterRemote()
         {
-            var config = new DroneSystemConfig();
-            config.RegisterSystemName = Sys.Name;
+            var config = new DroneSystemConfig
+            {
+                RegisterSystemName = Sys.Name
+            };
 
             // spawn del registro (in remoto) usando il provider
             var registerProvider = new RegisterProvider(Sys, config);
             RegisterAPI register = registerProvider.SpawnRemote(Host.GetTestHost());
 
             Assert.NotNull(register);
-            _checkRegister(register);
+            CheckRegister(register);
 
             Sys.Terminate();
         }
@@ -50,11 +51,13 @@ namespace UnitTests.API
         [Fact]
         public void ConnectToExistentRegister()
         {
-            var config = new DroneSystemConfig();
-            config.RegisterSystemName = Sys.Name;
+            var config = new DroneSystemConfig
+            {
+                RegisterSystemName = Sys.Name
+            };
 
             // spawn del registro (in remoto)
-            var realRef = Sys.ActorOf(
+            _ = Sys.ActorOf(
                 DronesRepositoryActor.Props()
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(
                         Address.Parse(Host.GetTestHost().GetSystemAddress(config.RegisterSystemName))
@@ -66,7 +69,7 @@ namespace UnitTests.API
             RegisterAPI? register = registerProvider.TryConnectToExistent(Host.GetTestHost());
 
             Assert.NotNull(register);
-            _checkRegister(register!);
+            CheckRegister(register!);
 
             Sys.Terminate();
         }
@@ -75,7 +78,7 @@ namespace UnitTests.API
         /// Controlla se il registro funziona
         /// </summary>
         /// <param name="register"></param>
-        private void _checkRegister(RegisterAPI register)
+        private void CheckRegister(RegisterAPI register)
         {
             register.ActorRef.Tell(new RegisterRequest(TestActor), TestActor);
             ExpectMsgFrom<RegisterResponse>(register.ActorRef);

@@ -3,7 +3,7 @@ using Actors.Utils;
 using Akka.Event;
 using Actors.Messages.Register;
 
-namespace Environment
+namespace Actors
 {
     /// <summary>
     /// Attore ambiente, si occupa si spawnare e 

@@ -7,7 +7,6 @@ using Actors.DTO;
 using DroneSystemAPI.APIClasses.Register;
 using DroneSystemAPI.APIClasses.Mission;
 using DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI;
-using DroneSystemAPI.APIClasses.Utils;
 using DroneSystemAPI.APIClasses;
 
 namespace UnitTests.API
