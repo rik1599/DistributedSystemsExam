@@ -8,6 +8,7 @@ using DroneSystemAPI.APIClasses.Register;
 using DroneSystemAPI.APIClasses.Mission;
 using DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI;
 using DroneSystemAPI.APIClasses.Utils;
+using DroneSystemAPI.APIClasses;
 
 namespace UnitTests.API
 {
@@ -53,11 +54,12 @@ namespace UnitTests.API
             Sys.Terminate();
         }
 
+        /// <summary>
+        /// Crea un'API per connetterti ad una missione già esistente.
+        /// </summary>
         [Fact]
         public void ConnectToExistingMission()
-        {
-            // TODO: aggiusta!
-            
+        {         
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
             DroneSystemConfig config = new()
@@ -70,7 +72,7 @@ namespace UnitTests.API
             RegisterAPI register = new RegisterProvider(Sys).SpawnHere();
 
             // spawno una missione manualmente
-            _ = Sys.ActorOf(
+            var realRef = Sys.ActorOf(
                 DroneActor.Props(register.ActorRef, missionA)
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(
                         Address.Parse(Host.GetTestHost().GetSystemAddress(config.DroneSystemName))
@@ -84,7 +86,37 @@ namespace UnitTests.API
 
             IMissionAPI? a = spawner.TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
-            Assert.IsType<DroneStateDTO>(a!.GetCurrentStatus());
+            Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
+
+            Sys.Terminate();
+        }
+
+        /// <summary>
+        /// Spawna una missione in remoto (sempre nell'ambiente test, 
+        /// ma con la funzione apposita).
+        /// </summary>
+        [Fact]
+        public void SpawnMissionRemote()
+        {
+            var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
+
+            DroneSystemConfig config = new()
+            {
+                RegisterSystemName = "test",
+                DroneSystemName = "test"
+            };
+
+            // creo il registro
+            RegisterAPI register = new RegisterProvider(Sys).SpawnHere();
+
+            // uso il tool per spawnare in remoto una missione
+            // e ricavare un'istanza dell'API
+            MissionSpawner spawner = new(Sys,
+                register, SimpleMissionAPI.Factory(), config);
+           
+            IMissionAPI a = spawner.SpawnRemote(Host.GetTestHost(), missionA, "DroneA");
+            Assert.NotNull(a);
+            Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
 
             Sys.Terminate();
         }
