@@ -60,6 +60,7 @@ namespace Actors
                 state.LastNegotiationRound,
                 state.IsMissionAccomplished, 
                 state.Motivation,
+                state.Error, 
                 precStateVisitor.StateDTO!
                 );
         }

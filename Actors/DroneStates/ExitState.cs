@@ -14,14 +14,17 @@ namespace Actors.DroneStates
     {
         internal readonly DroneActorState PrecedentState;
         internal bool IsMissionAccomplished { get; }
+        internal bool Error { get;  }
         internal string Motivation { get; }
+
         
-        public ExitState(DroneActorState prececentState, bool isMissionFinished, string motivation)
+        public ExitState(DroneActorState prececentState, bool isMissionFinished, string motivation, bool error=false)
             : base(prececentState)
         {
             PrecedentState = prececentState;
             IsMissionAccomplished = isMissionFinished;
             Motivation = motivation;
+            Error = error;
         }
 
         internal override DroneActorState RunState()
@@ -40,10 +43,9 @@ namespace Actors.DroneStates
 
             // a seconda se ho terminato correttamente o no, mi invio 
             // una poison pill oppure 
-            if (IsMissionAccomplished)
+            if (!Error)
                 ActorRef.Tell(PoisonPill.Instance, ActorRefs.NoSender);
             else
-                // TODO: e come gestisco in questo caso l'invio dei DTO a eventuali observer?
                 ActorContext.Context.Stop(ActorRef);
 
 

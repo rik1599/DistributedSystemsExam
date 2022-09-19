@@ -73,8 +73,8 @@ namespace Actors.DroneStates
         internal static DroneActorState CreateFlyingState(DroneActorState precedentState)
             => new FlyingState(precedentState);
 
-        internal static DroneActorState CreateExitState(DroneActorState precedentState, bool isMissionAccomplished, string motivation) 
-            => new ExitState(precedentState, isMissionAccomplished, motivation);
+        internal static DroneActorState CreateExitState(DroneActorState precedentState, bool isMissionAccomplished, string motivation, bool error=false) 
+            => new ExitState(precedentState, isMissionAccomplished, motivation, error);
 
         #endregion
 
@@ -148,7 +148,7 @@ namespace Actors.DroneStates
         internal virtual DroneActorState OnReceive(InternalTimeoutEnded msg, IActorRef sender)
         {
 
-            return CreateExitState(this, false, $"ERRORE: timeout {msg.TimerKey} scaduto!").RunState();
+            return CreateExitState(this, false, $"ERRORE: timeout {msg.TimerKey} scaduto!", true).RunState();
         }
 
         #endregion

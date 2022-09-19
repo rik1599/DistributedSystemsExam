@@ -157,10 +157,13 @@ namespace Actors.DTO
 
         public string Motivation { get; }
 
+        public bool Error { get; }
+
         internal ExitStateDTO(DroneActorContext droneContext,
             int negotiationsCount,
             bool isMissionAccomplished, 
             string motivation, 
+            bool error, 
             DroneStateDTO precedentState)
             : base(droneContext,
                   new HashSet<WaitingMission>(), new HashSet<FlyingMission>(),
@@ -169,6 +172,7 @@ namespace Actors.DTO
             _isMissionAccomplished = isMissionAccomplished;
             PrecedentState = precedentState;
             Motivation = motivation;
+            Error = error;
         }
 
         public override bool IsMissionAccomplished() => _isMissionAccomplished;
