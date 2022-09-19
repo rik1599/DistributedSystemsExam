@@ -67,7 +67,7 @@ namespace UnitTests.API
             var register = new RepositoryProvider(Sys).SpawnHere();
 
             // spawno una missione manualmente
-            var actor = Sys.ActorOf(
+            _ = Sys.ActorOf(
                 DroneActor.Props(register.ActorRef, missionA)
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(
                         Address.Parse(Host.GetTestHost().GetSystemAddress(droneConfig.SystemName))
@@ -120,11 +120,8 @@ namespace UnitTests.API
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
+            var config = SystemConfigs.DroneConfig;
+            config.SystemName = "test";
 
             // creo il registro (e mi ci iscrivo)
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
