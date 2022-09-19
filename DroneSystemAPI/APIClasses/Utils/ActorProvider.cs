@@ -24,7 +24,7 @@ namespace DroneSystemAPI.APIClasses.Utils
         {
             try
             {
-                var address = systemAddress.ToString() + "/user/" + actorName;
+                var address = $"{systemAddress}/user/{actorName}";
                 return deployerSystem.ActorSelection(address).ResolveOne(_timeout).Result;
 
             } catch (ActorNotFoundException)

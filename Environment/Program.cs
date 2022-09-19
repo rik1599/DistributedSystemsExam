@@ -1,42 +1,43 @@
-﻿using Actors;
-using Actors.MissionPathPriority;
+﻿
+
 using Akka.Actor;
 using Akka.Configuration;
-using MathNet.Spatial.Euclidean;
 using DroneSystemAPI;
-
-var envSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
-akka {  
-    actor {
-        provider = remote
-    }
-    remote {
-        dot-netty.tcp {
-            port = 8080
-            hostname = 0.0.0.0
-            public-hostname = localhost
-        }
-    }
-}
-"));
-
-var repository = envSystem.ActorOf(DronesRepositoryActor.Props());
-
-var droneConfiguration = SystemConfigs.DroneConfig;
-List<ActorSystem> drones = new();
-for (int i = 0; i < 1; i++)
+using UI;
+using UI.InputCommands;
+using UI.TerminalCommands;
+/**
+* Modalità per il main:
+* 1) Solo Terminale
+* 2) Solo Actor System
+*  2a) Drone
+*  2b) Repository
+*/
+if (args.Length == 0)
 {
-    var droneSystem = ActorSystem.Create(droneConfiguration.SystemName, droneConfiguration.Config);
-    drones.Add(droneSystem);
-
-    var mission = new MissionPath(Point2D.Origin, new Point2D(10, 30), 10f);
-    droneSystem.ActorOf(DroneActor.Props(repository, mission));
-
-    Console.ReadKey();
+	new InputCommand().Execute();
 }
-
-foreach (var drone in drones)
+else if (args.Length >= 1)
 {
-    drone.Terminate();
+	ITerminalCommand command;
+	try
+	{
+		var allArgs = args.ToList();
+		if (args.Length == 1)
+			allArgs.Add(null);
+
+		command = (allArgs[0], allArgs[1]) switch
+		{
+			("-d", "-c") => new ConnectCommand(SystemConfigs.DroneConfig),
+			("-r", "-c") => new ConnectCommand(SystemConfigs.RepositoryConfig),
+			("-d", null) => new ActorSystemCommand(SystemConfigs.DroneConfig),
+			("-r", null) => new ActorSystemCommand(SystemConfigs.RepositoryConfig),
+			(_, _) => new InvalidArgsCommand()
+        };
+	}
+	catch (Exception)
+	{
+		command = new InvalidArgsCommand();
+	}
+	command.Execute();
 }
-envSystem.Terminate();

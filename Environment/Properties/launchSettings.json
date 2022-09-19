@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "UI drone": {
+      "commandName": "Project",
+      "commandLineArgs": "-d"
+    },
+    "UI repository": {
+      "commandName": "Project",
+      "commandLineArgs": "-r"
+    },
+    "UI input": {
+      "commandName": "Project"
+    }
+  }
+}
