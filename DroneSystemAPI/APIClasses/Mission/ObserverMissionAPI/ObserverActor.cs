@@ -1,6 +1,11 @@
 ﻿using Actors.Messages.StateChangeNotifier;
 using Actors.Utils;
 using Akka.Actor;
+using System.Diagnostics;
+
+using Actors.Messages.StateChangeNotifier;
+using Actors.Utils;
+using Akka.Actor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,14 +31,14 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
         /// <summary>
         /// Attore osservato
         /// </summary>
-        private readonly IActorRef _observed;
+        private readonly IActorRef _observedNodeRef;
 
         /// <summary>
         /// Coda di notifiche non ancora consegnate. Non appena arriva una richiesta
         /// questa coda viene svuotata (in ordine di ID del messaggio)
         /// </summary>
-        private IList<OrderedStateChangeNotification> _notDeliveredNotifications = 
-            new List<OrderedStateChangeNotification>();
+        private IList<OrderedStateNotification> _notDeliveredNotifications = 
+            new List<OrderedStateNotification>();
 
         /// <summary>
         /// (eventuale) mittente dell'ultima richiesta che non è stata ancora 
@@ -50,10 +55,10 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
 
         public ObserverActor(IActorRef observed)
         {
-            _observed = observed;
+            _observedNodeRef = observed;
             // _debugLog.ForcedDeactivate();
 
-            Receive<OrderedStateChangeNotification>(msg => OnReceive(msg));
+            Receive<OrderedStateNotification>(msg => OnReceive(msg));
             Receive<AskForNotifications>(msg => OnReceive(msg));
         }
 
@@ -61,7 +66,7 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
         /// Ricezione di una notifica
         /// </summary>
         /// <param name="msg"></param>
-        private void OnReceive(OrderedStateChangeNotification msg)
+        private void OnReceive(OrderedStateNotification msg)
         {
             _notDeliveredNotifications.Add(msg);
 
@@ -108,13 +113,13 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
             base.PreStart();
 
             // iscrizione all'observed
-            Task<SubscribeConfirm> t = _observed.Ask<SubscribeConfirm>(new SubscribeRequest(Self, true));
+            Task<SubscribeConfirm> t = _observedNodeRef.Ask<SubscribeConfirm>(new SubscribeRequest(Self, true));
             t.ContinueWith(t =>
             {
                 if (t.IsCompleted)
-                    _debugLog.Info($"Successfully subscribed to {_observed}");
+                    _debugLog.Info($"Successfully subscribed to {_observedNodeRef}");
                 else
-                    _debugLog.Error($"Error while subscribing to {_observed}");
+                    _debugLog.Error($"Error while subscribing to {_observedNodeRef}");
             });
         }
 
@@ -123,13 +128,13 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
             base.PostStop();
 
             // disiscrizione dall'observed
-            Task<UnsubscribeConfirm> t = _observed.Ask<UnsubscribeConfirm>(new UnsubscribeRequest(Self));
+            Task<UnsubscribeConfirm> t = _observedNodeRef.Ask<UnsubscribeConfirm>(new UnsubscribeRequest(Self));
             t.ContinueWith(t =>
             {
                 if (t.IsCompleted)
-                    _debugLog.Info($"Successfully un-subscribed from {_observed}");
+                    _debugLog.Info($"Successfully un-subscribed from {_observedNodeRef}");
                 else
-                    _debugLog.Error($"Error while un-subscribing from {_observed}");
+                    _debugLog.Error($"Error while un-subscribing from {_observedNodeRef}");
             });
         }
 

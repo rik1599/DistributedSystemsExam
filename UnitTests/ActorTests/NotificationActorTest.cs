@@ -30,19 +30,19 @@ namespace UnitTests.ActorTests
             var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA, TestActor), "droneProva");
 
             // ora mi aspetto di ricevere una sequenza di stati
-            var m0 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m0 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(0, m0.MessageNumber);
             Assert.IsType<InitStateDTO>(m0.NewState);
 
-            var m1 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m1 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(1, m1.MessageNumber);
             Assert.IsType<NegotiateStateDTO>(m1.NewState);
 
-            var m2 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m2 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(2, m2.MessageNumber);
             Assert.IsType<FlyingStateDTO>(m2.NewState);
 
-            var m3 = ExpectMsgFrom<OrderedStateChangeNotification>(subject, new TimeSpan(0,0,7));
+            var m3 = ExpectMsgFrom<OrderedStateNotification>(subject, new TimeSpan(0,0,7));
             Assert.Equal(3, m3.MessageNumber);
             Assert.IsType<ExitStateDTO>(m3.NewState);
 
@@ -72,19 +72,19 @@ namespace UnitTests.ActorTests
             ExpectMsgFrom<SubscribeConfirm>(subject);
 
             // ora mi aspetto di ricevere una sequenza di stati
-            var m0 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m0 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(0, m0.MessageNumber);
             Assert.IsType<InitStateDTO>(m0.NewState);
 
-            var m1 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m1 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(1, m1.MessageNumber);
             Assert.IsType<NegotiateStateDTO>(m1.NewState);
 
-            var m2 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m2 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(2, m2.MessageNumber);
             Assert.IsType<FlyingStateDTO>(m2.NewState);
 
-            var m3 = ExpectMsgFrom<OrderedStateChangeNotification>(subject, new TimeSpan(0, 0, 7));
+            var m3 = ExpectMsgFrom<OrderedStateNotification>(subject, new TimeSpan(0, 0, 7));
             Assert.Equal(3, m3.MessageNumber);
             Assert.IsType<ExitStateDTO>(m3.NewState);
 
@@ -108,15 +108,15 @@ namespace UnitTests.ActorTests
             var subject = Sys.ActorOf(DroneActor.Props(nodes, missionA, TestActor), "droneProva");
 
             // ora mi aspetto di ricevere una sequenza di stati
-            var m0 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m0 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(0, m0.MessageNumber);
             Assert.IsType<InitStateDTO>(m0.NewState);
 
-            var m1 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m1 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(1, m1.MessageNumber);
             Assert.IsType<NegotiateStateDTO>(m1.NewState);
 
-            var m2 = ExpectMsgFrom<OrderedStateChangeNotification>(subject);
+            var m2 = ExpectMsgFrom<OrderedStateNotification>(subject);
             Assert.Equal(2, m2.MessageNumber);
             Assert.IsType<FlyingStateDTO>(m2.NewState);
 

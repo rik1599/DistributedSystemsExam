@@ -16,9 +16,9 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
         /// <summary>
         /// Lista ordinata delle nuove notifiche
         /// </summary>
-        public IReadOnlyList<OrderedStateChangeNotification> NewNotifications;
+        public IReadOnlyList<OrderedStateNotification> NewNotifications;
 
-        public Notifications(IReadOnlyList<OrderedStateChangeNotification> newNotifications)
+        public Notifications(IReadOnlyList<OrderedStateNotification> newNotifications)
         {
             NewNotifications = newNotifications;
         }

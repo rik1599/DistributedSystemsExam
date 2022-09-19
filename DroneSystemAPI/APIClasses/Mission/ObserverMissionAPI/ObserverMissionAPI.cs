@@ -27,12 +27,12 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
         /// <summary>
         /// Attore che uso per ricevere notifiche
         /// </summary>
-        private readonly IActorRef _observerActor;
+        private readonly IActorRef _observerRef;
 
         internal ObserverMissionAPI(IMissionAPI baseAPI, IActorRef observerActor)
         {
             _baseAPI = baseAPI;
-            _observerActor = observerActor;
+            _observerRef = observerActor;
         }
 
         public Task Cancel()
@@ -55,11 +55,11 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
         /// degli eventi rilevanti per la missione (ad es., cambio di stato)
         /// </summary>
         /// <returns></returns>
-        public async Task<IReadOnlyList<DroneStateDTO>> AskForNotifications()
+        public async Task<IReadOnlyList<DroneStateDTO>> AskForUpdates()
         {
             try
             {
-                var t = await _observerActor
+                var t = await _observerRef
                     .Ask<Notifications>(new AskForNotifications());
 
                 return t.NewNotifications

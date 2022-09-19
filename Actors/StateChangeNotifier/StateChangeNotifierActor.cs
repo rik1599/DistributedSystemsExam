@@ -65,7 +65,7 @@ namespace Actors.StateChangeNotifier
         {
             if (Sender == _mainActor)
             {
-                var ordMsg = new OrderedStateChangeNotification(
+                var ordMsg = new OrderedStateNotification(
                         msg.NewState, _precStates.Count);
 
                 _precStates.Add(ordMsg);

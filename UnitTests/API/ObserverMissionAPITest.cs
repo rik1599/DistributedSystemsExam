@@ -54,7 +54,7 @@ namespace UnitTests.API
             IList<DroneStateDTO> notifications = new List<DroneStateDTO>();
             do
             {
-                var newNotifications = obsAPI.AskForNotifications().Result;
+                var newNotifications = obsAPI.AskForUpdates().Result;
 
                 foreach(var n in newNotifications)
                 {
@@ -108,7 +108,7 @@ namespace UnitTests.API
             IList<DroneStateDTO> notifications = new List<DroneStateDTO>();
             do
             {
-                var newNotifications = obsAPI.AskForNotifications().Result;
+                var newNotifications = obsAPI.AskForUpdates().Result;
 
                 foreach (var n in newNotifications)
                 {

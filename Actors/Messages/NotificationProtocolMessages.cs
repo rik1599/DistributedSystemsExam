@@ -34,11 +34,11 @@ namespace Actors.Messages.StateChangeNotifier
     /// <summary>
     /// Versione ordinata del messaggio di notifica del cambio stato
     /// </summary>
-    public class OrderedStateChangeNotification : StateChangeNotification
+    public class OrderedStateNotification : StateChangeNotification
     {
         public int MessageNumber { get; }
 
-        public OrderedStateChangeNotification(DroneStateDTO newState, int msgNumber) : base(newState)
+        public OrderedStateNotification(DroneStateDTO newState, int msgNumber) : base(newState)
         {
             MessageNumber = msgNumber;
         }
