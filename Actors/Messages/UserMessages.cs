@@ -31,8 +31,14 @@ namespace Actors.Messages.User
     /// Messaggio per indicare al drone 
     /// di annullare la missione.
     /// </summary>
-    public class CancelMissionMessage
+    public class CancelMissionRequest
     {
        
     }
+
+    public class CancelMissionResponse
+    {
+
+    }
+
 }

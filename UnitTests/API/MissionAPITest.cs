@@ -8,6 +8,8 @@ using DroneSystemAPI.APIClasses.Register;
 using DroneSystemAPI.APIClasses.Mission;
 using DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI;
 using DroneSystemAPI.APIClasses;
+using Actors.Messages.Register;
+using Actors.Messages.External;
 
 namespace UnitTests.API
 {
@@ -116,6 +118,50 @@ namespace UnitTests.API
             IMissionAPI a = spawner.SpawnRemote(Host.GetTestHost(), missionA, "DroneA");
             Assert.NotNull(a);
             Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
+
+            Sys.Terminate();
+        }
+
+        /// <summary>
+        /// Spawno una missione, la faccio volare e la annullo.
+        /// </summary>
+        [Fact]
+        public void CancelMission()
+        {
+            var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
+            var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
+
+            DroneSystemConfig config = new()
+            {
+                RegisterSystemName = "test",
+                DroneSystemName = "test"
+            };
+
+            // creo il registro (e mi ci iscrivo)
+            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
+            register.ActorRef.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register.ActorRef);
+
+            // creo il tool per lo spawn di missioni
+            MissionSpawner spawner = new(Sys,
+                register, SimpleMissionAPI.Factory(), config);
+
+            // spawno una missione
+            IMissionAPI a = spawner.SpawnHere(missionA, "DroneA");
+
+            // mi aspetto la connessione e la negoziazione
+            ExpectMsgFrom<ConnectRequest>(a.GetDroneRef());
+            a.GetDroneRef().Tell(new ConnectResponse(missionB));
+            ExpectMsgFrom<MetricMessage>(a.GetDroneRef());
+            a.GetDroneRef().Tell(new MetricMessage(Priority.NullPriority, 1));
+
+            // mentre vola, cancello la missione
+            // (mi aspetto una sua uscita)
+            ExpectMsgFrom<FlyingResponse>(a.GetDroneRef());
+            a.Cancel().Wait();
+            ExpectMsgFrom<ExitMessage>(a.GetDroneRef());
+
+            ExpectNoMsg(new TimeSpan(0, 0, 7));
 
             Sys.Terminate();
         }

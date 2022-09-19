@@ -40,7 +40,7 @@ namespace DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI
 
         public Task Cancel()
         {
-            throw new NotImplementedException();
+            return _nodeRef.Ask<CancelMissionResponse>(new CancelMissionRequest());
         }
 
         public static IMissionAPIFactory Factory() => new SimpleMissionAPIFactory();

@@ -83,15 +83,18 @@ namespace Actors
             {
                 StateDTOBuilderVisitor visitor = new StateDTOBuilderVisitor();
                 _droneState!.PerformVisit(visitor);
+
                 Sender.Tell(new GetStatusResponse(visitor.StateDTO!));
             });
 
-            Receive<CancelMissionMessage>(msg =>
+            Receive<CancelMissionRequest>(msg =>
             {
                 _droneState = DroneActorState.CreateExitState(
                     _droneState!, false,
                     "Mission cancelled", 
                     false).RunState();
+
+                Sender.Tell(new CancelMissionResponse());
             });
         }
 
