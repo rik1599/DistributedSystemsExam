@@ -6,9 +6,9 @@ using MathNet.Spatial.Euclidean;
 using Actors.DTO;
 using DroneSystemAPI.APIClasses.Register;
 using DroneSystemAPI.APIClasses.Mission;
-using DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
+using DroneSystemAPI;
 
 namespace UnitTests.API
 {
@@ -21,7 +21,6 @@ namespace UnitTests.API
     {
 
         #region verifica observer
-
         /// <summary>
         /// Avvio di una missione (in locale) e monitoraggio 
         /// dei vari passaggi con un observer API
@@ -31,11 +30,7 @@ namespace UnitTests.API
         {
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
+            var config = SystemConfigs.DroneConfig;
 
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
@@ -62,7 +57,7 @@ namespace UnitTests.API
                 }
 
             } // while (notifications.Last() is ExitStateDTO);
-            while (notifications.Count() < 4);
+            while (notifications.Count < 4);
 
             // mi assicuro di aver ricevuto le notifiche
             // che mi aspettavo (nell'ordine giusto)
@@ -73,7 +68,6 @@ namespace UnitTests.API
 
             Sys.Terminate();
         }
-
 
         /// <summary>
         /// Crea un'API per connetterti ad una missione già esistente.
@@ -84,11 +78,8 @@ namespace UnitTests.API
         {         
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
+            var config = SystemConfigs.DroneConfig;
+            config.SystemName = "test";
 
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
@@ -98,7 +89,7 @@ namespace UnitTests.API
                 register, ObserverMissionAPI.Factory(Sys), config);
 
             // spawno una missione
-            IMissionAPI a = spawner.SpawnHere(missionA, "DroneA");
+            _ = spawner.SpawnHere(missionA, "DroneA");
 
             // creo una seconda API per l'osservazione
             ObserverMissionAPI? obsAPI = (ObserverMissionAPI?) spawner
@@ -108,7 +99,7 @@ namespace UnitTests.API
             IList<DroneStateDTO> notifications = new List<DroneStateDTO>();
             do
             {
-                var newNotifications = obsAPI.AskForUpdates().Result;
+                var newNotifications = obsAPI!.AskForUpdates().Result;
 
                 foreach (var n in newNotifications)
                 {
@@ -116,7 +107,7 @@ namespace UnitTests.API
                 }
 
             } // while (notifications.Last() is ExitStateDTO);
-            while (notifications.Count() < 4);
+            while (notifications.Count < 4);
 
             // mi assicuro di aver ricevuto le notifiche
             // che mi aspettavo (nell'ordine giusto)
@@ -127,11 +118,9 @@ namespace UnitTests.API
 
             Sys.Terminate();
         }
-
         #endregion
 
         #region test retrocompatibilità 
-
         /// <summary>
         /// Semplice tentativo di avvio di una missione 
         /// (e richiesta stato) tramite le API
@@ -142,11 +131,7 @@ namespace UnitTests.API
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
+            var config = SystemConfigs.DroneConfig;
 
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
@@ -174,20 +159,17 @@ namespace UnitTests.API
         {
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
+            var config = SystemConfigs.DroneConfig;
+            config.SystemName = "test";
 
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
 
             // spawno una missione manualmente
-            var realRef = Sys.ActorOf(
+            _ = Sys.ActorOf(
                 DroneActor.Props(register.ActorRef, missionA)
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.DroneSystemName))
+                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.SystemName))
                         ))),
                 "DroneA");
 
@@ -212,11 +194,7 @@ namespace UnitTests.API
         {
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
+            var config = SystemConfigs.DroneConfig;
 
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
@@ -232,8 +210,6 @@ namespace UnitTests.API
 
             Sys.Terminate();
         }
-
-
         #endregion
     }
 }

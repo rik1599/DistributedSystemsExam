@@ -3,6 +3,7 @@ using Actors.MissionPathPriority;
 using Akka.Actor;
 using Akka.Configuration;
 using MathNet.Spatial.Euclidean;
+using DroneSystemAPI;
 
 var envSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
 akka {  
@@ -21,11 +22,11 @@ akka {
 
 var repository = envSystem.ActorOf(DronesRepositoryActor.Props());
 
-var droneConfiguration = new DroneSystemConfig();
+var droneConfiguration = SystemConfigs.DroneConfig;
 List<ActorSystem> drones = new();
 for (int i = 0; i < 1; i++)
 {
-    var droneSystem = ActorSystem.Create(droneConfiguration.DroneSystemName, droneConfiguration.DroneConfig);
+    var droneSystem = ActorSystem.Create(droneConfiguration.SystemName, droneConfiguration.Config);
     drones.Add(droneSystem);
 
     var mission = new MissionPath(Point2D.Origin, new Point2D(10, 30), 10f);

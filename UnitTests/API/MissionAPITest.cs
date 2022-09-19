@@ -8,6 +8,7 @@ using DroneSystemAPI.APIClasses.Register;
 using DroneSystemAPI.APIClasses.Mission;
 using DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI;
 using DroneSystemAPI.APIClasses;
+using DroneSystemAPI;
 
 namespace UnitTests.API
 {
@@ -29,17 +30,13 @@ namespace UnitTests.API
             var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
             var missionB = new MissionPath(new Point2D(25, 0), new Point2D(0, 25), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
-
+            var config = SystemConfigs.DroneConfig;
+            
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
+            var register = new RepositoryProvider(Sys).SpawnHere();
 
             // creo il tool per lo spawn di missioni
-            MissionSpawner spawner = new (Sys, 
+            var spawner = new MissionSpawner(Sys, 
                 register, SimpleMissionAPI.Factory(), config);
 
             // spawno due missioni 
@@ -61,27 +58,23 @@ namespace UnitTests.API
         {         
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
+            var droneConfig = SystemConfigs.DroneConfig;
+            droneConfig.SystemName = "test";
 
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
+            var register = new RepositoryProvider(Sys).SpawnHere();
 
             // spawno una missione manualmente
-            var realRef = Sys.ActorOf(
+            var actor = Sys.ActorOf(
                 DroneActor.Props(register.ActorRef, missionA)
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.DroneSystemName))
+                        Address.Parse(Host.GetTestHost().GetSystemAddress(droneConfig.SystemName))
                         ))),
                 "DroneA");
 
-
             // uso il tool per ricavare un'istanza dell'API e le richiedo lo stato
-            MissionSpawner spawner = new (Sys,
-                register, SimpleMissionAPI.Factory(), config);
+            var spawner = new MissionSpawner(Sys,
+                register, SimpleMissionAPI.Factory(), droneConfig);
 
             IMissionAPI? a = spawner.TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
@@ -99,11 +92,7 @@ namespace UnitTests.API
         {
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
-            DroneSystemConfig config = new()
-            {
-                RegisterSystemName = "test",
-                DroneSystemName = "test"
-            };
+            var config = SystemConfigs.DroneConfig;
 
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();

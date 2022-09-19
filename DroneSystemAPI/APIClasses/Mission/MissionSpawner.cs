@@ -9,7 +9,7 @@ namespace DroneSystemAPI.APIClasses.Mission
     public class MissionSpawner
     {
         private readonly ActorSystem _localSystem;
-        private readonly DroneSystemConfig _config = new();
+        private readonly SystemConfigs _config = SystemConfigs.DroneConfig;
 
         /// <summary>
         /// Il registro indicato alle misioni generate
@@ -28,7 +28,7 @@ namespace DroneSystemAPI.APIClasses.Mission
             _missionAPIFactory = missionAPIFactory;
         }
 
-        public MissionSpawner(ActorSystem localSystem, RepositoryAPI register, IMissionAPIFactory missionAPIFactory, DroneSystemConfig config) 
+        public MissionSpawner(ActorSystem localSystem, RepositoryAPI register, IMissionAPIFactory missionAPIFactory, SystemConfigs config) 
             : this(localSystem, register, missionAPIFactory)
         {
             _config = config;
@@ -43,7 +43,7 @@ namespace DroneSystemAPI.APIClasses.Mission
         {
             var actorRef = new ActorProvider().TryGetExistentActor(
                 _localSystem,
-                Address.Parse(host.GetSystemAddress(_config.DroneSystemName)),
+                Address.Parse(host.GetSystemAddress(_config.SystemName)),
                 missionName);
 
             return (actorRef is null) ? null : _missionAPIFactory.GetMissionAPI(actorRef);
@@ -65,7 +65,7 @@ namespace DroneSystemAPI.APIClasses.Mission
         {
             var actorRef = ActorProvider.SpawnRemote(
                 _localSystem,
-                Address.Parse(host.GetSystemAddress(_config.DroneSystemName)),
+                Address.Parse(host.GetSystemAddress(_config.SystemName)),
                 DroneActor.Props(_register.ActorRef, missionPath),
                 missionName);
 

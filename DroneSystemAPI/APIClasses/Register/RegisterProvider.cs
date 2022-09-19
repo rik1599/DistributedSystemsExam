@@ -11,14 +11,14 @@ namespace DroneSystemAPI.APIClasses.Register
     {
         private readonly ActorSystem _localSystem;
 
-        private readonly DroneSystemConfig _config = new();
+        private readonly SystemConfigs _config = SystemConfigs.RepositoryConfig;
        
         public RepositoryProvider(ActorSystem localSystem)
         {
             _localSystem = localSystem; 
         }
 
-        public RepositoryProvider(ActorSystem localSystem, DroneSystemConfig config) : this(localSystem)
+        public RepositoryProvider(ActorSystem localSystem, SystemConfigs config) : this(localSystem)
         {
             _config = config;
         }
@@ -33,8 +33,8 @@ namespace DroneSystemAPI.APIClasses.Register
             ActorProvider actorProvider = new ();
             var actorRef = actorProvider.TryGetExistentActor(
                 _localSystem, 
-                Address.Parse(host.GetSystemAddress(_config.RegisterSystemName)),
-                _config.RegisterActorName);
+                Address.Parse(host.GetSystemAddress(_config.SystemName)),
+                _config.ActorName);
 
             return (actorRef is null) ? null : new RepositoryAPI(actorRef);
         }
@@ -48,7 +48,7 @@ namespace DroneSystemAPI.APIClasses.Register
             var actorRef = ActorProvider.SpawnLocally(
                 _localSystem, 
                 DronesRepositoryActor.Props(), 
-                _config.RegisterActorName);
+                _config.ActorName);
 
             return new RepositoryAPI(actorRef);
         }
@@ -62,9 +62,9 @@ namespace DroneSystemAPI.APIClasses.Register
         {
             var actorRef = ActorProvider.SpawnRemote(
                 _localSystem, 
-                Address.Parse(host.GetSystemAddress(_config.RegisterSystemName)), 
+                Address.Parse(host.GetSystemAddress(_config.SystemName)), 
                 DronesRepositoryActor.Props(), 
-                _config.RegisterActorName);
+                _config.ActorName);
 
             return new RepositoryAPI(actorRef);
         }

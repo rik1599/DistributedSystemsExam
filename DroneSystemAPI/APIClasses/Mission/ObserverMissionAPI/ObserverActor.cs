@@ -3,16 +3,6 @@ using Actors.Utils;
 using Akka.Actor;
 using System.Diagnostics;
 
-using Actors.Messages.StateChangeNotifier;
-using Actors.Utils;
-using Akka.Actor;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
 {
     /// <summary>

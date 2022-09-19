@@ -2,6 +2,7 @@
 using Actors.Messages.Register;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
+using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Register;
 
@@ -15,10 +16,8 @@ namespace UnitTests.API
         [Fact]
         public void SpawnRegisterLocally()
         {
-            var config = new DroneSystemConfig
-            {
-                RegisterSystemName = Sys.Name
-            };
+            var config = SystemConfigs.RepositoryConfig;
+            config.SystemName = Sys.Name;
 
             // spawn del registro usando il provider
             var registerProvider = new RepositoryProvider(Sys, config);
@@ -33,10 +32,8 @@ namespace UnitTests.API
         [Fact]
         public void SpawnRegisterRemote()
         {
-            var config = new DroneSystemConfig
-            {
-                RegisterSystemName = Sys.Name
-            };
+            var config = SystemConfigs.RepositoryConfig;
+            config.SystemName = Sys.Name;
 
             // spawn del registro (in remoto) usando il provider
             var registerProvider = new RepositoryProvider(Sys, config);
@@ -51,18 +48,16 @@ namespace UnitTests.API
         [Fact]
         public void ConnectToExistentRegister()
         {
-            var config = new DroneSystemConfig
-            {
-                RegisterSystemName = Sys.Name
-            };
+            var config = SystemConfigs.RepositoryConfig;
+            config.SystemName = Sys.Name;
 
             // spawn del registro (in remoto)
             _ = Sys.ActorOf(
                 DronesRepositoryActor.Props()
                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.RegisterSystemName))
+                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.SystemName))
                         ))),
-                config.RegisterActorName);
+                config.ActorName);
 
             // connessione (usando il provider)
             var registerProvider = new RepositoryProvider(Sys, config);
