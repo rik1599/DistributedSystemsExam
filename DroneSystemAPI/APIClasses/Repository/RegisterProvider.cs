@@ -2,7 +2,7 @@
 using Akka.Actor;
 using DroneSystemAPI.APIClasses.Utils;
 
-namespace DroneSystemAPI.APIClasses.Register
+namespace DroneSystemAPI.APIClasses.Repository
 {
     /// <summary>
     /// Strumento per il reperimento o per lo spawn di un registro dei nodi.

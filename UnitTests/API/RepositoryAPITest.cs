@@ -4,7 +4,7 @@ using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
-using DroneSystemAPI.APIClasses.Register;
+using DroneSystemAPI.APIClasses.Repository;
 
 namespace UnitTests.API
 {

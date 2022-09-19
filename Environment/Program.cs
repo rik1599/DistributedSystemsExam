@@ -28,8 +28,8 @@ else if (args.Length >= 1)
 
 		command = (allArgs[0], allArgs[1]) switch
 		{
-			("-d", "-c") => new ConnectCommand(SystemConfigs.DroneConfig),
-			("-r", "-c") => new ConnectCommand(SystemConfigs.RepositoryConfig),
+			//("-d", "-c") => new ConnectDroneCommand(SystemConfigs.DroneConfig),
+			//("-r", "-c") => new ConnectRepositoryCommand(SystemConfigs.RepositoryConfig),
 			("-d", null) => new ActorSystemCommand(SystemConfigs.DroneConfig),
 			("-r", null) => new ActorSystemCommand(SystemConfigs.RepositoryConfig),
 			(_, _) => new InvalidArgsCommand()
