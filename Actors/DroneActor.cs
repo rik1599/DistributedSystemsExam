@@ -6,7 +6,6 @@ using Actors.Messages.Internal;
 using Actors.DroneStates;
 using Actors.Messages.Register;
 using Actors.Messages.User;
-using Actors.DTO;
 using Actors.Messages.StateChangeNotifier;
 using Actors.StateChangeNotifier;
 
@@ -23,7 +22,7 @@ namespace Actors
         /// <summary>
         /// Eventuale riferimento a chi mi ha spawnato
         /// </summary>
-        private IActorRef? _spawner;
+        private readonly IActorRef? _spawner;
 
         public DroneActor(IActorRef? spawner = null)
         {

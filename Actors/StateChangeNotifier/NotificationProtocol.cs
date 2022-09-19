@@ -19,7 +19,7 @@ namespace Actors.StateChangeNotifier
     /// </summary>
     internal class NotificationProtocol
     {
-        private IActorRef _notificationServiceActor;
+        private readonly IActorRef _notificationServiceActor;
 
         public NotificationProtocol(DroneActorContext context, IReadOnlySet<IActorRef>? initialSubscribed = null)
         {

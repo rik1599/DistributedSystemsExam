@@ -21,19 +21,19 @@ namespace Actors.StateChangeNotifier
         /// Mi aspetto anche mi vengano inotrati da lui i messaggi (tramite
         /// <code>Forward(msg))</code>
         /// </summary>
-        private IActorRef _mainActor;
+        private readonly IActorRef _mainActor;
 
         /// <summary>
         /// Attori iscritti al servizio di notifica
         /// </summary>
-        private ISet<IActorRef> _subscribed;
+        private readonly ISet<IActorRef> _subscribed;
 
         /// <summary>
         /// Lista di tutti gli stati precedenti 
         /// (si tiene in modo che possa essere comunicata
         /// ai nuovi iscritti che lo richiedono)
         /// </summary>
-        private IList<StateChangeNotification> _precStates = 
+        private readonly IList<StateChangeNotification> _precStates = 
             new List<StateChangeNotification>();
 
         /// <summary>
