@@ -47,7 +47,7 @@ namespace Actors
 
             ReceiveExternalMessages();
             ReceiveInternalMessage();
-            HandleStatusRequests();
+            HandleUserRequests();
             HandleNotificationProtocol();
         }
 
@@ -77,13 +77,21 @@ namespace Actors
             Receive<InternalTimeoutEnded>    (msg => _droneState = _droneState!.OnReceive(msg, Sender));
         }
 
-        private void HandleStatusRequests()
+        private void HandleUserRequests()
         {
             Receive<GetStatusRequest>(msg =>
             {
                 StateDTOBuilderVisitor visitor = new StateDTOBuilderVisitor();
                 _droneState!.PerformVisit(visitor);
                 Sender.Tell(new GetStatusResponse(visitor.StateDTO!));
+            });
+
+            Receive<CancelMissionMessage>(msg =>
+            {
+                _droneState = DroneActorState.CreateExitState(
+                    _droneState!, false,
+                    "Mission cancelled", 
+                    false).RunState();
             });
         }
 

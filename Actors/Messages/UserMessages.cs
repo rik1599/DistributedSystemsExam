@@ -26,4 +26,13 @@ namespace Actors.Messages.User
             StateDTO = stateDTO;
         }
     }
+
+    /// <summary>
+    /// Messaggio per indicare al drone 
+    /// di annullare la missione.
+    /// </summary>
+    public class CancelMissionMessage
+    {
+       
+    }
 }
