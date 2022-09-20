@@ -72,13 +72,17 @@ namespace UI.Verbs
             }
 
             var obsAPI = (ObserverMissionAPI)missionAPI;
-            DroneStateDTO droneState;
-            while(true)
+            IList<DroneStateDTO> notifications = new List<DroneStateDTO>();
+            do
             {
-                Console.WriteLine(droneState = obsAPI.GetCurrentStatus().Result);
-                Thread.Sleep(1000);
-            }
+                var newNotifications = obsAPI.AskForUpdates().Result;
+                foreach (var n in newNotifications)
+                {
+                    notifications.Add(n);
+                }
+            } while ((notifications.Last() as ExitStateDTO) == null);
 
+            system.WhenTerminated.RunSynchronously();
             return 0;
         }
     }

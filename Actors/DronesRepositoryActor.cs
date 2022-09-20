@@ -29,13 +29,15 @@ namespace Actors
 
         private void OnReceive(Terminated msg)
         {
-            _logger.Info($"Missione del drone {Sender} terminata. ExistenceConfirmed= {msg.ExistenceConfirmed}");
-            _nodes.Remove(Sender);
+            if(_nodes.Remove(Sender))
+            {
+                _logger.Warning($"Missione del drone {Sender} terminata. Rimuovo dal registro");
+            }
         }
 
         private void OnReceive(RegisterRequest msg)
         {
-            _logger.Info($"Registrazione del nodo {msg.Actor} nel registro");
+            _logger.Warning($"Registrazione del nodo {msg.Actor} nel registro");
             Sender.Tell(new RegisterResponse(_nodes.ToHashSet()), Self);
 
             Context.Watch(msg.Actor);

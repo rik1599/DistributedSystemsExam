@@ -39,7 +39,7 @@ namespace Actors.DroneStates
 
         internal override DroneActorState RunState()
         {
-            ActorContext.Log.Info("Sto partendo");
+            ActorContext.Log.Warning("Sto partendo");
             foreach (var node in ConflictSet.GetNodes())
             {
                 node.Tell(new FlyingResponse(MissionPath));

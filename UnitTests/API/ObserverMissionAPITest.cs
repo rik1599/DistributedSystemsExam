@@ -92,7 +92,7 @@ namespace UnitTests.API
             _ = spawner.SpawnHere(missionA, "DroneA");
 
             // creo una seconda API per l'osservazione
-            ObserverMissionAPI? obsAPI = (ObserverMissionAPI?) spawner
+            ObserverMissionAPI? obsAPI = (ObserverMissionAPI?) new MissionProvider(Sys, config)
                 .TryConnectToExistent(Host.GetTestHost(), "DroneA");
 
             // ricevo tutte le notifiche
@@ -178,7 +178,7 @@ namespace UnitTests.API
             MissionSpawner spawner = new(Sys,
                 register, ObserverMissionAPI.Factory(Sys), config);
 
-            IMissionAPI? a = spawner.TryConnectToExistent(Host.GetTestHost(), "DroneA");
+            IMissionAPI? a = new MissionProvider(Sys, config).TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
             Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
 

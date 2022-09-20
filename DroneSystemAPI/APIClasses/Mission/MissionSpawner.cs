@@ -6,6 +6,38 @@ using DroneSystemAPI.APIClasses.Utils;
 
 namespace DroneSystemAPI.APIClasses.Mission
 {
+    public class MissionProvider
+    {
+        private readonly ActorSystem _localSystem;
+        private readonly SystemConfigs _config = SystemConfigs.DroneConfig;
+
+        public MissionProvider(ActorSystem localSystem)
+        {
+            _localSystem = localSystem;
+        }
+
+        public MissionProvider(ActorSystem localSystem, SystemConfigs config) : this(localSystem)
+        {
+            _config = config;
+        }
+
+        /// <summary>
+        /// Prova a collegarti ad una missione esistente .
+        /// </summary>
+        /// <param name="host">host dove cercare il drone</param>
+        /// <returns></returns>
+        public IMissionAPI? TryConnectToExistent(Host host, string missionName)
+        {
+            var actorRef = new ActorProvider().TryGetExistentActor(
+                _localSystem,
+                Address.Parse(host.GetSystemAddress(_config.SystemName)),
+                missionName);
+
+            var missionAPI = ObserverMissionAPI.ObserverMissionAPI.Factory(_localSystem);
+            return (actorRef is null) ? null : missionAPI.GetMissionAPI(actorRef);
+        }
+    }
+
     public class MissionSpawner
     {
         private readonly ActorSystem _localSystem;
@@ -33,22 +65,6 @@ namespace DroneSystemAPI.APIClasses.Mission
         {
             _config = config;
         }
-
-        /// <summary>
-        /// Prova a collegarti ad una missione esistente .
-        /// </summary>
-        /// <param name="host">host dove cercare il drone</param>
-        /// <returns></returns>
-        public IMissionAPI? TryConnectToExistent(Host host, string missionName)
-        {
-            var actorRef = new ActorProvider().TryGetExistentActor(
-                _localSystem,
-                Address.Parse(host.GetSystemAddress(_config.SystemName)),
-                missionName);
-
-            return (actorRef is null) ? null : _missionAPIFactory.GetMissionAPI(actorRef);
-        }
-
 
         public IMissionAPI SpawnHere(MissionPath missionPath, string missionName)
         {

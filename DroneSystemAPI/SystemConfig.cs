@@ -39,7 +39,8 @@ namespace DroneSystemAPI
         public override string ActorName { get; set; } = "Drone";
 
         public override string HoconConfig { get; set; } = @"
-akka {  
+akka {
+    loglevel = WARNING
     actor {
         provider = remote
     }
@@ -57,7 +58,8 @@ akka {
         public override string SystemName { get; set; } = "RepositoryActorSystem";
         public override string ActorName { get; set; } = "Repository";
         public override string HoconConfig { get; set; } = @"
-akka {  
+akka {
+    loglevel = WARNING
     actor {
         provider = remote
     }

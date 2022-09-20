@@ -78,7 +78,7 @@ namespace UnitTests.API
             var spawner = new MissionSpawner(Sys,
                 register, SimpleMissionAPI.Factory(), droneConfig);
 
-            IMissionAPI? a = spawner.TryConnectToExistent(Host.GetTestHost(), "DroneA");
+            IMissionAPI? a = new MissionProvider(Sys, droneConfig).TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
             Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
 

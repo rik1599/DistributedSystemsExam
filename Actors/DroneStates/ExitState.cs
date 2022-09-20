@@ -1,12 +1,6 @@
 ﻿using Actors.Messages.External;
 using Actors.Messages.Internal;
-using Actors.MissionSets;
 using Akka.Actor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Actors.DroneStates
 {
@@ -29,7 +23,6 @@ namespace Actors.DroneStates
 
         internal override DroneActorState RunState()
         {
-
             ActorContext.Log.Error(Motivation);
 
             // comunico la mia uscita a tutti i nodi noti 
@@ -47,7 +40,6 @@ namespace Actors.DroneStates
                 ActorRef.Tell(PoisonPill.Instance, ActorRefs.NoSender);
             else
                 ActorContext.Context.Stop(ActorRef);
-
 
             return this;
         }
