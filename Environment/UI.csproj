@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Akka" Version="1.4.41" />
     <PackageReference Include="Akka.Remote" Version="1.4.41" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
   </ItemGroup>
 
   <ItemGroup>
