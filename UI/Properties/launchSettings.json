@@ -2,14 +2,11 @@
   "profiles": {
     "UI drone": {
       "commandName": "Project",
-      "commandLineArgs": "-sdrone"
+      "commandLineArgs": "drone --xstart 0 --ystart 0 --xend 30 --yend 30"
     },
     "UI repository": {
       "commandName": "Project",
-      "commandLineArgs": "-srepository"
-    },
-    "UI input": {
-      "commandName": "Project"
+      "commandLineArgs": "repository"
     }
   }
 }
