@@ -49,7 +49,7 @@ namespace DroneSystemAPI.APIClasses.Repository
                 _localSystem, 
                 DronesRepositoryActor.Props(), 
                 _config.ActorName);
-
+            Console.WriteLine(actorRef);
             return new RepositoryAPI(actorRef);
         }
 

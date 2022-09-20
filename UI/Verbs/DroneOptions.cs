@@ -1,9 +1,11 @@
-﻿using Actors.MissionPathPriority;
+﻿using Actors.DTO;
+using Actors.MissionPathPriority;
 using Akka.Actor;
 using CommandLine;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Mission;
+using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 using DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI;
 using DroneSystemAPI.APIClasses.Repository;
 using MathNet.Spatial.Euclidean;
@@ -55,23 +57,27 @@ namespace UI.Verbs
                 );
             
             using var system = ActorSystem.Create(config.SystemName, config.Config);
-            var repository = new RepositoryProvider(system, config).TryConnectToExistent(host);
+            var repository = new RepositoryProvider(system).TryConnectToExistent(host);
             if (repository is null)
             {
                 Console.Error.WriteLine($"ERRORE! Impossibile collegarsi al repository {host}");
                 return 1;
             }
 
-            var missionAPI = new MissionSpawner(system, repository, SimpleMissionAPI.Factory()).SpawnHere(mission, "DroneA");
+            var missionAPI = new MissionSpawner(system, repository, ObserverMissionAPI.Factory(system)).SpawnHere(mission, "DroneA");
             if (missionAPI is null)
             {
                 Console.Error.WriteLine($"ERRORE! Impossibile spawnare la missione!");
                 return 1;
             }
 
-            string? line;
-            while ((line = Console.ReadLine()) != "cancel") {}
-            missionAPI.Cancel();
+            var obsAPI = (ObserverMissionAPI)missionAPI;
+            DroneStateDTO droneState;
+            while(true)
+            {
+                Console.WriteLine(droneState = obsAPI.GetCurrentStatus().Result);
+                Thread.Sleep(1000);
+            }
 
             return 0;
         }

@@ -6,7 +6,7 @@ using DroneSystemAPI.APIClasses.Repository;
 namespace UI.Verbs
 {
     [Verb("repository", HelpText = "start terminal as a repository")]
-    internal class RepositoryOptions
+    public class RepositoryOptions
     {
         public static int Run(RepositoryOptions options)
         {
