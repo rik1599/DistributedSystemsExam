@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "UI": {
-      "commandName": "Project",
-      "commandLineArgs": "connect -p 8090"
-    }
-  }
-}

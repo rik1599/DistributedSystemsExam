@@ -25,7 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Actors\Actors.csproj" />
     <ProjectReference Include="..\DroneSystemAPI\DroneSystemAPI.csproj" />
-    <ProjectReference Include="..\UI\UI.csproj" />
   </ItemGroup>
 
 </Project>
