@@ -107,7 +107,7 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
             t.ContinueWith(t =>
             {
                 if (t.IsCompleted)
-                    _debugLog.Info($"Successfully subscribed to {_observedNodeRef}");
+                    _debugLog.Warning($"Successfully subscribed to {_observedNodeRef}");
                 else
                     _debugLog.Error($"Error while subscribing to {_observedNodeRef}");
             });
@@ -122,7 +122,7 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
             t.ContinueWith(t =>
             {
                 if (t.IsCompleted)
-                    _debugLog.Info($"Successfully un-subscribed from {_observedNodeRef}");
+                    _debugLog.Warning($"Successfully un-subscribed from {_observedNodeRef}");
                 else
                     _debugLog.Error($"Error while un-subscribing from {_observedNodeRef}");
             });
