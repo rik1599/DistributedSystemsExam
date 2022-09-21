@@ -8,29 +8,29 @@ namespace DroneSystemAPI
         public abstract string ActorName { get; set; }
         public virtual string HostName { get; set; } = "localhost";
         public abstract int Port { get; set; }
-        protected virtual string HoconConfig { get; set; } = @"
-akka {
-    loglevel = WARNING
-    actor {
-        provider = remote
-    }
-    remote {
-        dot-netty.tcp {
-            port = {0}
-            hostname = {1}
-        }
-    }
-}";
 
         public Config Config
         {
             get
             {
-                return ConfigurationFactory.ParseString(HoconConfig);
+                var hocon = @$"
+akka {{
+    loglevel = WARNING
+    actor {{
+        provider = remote
+    }}
+    remote {{
+        dot-netty.tcp {{
+            port = {Port}
+            hostname = {HostName}
+        }}
+    }}
+}}";
+                return ConfigurationFactory.ParseString(hocon);
             }
         }
 
-        public static SystemConfigs RepositoryConfig 
+        public static SystemConfigs RepositoryConfig
         {
             get
             {
@@ -45,6 +45,9 @@ akka {
                 return new DroneSystemConfig();
             }
         }
+
+        public static SystemConfigs SimpleConfig(string systemName, string actorName, int port)
+            => new SimpleConfig(systemName, actorName, port);
     }
 
     internal class DroneSystemConfig : SystemConfigs
@@ -59,6 +62,20 @@ akka {
         public override string SystemName { get; set; } = "RepositoryActorSystem";
         public override string ActorName { get; set; } = "Repository";
         public override int Port { get; set; } = 8080;
+    }
+
+    internal class SimpleConfig : SystemConfigs
+    {
+        public override string SystemName { get; set; }
+        public override string ActorName { get; set; }
+        public override int Port { get; set; }
+
+        public SimpleConfig(string systemName, string actorName, int port)
+        {
+            SystemName = systemName;
+            ActorName = actorName;
+            Port = port;
+        }
     }
 
 }
