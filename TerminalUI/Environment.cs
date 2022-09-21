@@ -1,6 +1,8 @@
 ﻿using Akka.Actor;
 using Akka.Actor.Internal;
 using DroneSystemAPI;
+using DroneSystemAPI.APIClasses;
+using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 using DroneSystemAPI.APIClasses.Repository;
 
 namespace TerminalUI
@@ -10,6 +12,8 @@ namespace TerminalUI
         public IDictionary<int, ActorSystem> ActorSystems { get; }
         public ActorSystem InterfaceActorSystem { get; }
         public RepositoryAPI? RepositoryAPI { get; set; }
+        public IDictionary<string, Host> GeneratedMissions { get; }
+        public IDictionary<string, ObserverMissionAPI> ConnectedMissions { get; }
 
         public Environment()
         {
@@ -20,6 +24,8 @@ namespace TerminalUI
             config.Port = 0;
 
             InterfaceActorSystem = ActorSystem.Create(config.SystemName, config.Config);
+            GeneratedMissions = new Dictionary<string, Host>();
+            ConnectedMissions = new Dictionary<string, ObserverMissionAPI>();
         }
 
         public void Terminate()

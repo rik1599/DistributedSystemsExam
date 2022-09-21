@@ -48,6 +48,12 @@
             return $"{GetSystemAddress(systemName)}/{actorSpace}/{actorName}"; 
         }
 
+        public override string? ToString()
+        {
+            return $"{Protocol}://{HostName}:{Port}";
+        }
+
+
         /// <summary>
         /// Ottieni un'istzanza di Host (locale) da utilizzare 
         /// PER I TEST. 

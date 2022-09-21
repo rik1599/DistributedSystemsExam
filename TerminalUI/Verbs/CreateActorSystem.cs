@@ -15,7 +15,6 @@ namespace TerminalUI.Verbs
 
             _ = ActorSystemFactory.CreateActorSystem(env, config, out var _);
 
-            Console.ResetColor();
             return env;
         }
     }

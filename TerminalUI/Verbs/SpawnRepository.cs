@@ -53,7 +53,6 @@ namespace TerminalUI.Verbs
                 Console.Error.WriteLine("Errore! Impossibile creare il repository");
             }
 
-            Console.ResetColor();
             return env;
         }
 
@@ -62,20 +61,10 @@ namespace TerminalUI.Verbs
             var configs = SystemConfigs.GenericConfig;
             configs.ActorName = "repository";
 
-            RepositoryAPI? repositoryAPI;
-            try
-            {
-                repositoryAPI =
+            var repositoryAPI =
                     new RepositoryProvider(actorSystem, configs)
                     .SpawnRemote(new Host(Host!, Port));
-            }
-            catch (InvalidActorNameException)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore! Host Remoto non raggiungibile");
-                repositoryAPI = null;
-            }
-            
+
             if (repositoryAPI is null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;

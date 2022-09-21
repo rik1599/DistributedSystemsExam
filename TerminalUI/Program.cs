@@ -4,6 +4,7 @@ using System.Reflection;
 using TerminalUI.Verbs;
 using Environment = TerminalUI.Environment;
 
+Console.ResetColor();
 var env = new Environment();
 
 string? line;
@@ -16,7 +17,8 @@ while ((line = Console.ReadLine()) != "exit")
         .MapResult(
            (IVerb options) => options.Run(env),
            errors => env
-        ) ;
+        );
+    Console.ResetColor();
 }
 env.Terminate();
 
