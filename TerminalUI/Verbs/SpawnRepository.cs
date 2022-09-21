@@ -1,6 +1,13 @@
-﻿namespace TerminalUI.Verbs
+﻿using CommandLine;
+
+namespace TerminalUI.Verbs
 {
-    internal class SpawnRepository
+    [Verb("spawn-repository")]
+    internal class SpawnRepository : IVerb
     {
+        public Environment Run(Environment env)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

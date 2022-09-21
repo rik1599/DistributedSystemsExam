@@ -1,6 +1,14 @@
-﻿namespace TerminalUI.Verbs
+﻿using CommandLine;
+
+namespace TerminalUI.Verbs
 {
-    internal class CreateActorSystem
+    [Verb("create-actor-system")]
+    internal class CreateActorSystem : IVerb
     {
+        public Environment Run(Environment env)
+        {
+            Console.WriteLine("Actor system creato");
+            return env;
+        }
     }
 }

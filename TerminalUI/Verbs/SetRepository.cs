@@ -2,8 +2,8 @@
 
 namespace TerminalUI.Verbs
 {
-    [Verb("cancel-mission")]
-    internal class CancelMission : IVerb
+    [Verb("set-repository")]
+    internal class SetRepository : IVerb
     {
         public Environment Run(Environment env)
         {
