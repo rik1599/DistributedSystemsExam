@@ -1,6 +1,6 @@
 ﻿namespace UI.Verbs
 {
-    internal enum Protocol
+    public enum Protocol
     {
         tcp,
         udp

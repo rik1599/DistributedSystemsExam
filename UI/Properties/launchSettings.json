@@ -1,12 +1,8 @@
 {
   "profiles": {
-    "UI drone": {
+    "UI": {
       "commandName": "Project",
-      "commandLineArgs": "drone --xstart 0 --ystart 0 --xend 100 --yend 100"
-    },
-    "UI repository": {
-      "commandName": "Project",
-      "commandLineArgs": "repository"
+      "commandLineArgs": "connect -p 51585"
     }
   }
 }

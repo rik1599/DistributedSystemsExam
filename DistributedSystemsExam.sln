@@ -14,7 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DroneSystemAPI", "DroneSystemAPI\DroneSystemAPI.csproj", "{F1A3FAC1-C9F1-4D0A-974E-3D77E2782064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryDummy", "RepositoryDummy\RepositoryDummy.csproj", "{0591AAEC-0242-424D-A3D1-880F4AAEA823}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryDummy", "RepositoryDummy\RepositoryDummy.csproj", "{0591AAEC-0242-424D-A3D1-880F4AAEA823}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DroneDummy", "DroneDummy\DroneDummy.csproj", "{01D0F2D6-68AC-4F91-B93B-9283587FE1D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,10 @@ Global
 		{0591AAEC-0242-424D-A3D1-880F4AAEA823}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0591AAEC-0242-424D-A3D1-880F4AAEA823}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0591AAEC-0242-424D-A3D1-880F4AAEA823}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01D0F2D6-68AC-4F91-B93B-9283587FE1D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01D0F2D6-68AC-4F91-B93B-9283587FE1D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01D0F2D6-68AC-4F91-B93B-9283587FE1D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01D0F2D6-68AC-4F91-B93B-9283587FE1D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,7 +13,7 @@ using MathNet.Spatial.Euclidean;
 namespace UI.Verbs
 {
     [Verb("drone", HelpText = "Start terminal as a drone with given coordinates")]
-    internal class DroneOptions
+    public class DroneOptions
     {
         // Coordinate
         [Option(Required = true)]
