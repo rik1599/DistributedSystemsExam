@@ -45,7 +45,7 @@ namespace Actors
             _droneState = DroneActorState.CreateInitState(droneContext, Timers!,
                 _notificationProtocol.GetStateChangeNotifierVisitor()).RunState();
 
-            ReceiveExternalMessages();
+            ReceiveMainProtocolMessages();
             ReceiveInternalMessage();
             HandleUserRequests();
             HandleNotificationProtocol();
@@ -55,7 +55,7 @@ namespace Actors
         /// Ricevi e gestisci tutti i messaggi esterni del protocollo 
         /// di schedulazione dei voli.
         /// </summary>
-        private void ReceiveExternalMessages()
+        private void ReceiveMainProtocolMessages()
         {
             // la modalità di gestione dei messaggi dipende dallo stato del drone
             Receive<ConnectRequest> (msg => _droneState = _droneState!.OnReceive(msg, Sender));
