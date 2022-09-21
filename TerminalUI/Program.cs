@@ -18,6 +18,7 @@ while ((line = Console.ReadLine()) != "exit")
            errors => env
         ) ;
 }
+env.Terminate();
 
 static Type[] LoadVerbs()
 {
