@@ -10,7 +10,7 @@ namespace TerminalUI.Verbs
             foreach (var system in env.ActorSystems)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Porta: {system.Key}; Nome: {system.Value.Role}");
+                Console.WriteLine($"Porta: {system.Key}");
                 Console.ForegroundColor = ConsoleColor.White;
             }
             return env;

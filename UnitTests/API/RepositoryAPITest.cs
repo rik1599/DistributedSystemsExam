@@ -21,7 +21,7 @@ namespace UnitTests.API
 
             // spawn del registro usando il provider
             var registerProvider = new RepositoryProvider(Sys, config);
-            RepositoryAPI register = registerProvider.SpawnHere();
+            RepositoryAPI register = registerProvider.SpawnHere()!;
 
             Assert.NotNull(register);
             CheckRegister(register);
@@ -37,7 +37,7 @@ namespace UnitTests.API
 
             // spawn del registro (in remoto) usando il provider
             var registerProvider = new RepositoryProvider(Sys, config);
-            RepositoryAPI register = registerProvider.SpawnRemote(Host.GetTestHost());
+            RepositoryAPI register = registerProvider.SpawnRemote(Host.GetTestHost())!;
 
             Assert.NotNull(register);
             CheckRegister(register);

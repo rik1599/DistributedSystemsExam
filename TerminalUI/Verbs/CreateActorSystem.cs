@@ -1,7 +1,4 @@
-﻿using Akka.Actor;
-using Akka.Actor.Internal;
-using Akka.Remote;
-using CommandLine;
+﻿using CommandLine;
 using DroneSystemAPI;
 
 namespace TerminalUI.Verbs
@@ -13,11 +10,12 @@ namespace TerminalUI.Verbs
         public int Port { get; set; }
         public Environment Run(Environment env)
         {
-            var config = SystemConfigs.DroneConfig;
+            var config = SystemConfigs.GenericConfig;
             config.Port = Port;
 
-            _ = ActorSystemFactory.CreateActorSystem(env, config);
-            
+            _ = ActorSystemFactory.CreateActorSystem(env, config, out var _);
+
+            Console.ResetColor();
             return env;
         }
     }

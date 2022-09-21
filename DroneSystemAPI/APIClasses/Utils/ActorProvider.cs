@@ -39,17 +39,31 @@ namespace DroneSystemAPI.APIClasses.Utils
             //      le eccezioni per dare un idea del tipo di errore
         }
 
-        public static IActorRef SpawnLocally(ActorSystem localActorSystem, Props actorProps, string actorName)
+        public static IActorRef? SpawnLocally(ActorSystem localActorSystem, Props actorProps, string actorName)
         {
-            return localActorSystem.ActorOf(actorProps, actorName);
+            try
+            {
+                return localActorSystem.ActorOf(actorProps, actorName);
+            }
+            catch (InvalidActorNameException)
+            {
+                return null;
+            }
         }
 
-        public static IActorRef SpawnRemote(ActorSystem deployerSystem, Address remoteAddress, Props actorProps, string actorName)
+        public static IActorRef? SpawnRemote(ActorSystem deployerSystem, Address remoteAddress, Props actorProps, string actorName)
         {
-            return deployerSystem.ActorOf(
+            try
+            {
+                return deployerSystem.ActorOf(
                 actorProps.WithDeploy(Deploy.None.WithScope(new RemoteScope(remoteAddress))),
-                actorName 
+                actorName
                 );
+            }
+            catch (InvalidActorNameException)
+            {
+                return null;
+            }
         }
     }
 }

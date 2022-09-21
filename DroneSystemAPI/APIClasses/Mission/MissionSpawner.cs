@@ -66,18 +66,18 @@ namespace DroneSystemAPI.APIClasses.Mission
             _config = config;
         }
 
-        public IMissionAPI SpawnHere(MissionPath missionPath, string missionName)
+        public IMissionAPI? SpawnHere(MissionPath missionPath, string missionName)
         {
             var actorRef = ActorProvider.SpawnLocally(
                 _localSystem,
                 DroneActor.Props(_register.ActorRef, missionPath),
                 missionName);
 
-            return _missionAPIFactory.GetMissionAPI(actorRef);
+            return actorRef is null ? null : _missionAPIFactory.GetMissionAPI(actorRef);
         }
 
 
-        public IMissionAPI SpawnRemote(Host host, MissionPath missionPath, string missionName)
+        public IMissionAPI? SpawnRemote(Host host, MissionPath missionPath, string missionName)
         {
             var actorRef = ActorProvider.SpawnRemote(
                 _localSystem,
@@ -85,7 +85,7 @@ namespace DroneSystemAPI.APIClasses.Mission
                 DroneActor.Props(_register.ActorRef, missionPath),
                 missionName);
 
-            return _missionAPIFactory.GetMissionAPI(actorRef);
+            return actorRef is null ? null : _missionAPIFactory.GetMissionAPI(actorRef);
         }
 
     }
