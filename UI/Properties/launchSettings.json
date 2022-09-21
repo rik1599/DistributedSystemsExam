@@ -2,7 +2,7 @@
   "profiles": {
     "UI": {
       "commandName": "Project",
-      "commandLineArgs": "connect -p 51585"
+      "commandLineArgs": "connect -p 8090"
     }
   }
 }
