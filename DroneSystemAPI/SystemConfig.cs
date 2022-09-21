@@ -6,7 +6,21 @@ namespace DroneSystemAPI
     {
         public abstract string SystemName { get; set; }
         public abstract string ActorName { get; set; }
-        public abstract string HoconConfig { get; set; }
+        public virtual string HostName { get; set; } = "localhost";
+        public abstract int Port { get; set; }
+        protected virtual string HoconConfig { get; set; } = @"
+akka {
+    loglevel = WARNING
+    actor {
+        provider = remote
+    }
+    remote {
+        dot-netty.tcp {
+            port = {0}
+            hostname = {1}
+        }
+    }
+}";
 
         public Config Config
         {
@@ -37,40 +51,14 @@ namespace DroneSystemAPI
     {
         public override string SystemName { get; set; } = "DroneActorSystem";
         public override string ActorName { get; set; } = "Drone";
-
-        public override string HoconConfig { get; set; } = @"
-akka {
-    loglevel = WARNING
-    actor {
-        provider = remote
-    }
-    remote {
-        dot-netty.tcp {
-            port = 0
-            hostname = localhost
-        }
-    }
-}";
+        public override int Port { get; set; } = 0;
     }
 
     internal class DroneRepositoryConfig : SystemConfigs
     {
         public override string SystemName { get; set; } = "RepositoryActorSystem";
         public override string ActorName { get; set; } = "Repository";
-        public override string HoconConfig { get; set; } = @"
-akka {
-    loglevel = WARNING
-    actor {
-        provider = remote
-    }
-    remote {
-        dot-netty.tcp {
-            port = 8080
-            hostname = localhost
-        }
-    }
-}
-";
+        public override int Port { get; set; } = 8080;
     }
 
 }
