@@ -51,10 +51,11 @@ Notifiche: {{
         Type: {notification.GetType()}
         Timestamp: {notification.DroneTimestamp}
         Age: {notification.Age}
-        Posizione attuale: {notification.CurrentPosition()}
-        Missione terminata con successo: {notification.IsMissionAccomplished()}
+        Posizione attuale: {notification.CurrentPosition}
     }}
 ");
+
+                //  Missione terminata con successo: {notification.IsMissionAccomplished}
             }
             return stringBuilder.ToString();
         }
