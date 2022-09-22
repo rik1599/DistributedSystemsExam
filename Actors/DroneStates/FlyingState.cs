@@ -50,7 +50,8 @@ namespace Actors.DroneStates
                 FlyingDroneActor.Props(ActorContext.ThisMission, ActorRef), "fly-actor");
 
             // lo supervisiono (in modo da rilevare quando e come termina)
-            ActorContext.Context.WatchWith(_flyingDroneActor, new InternalMissionEnded());
+            // TODO: gestisci errore
+            ActorContext.Context.Watch(_flyingDroneActor);
 
             // notifico cambio di stato
             PerformVisit(ChangeStateNotifier);
@@ -112,7 +113,10 @@ namespace Actors.DroneStates
 
             _isMissionEnd = true;
 
-            // cancello il mio riferimento all'attore che gestisce il volo
+            _lastPositionCache = msg.Position;
+
+            // termino l'attore che gestisce il volo e cancello il riferimento
+            _flyingDroneActor.Tell(PoisonPill.Instance);
             _flyingDroneActor = null;   
             
             return CreateExitState(this, true, "Mission ENDED! Killing myself").RunState();

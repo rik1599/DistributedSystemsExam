@@ -91,7 +91,10 @@ namespace Actors.DTO
 
         public virtual bool IsFlying() => false;
 
-        public virtual bool IsMissionAccomplished() => false;
+        public virtual bool IsMissionAccomplished()
+        {
+            return false;
+        }
     }
 
     public class InitStateDTO : DroneStateDTO
@@ -223,8 +226,8 @@ namespace Actors.DTO
 
     public class ExitStateDTO : DroneStateDTO
     {
-        private readonly bool _isMissionAccomplished;
-        
+        private readonly bool _isMissionAccomplished { get; }s
+
         public DroneStateDTO PrecedentState { get; }
 
         public string Motivation { get; }
@@ -268,7 +271,9 @@ namespace Actors.DTO
             Error = error;
         }
 
-        public override bool IsMissionAccomplished() => _isMissionAccomplished;
-        public override Point2D CurrentPosition() => Path.StartPoint;
+        public override bool IsMissionAccomplished() { 
+            return _isMissionAccomplished; 
+        }
+        public override Point2D CurrentPosition() { return Path.StartPoint; }
     }
 }

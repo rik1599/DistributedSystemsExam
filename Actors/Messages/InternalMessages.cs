@@ -33,7 +33,15 @@ namespace Actors.Messages.Internal
         }
     }
 
-    public class InternalMissionEnded { }
+    public class InternalMissionEnded 
+    {
+        public Point2D Position { get; }
+
+        public InternalMissionEnded(Point2D position)
+        {
+            Position = position;
+        }
+    }
 
     internal class InternalTimeoutEnded
     {
