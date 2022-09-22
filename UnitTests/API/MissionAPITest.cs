@@ -39,11 +39,11 @@ namespace UnitTests.API
 
             // creo il tool per lo spawn di missioni
             var spawner = new MissionSpawner(Sys, 
-                register, SimpleMissionAPI.Factory(), config);
+                register!, SimpleMissionAPI.Factory(), config);
 
             // spawno due missioni 
-            IMissionAPI a = spawner.SpawnHere(missionA, "DroneA");
-            IMissionAPI b = spawner.SpawnHere(missionB, "DroneB");
+            IMissionAPI a = spawner.SpawnHere(missionA, "DroneA")!;
+            IMissionAPI b = spawner.SpawnHere(missionB, "DroneB")!;
 
             // richiedo ad entrambe lo stato
             _ = a.GetCurrentStatus().Result;
@@ -64,7 +64,7 @@ namespace UnitTests.API
             droneConfig.SystemName = "test";
 
             // creo il registro
-            var register = new RepositoryProvider(Sys).SpawnHere();
+            var register = new RepositoryProvider(Sys).SpawnHere()!;
 
             // spawno una missione manualmente
             _ = Sys.ActorOf(
@@ -97,14 +97,14 @@ namespace UnitTests.API
             var config = SystemConfigs.DroneConfig;
 
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
+            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
 
             // uso il tool per spawnare in remoto una missione
             // e ricavare un'istanza dell'API
             MissionSpawner spawner = new(Sys,
                 register, SimpleMissionAPI.Factory(), config);
            
-            IMissionAPI a = spawner.SpawnRemote(Host.GetTestHost(), missionA, "DroneA");
+            IMissionAPI? a = spawner.SpawnRemote(Host.GetTestHost(), missionA, "DroneA");
             Assert.NotNull(a);
             Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
 
@@ -124,7 +124,7 @@ namespace UnitTests.API
             config.SystemName = "test";
 
             // creo il registro (e mi ci iscrivo)
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere();
+            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
             register.ActorRef.Tell(new RegisterRequest(TestActor));
             ExpectMsgFrom<RegisterResponse>(register.ActorRef);
 
@@ -133,7 +133,7 @@ namespace UnitTests.API
                 register, SimpleMissionAPI.Factory(), config);
 
             // spawno una missione
-            IMissionAPI a = spawner.SpawnHere(missionA, "DroneA");
+            IMissionAPI a = spawner.SpawnHere(missionA, "DroneA")!;
 
             // mi aspetto la connessione e la negoziazione
             ExpectMsgFrom<ConnectRequest>(a.GetDroneRef());

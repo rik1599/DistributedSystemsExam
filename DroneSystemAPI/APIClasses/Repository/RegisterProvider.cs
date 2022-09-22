@@ -43,14 +43,13 @@ namespace DroneSystemAPI.APIClasses.Repository
         /// Crea localmente (nel sistema indicato come locale) un registro
         /// </summary>
         /// <returns></returns>
-        public RepositoryAPI SpawnHere()
+        public RepositoryAPI? SpawnHere()
         {
             var actorRef = ActorProvider.SpawnLocally(
-                _localSystem, 
-                DronesRepositoryActor.Props(), 
+                _localSystem,
+                DronesRepositoryActor.Props(),
                 _config.ActorName);
-            Console.WriteLine(actorRef);
-            return new RepositoryAPI(actorRef);
+            return actorRef is null ? null : new RepositoryAPI(actorRef);
         }
 
         /// <summary>
@@ -58,15 +57,15 @@ namespace DroneSystemAPI.APIClasses.Repository
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public RepositoryAPI SpawnRemote(Host host)
+        public RepositoryAPI? SpawnRemote(Host host)
         {
             var actorRef = ActorProvider.SpawnRemote(
-                _localSystem, 
-                Address.Parse(host.GetSystemAddress(_config.SystemName)), 
-                DronesRepositoryActor.Props(), 
+                _localSystem,
+                Address.Parse(host.GetSystemAddress(_config.SystemName)),
+                DronesRepositoryActor.Props(),
                 _config.ActorName);
 
-            return new RepositoryAPI(actorRef);
+            return actorRef is null ? null : new RepositoryAPI(actorRef);
         }
     }
 }

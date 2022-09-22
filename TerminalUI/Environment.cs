@@ -1,82 +1,65 @@
 ﻿using Akka.Actor;
 using Akka.Actor.Internal;
-using Akka.Configuration;
 using DroneSystemAPI;
-using TerminalUI.Verbs;
+using DroneSystemAPI.APIClasses;
+using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
+using DroneSystemAPI.APIClasses.Repository;
 
 namespace TerminalUI
 {
     internal class Environment
     {
-        public IDictionary<int, ActorSystemRolePair> ActorSystems { get; }
+        public IDictionary<int, ActorSystem> ActorSystems { get; }
         public ActorSystem InterfaceActorSystem { get; }
+        public RepositoryAPI? RepositoryAPI { get; set; }
+        public IDictionary<string, Host> GeneratedMissions { get; }
+        public IDictionary<string, ObserverMissionAPI> ConnectedMissions { get; }
 
         public Environment()
         {
-            ActorSystems = new Dictionary<int, ActorSystemRolePair>();
+            ActorSystems = new Dictionary<int, ActorSystem>();
 
-            var config = SystemConfigs.DroneConfig;
+            var config = SystemConfigs.GenericConfig;
             config.SystemName = "InterfaceActorSystem";
             config.Port = 0;
 
             InterfaceActorSystem = ActorSystem.Create(config.SystemName, config.Config);
+            GeneratedMissions = new Dictionary<string, Host>();
+            ConnectedMissions = new Dictionary<string, ObserverMissionAPI>();
         }
 
         public void Terminate()
         {
-            var tasks = new List<Task>
-            {
-                InterfaceActorSystem.WhenTerminated
-            };
-
+            InterfaceActorSystem?.Terminate();
             foreach (var system in ActorSystems)
             {
                 ActorSystems.Remove(system);
-                tasks.Add(system.Value.ActorSystem.WhenTerminated);
+                system.Value.Terminate();
             }
-            Task.WhenAll(tasks).RunSynchronously();
         }
-    }
-
-    internal class ActorSystemRolePair
-    {
-        public ActorSystem ActorSystem { get; }
-        public ActorSystemRole Role { get; set; }
-
-        public ActorSystemRolePair(ActorSystem actorSystem)
-        {
-            ActorSystem = actorSystem;
-            Role = ActorSystemRole.None;
-        }
-    }
-
-    internal enum ActorSystemRole
-    {
-        None,
-        Drone,
-        Repository
     }
 
     internal class ActorSystemFactory
     {
-        public static ActorSystem? CreateActorSystem(Environment env, SystemConfigs config)
+        public static ActorSystem? CreateActorSystem(Environment env, SystemConfigs config, out int port)
         {
             ActorSystemImpl? system;
             try
             {
                 system = ActorSystem.Create(config.SystemName, config.Config) as ActorSystemImpl;
                 var assignedPort = system!.LookupRoot.Provider.DefaultAddress.Port;
-                env.ActorSystems.Add(assignedPort!.Value, new ActorSystemRolePair(system));
+                env.ActorSystems.Add(assignedPort!.Value, system);
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"ActorSystem creato alla porta {assignedPort}");
+                port = assignedPort.Value;
             }
             catch (Exception)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.WriteLine("Porta già utilizzata!");
                 system = null;
+                port = 0;
             }
-            Console.ForegroundColor = ConsoleColor.White;
             return system;
         }
     }

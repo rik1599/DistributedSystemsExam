@@ -4,10 +4,10 @@ namespace DroneSystemAPI
 {
     public abstract class SystemConfigs
     {
-        public abstract string SystemName { get; set; }
+        public virtual string SystemName { get; set; } = "ActorSystem";
         public abstract string ActorName { get; set; }
         public virtual string HostName { get; set; } = "localhost";
-        public abstract int Port { get; set; }
+        public virtual int Port { get; set; } = 0;
 
         public Config Config
         {
@@ -46,15 +46,19 @@ akka {{
             }
         }
 
-        public static SystemConfigs SimpleConfig(string systemName, string actorName, int port)
-            => new SimpleConfig(systemName, actorName, port);
+        public static SystemConfigs GenericConfig
+        {
+            get
+            {
+                return new GenericConfig();
+            }
+        }
     }
 
     internal class DroneSystemConfig : SystemConfigs
     {
         public override string SystemName { get; set; } = "DroneActorSystem";
         public override string ActorName { get; set; } = "Drone";
-        public override int Port { get; set; } = 0;
     }
 
     internal class DroneRepositoryConfig : SystemConfigs
@@ -64,18 +68,8 @@ akka {{
         public override int Port { get; set; } = 8080;
     }
 
-    internal class SimpleConfig : SystemConfigs
+    internal class GenericConfig : SystemConfigs
     {
-        public override string SystemName { get; set; }
-        public override string ActorName { get; set; }
-        public override int Port { get; set; }
-
-        public SimpleConfig(string systemName, string actorName, int port)
-        {
-            SystemName = systemName;
-            ActorName = actorName;
-            Port = port;
-        }
+        public override string ActorName { get; set; } = string.Empty;
     }
-
 }
