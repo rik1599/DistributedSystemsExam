@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using Actors.DTO;
+using Akka.Actor;
 using Akka.Actor.Internal;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
@@ -12,9 +13,7 @@ namespace TerminalUI
         public IDictionary<int, ActorSystem> ActorSystems { get; }
         public ActorSystem InterfaceActorSystem { get; }
         public RepositoryAPI? RepositoryAPI { get; set; }
-        public IDictionary<string, Host> GeneratedMissions { get; }
-        public IDictionary<string, ObserverMissionAPI> ConnectedMissions { get; }
-
+        public IDictionary<string, MissionInfo> Missions { get; }
         public Environment()
         {
             ActorSystems = new Dictionary<int, ActorSystem>();
@@ -24,8 +23,7 @@ namespace TerminalUI
             config.Port = 0;
 
             InterfaceActorSystem = ActorSystem.Create(config.SystemName, config.Config);
-            GeneratedMissions = new Dictionary<string, Host>();
-            ConnectedMissions = new Dictionary<string, ObserverMissionAPI>();
+            Missions = new Dictionary<string, MissionInfo>();
         }
 
         public void Terminate()
@@ -61,6 +59,40 @@ namespace TerminalUI
                 port = 0;
             }
             return system;
+        }
+    }
+
+    internal class MissionInfo
+    {
+        public bool IsTerminated { get; private set; }
+        public Host Host { get; set; }
+        public ObserverMissionAPI API { get; set; }
+        public List<DroneStateDTO> Notifications { get; set; }
+        public Task ObserverTask { get; }
+
+        public MissionInfo(Host host, ObserverMissionAPI api)
+        {
+            Host = host;
+            API = api;
+            Notifications = new List<DroneStateDTO>();
+            ObserverTask = CollectNotification();
+            IsTerminated = false;
+        }
+
+        private async Task CollectNotification()
+        {
+            do
+            {
+                var newNotifications = await API.AskForUpdates();
+                Notifications.AddRange(newNotifications);
+            } while (Notifications.Last() is not ExitStateDTO);
+
+            IsTerminated = true;
+        }
+
+        public override string ToString()
+        {
+            return $"{Host}, LastStatus = {Notifications.Last()}, IsTerminated = {IsTerminated}";
         }
     }
 }

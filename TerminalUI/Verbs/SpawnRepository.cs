@@ -18,7 +18,7 @@ namespace TerminalUI.Verbs
         public Environment Run(Environment env)
         {
             ActorSystem? system;
-            if (!env.ActorSystems.ContainsKey(Port))
+            if (Host == "localhost" && !env.ActorSystems.ContainsKey(Port))
             {
                 var configs = SystemConfigs.GenericConfig;
                 configs.ActorName = "repository";
@@ -32,9 +32,14 @@ namespace TerminalUI.Verbs
                 else
                     return env;
             }
-            else
+
+            if (Host == "localhost" && env.ActorSystems.ContainsKey(Port))
             {
                 system = env.ActorSystems[Port];
+            }
+            else
+            {
+                system = env.InterfaceActorSystem;
             }
 
             var repository = Spawn(system);
@@ -44,7 +49,7 @@ namespace TerminalUI.Verbs
                 {
                     env.RepositoryAPI = repository;
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Repository impostato correttamente sulla porta {Port}");
+                    Console.WriteLine($"Repository impostato correttamente sul {new Host(Host!, Port)}");
                 }
             }
             else

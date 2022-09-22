@@ -18,7 +18,6 @@ namespace DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI
     {
         private readonly IMissionAPI _baseAPI;
 
-
         /// <summary>
         /// Attore che uso per ricevere notifiche
         /// </summary>

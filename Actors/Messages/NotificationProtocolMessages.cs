@@ -55,15 +55,11 @@ namespace Actors.Messages.StateChangeNotifier
         /// Indica se il nuovo iscritto vuole o
         /// meno che gli vengano inviati gli stati precedenti.
         /// </summary>
-        public bool SendPrecedent { get; } = true;
+        public bool SendPrecedent { get; }
 
-        public SubscribeRequest(IActorRef actorRef)
+        public SubscribeRequest(IActorRef actorRef, bool sendPrecedent = true)
         {
             ActorRef = actorRef;
-        }
-
-        public SubscribeRequest(IActorRef actorRef, bool sendPrecedent) : this(actorRef)
-        {
             SendPrecedent = sendPrecedent;
         }
     }

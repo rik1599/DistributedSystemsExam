@@ -11,12 +11,11 @@ namespace TerminalUI.Verbs
         public Environment Run(Environment env)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-
             if (Missions)
             {
-                foreach (var mission in env.GeneratedMissions)
+                foreach (var mission in env.Missions)
                 {
-                    Console.WriteLine($"{mission.Key}\t\t{mission.Value}");
+                    Console.WriteLine($"ID: {mission.Key.Split('-')[0]}\t\t{mission.Value}");
                 }
             }
             else

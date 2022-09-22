@@ -4,11 +4,10 @@ using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Mission;
 using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
-using DroneSystemAPI.APIClasses.Mission.SimpleMissionAPI;
 
 namespace TerminalUI.Verbs
 {
-    [Verb("spawn-mission")]
+    [Verb("spawn-mission", HelpText = "Crea una nuova missione")]
     internal class SpawnMission : IVerb
     {
         [Value(0, HelpText = "Coordinata X del punto di partenza", Required = true)]
@@ -52,11 +51,13 @@ namespace TerminalUI.Verbs
 
             var mission = new MissionPath(start, end, Speed);
             var config = SystemConfigs.GenericConfig;
+            var host = new Host(Host!, Port);
+            var ID = $"{mission.GetHashCode()}-{Host}:{Port}";
             var missionAPI = new MissionSpawner(
                 env.InterfaceActorSystem,
                 env.RepositoryAPI,
-                SimpleMissionAPI.Factory(),
-                config).SpawnRemote(new Host(Host!, Port), mission, $"mission-{mission.GetHashCode()}");
+                ObserverMissionAPI.Factory(env.InterfaceActorSystem),
+                config).SpawnRemote(host, mission, ID) as ObserverMissionAPI;
 
             try
             {
@@ -69,7 +70,12 @@ namespace TerminalUI.Verbs
                 return env;
             }
 
-            env.GeneratedMissions.Add($"mission-{mission.GetHashCode()}", new Host(Host!, Port));
+            var missionInfo = new MissionInfo(host, missionAPI);
+            env.Missions.Add(ID, missionInfo);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(mission.GetHashCode());
+
             return env;
         }
     }

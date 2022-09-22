@@ -43,7 +43,15 @@ namespace Actors.DTO
             NodeRef = droneContext.Context.Self;
         }
 
-        public DroneStateDTO(DateTime droneTimestamp, IActorRef nodeRef, MissionPath path, TimeSpan age, IReadOnlySet<IActorRef> knownNodes, IReadOnlySet<WaitingMissionDTO> conflictSet, IReadOnlySet<FlyingMissionDTO> flyingConflictMissions, int negotiationsCount, Priority currentPriority)
+        public DroneStateDTO(DateTime droneTimestamp,
+            IActorRef nodeRef,
+            MissionPath path,
+            TimeSpan age,
+            IReadOnlySet<IActorRef> knownNodes,
+            IReadOnlySet<WaitingMissionDTO> conflictSet,
+            IReadOnlySet<FlyingMissionDTO> flyingConflictMissions,
+            int negotiationsCount,
+            Priority currentPriority)
         {
             DroneTimestamp = droneTimestamp;
             NodeRef = nodeRef;
@@ -107,7 +115,7 @@ namespace Actors.DTO
 
         public override bool IsConnected() => false;
 
-        internal InitStateDTO(DateTime droneTimestamp, IActorRef nodeRef, MissionPath path, TimeSpan age, IReadOnlySet<IActorRef> knownNodes, IReadOnlySet<WaitingMissionDTO> conflictSet, IReadOnlySet<FlyingMissionDTO> flyingConflictMissions, int negotiationsCount, Priority currentPriority, IReadOnlySet<IActorRef> missingConnections) : base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
+        public InitStateDTO(DateTime droneTimestamp, IActorRef nodeRef, MissionPath path, TimeSpan age, IReadOnlySet<IActorRef> knownNodes, IReadOnlySet<WaitingMissionDTO> conflictSet, IReadOnlySet<FlyingMissionDTO> flyingConflictMissions, int negotiationsCount, Priority currentPriority, IReadOnlySet<IActorRef> missingConnections) : base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
         {
             MissingConnections = missingConnections;
         }
@@ -128,7 +136,16 @@ namespace Actors.DTO
         {
         }
 
-        internal NegotiateStateDTO(DateTime droneTimestamp, IActorRef nodeRef, MissionPath path, TimeSpan age, IReadOnlySet<IActorRef> knownNodes, IReadOnlySet<WaitingMissionDTO> conflictSet, IReadOnlySet<FlyingMissionDTO> flyingConflictMissions, int negotiationsCount, Priority currentPriority) : base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
+        public NegotiateStateDTO(DateTime droneTimestamp,
+            IActorRef nodeRef,
+            MissionPath path,
+            TimeSpan age,
+            IReadOnlySet<IActorRef> knownNodes,
+            IReadOnlySet<WaitingMissionDTO> conflictSet,
+            IReadOnlySet<FlyingMissionDTO> flyingConflictMissions,
+            int negotiationsCount,
+            Priority currentPriority) : 
+            base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
         {
         }
     }
@@ -146,7 +163,16 @@ namespace Actors.DTO
         {
         }
 
-        internal WaitingStateDTO(DateTime droneTimestamp, IActorRef nodeRef, MissionPath path, TimeSpan age, IReadOnlySet<IActorRef> knownNodes, IReadOnlySet<WaitingMissionDTO> conflictSet, IReadOnlySet<FlyingMissionDTO> flyingConflictMissions, int negotiationsCount, Priority currentPriority) : base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
+        public WaitingStateDTO(DateTime droneTimestamp,
+            IActorRef nodeRef,
+            MissionPath path,
+            TimeSpan age,
+            IReadOnlySet<IActorRef> knownNodes,
+            IReadOnlySet<WaitingMissionDTO> conflictSet,
+            IReadOnlySet<FlyingMissionDTO> flyingConflictMissions,
+            int negotiationsCount,
+            Priority currentPriority) : 
+            base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
         {
         }
     }
@@ -157,7 +183,7 @@ namespace Actors.DTO
         private readonly Point2D _currentPosition;
         private readonly TimeSpan _flyTime;
 
-        public TimeSpan ExtimatedRemainingFlyingTime { get; internal set; }
+        public TimeSpan ExtimatedRemainingFlyingTime { get; }
 
         internal FlyingStateDTO(DroneActorContext droneContext,
             int negotiationsCount, 
@@ -174,10 +200,19 @@ namespace Actors.DTO
             ExtimatedRemainingFlyingTime = remainingFlyingTime;
         }
 
-        internal FlyingStateDTO(DateTime droneTimestamp, IActorRef nodeRef, MissionPath path, TimeSpan age, IReadOnlySet<IActorRef> knownNodes, IReadOnlySet<WaitingMissionDTO> conflictSet, IReadOnlySet<FlyingMissionDTO> flyingConflictMissions, int negotiationsCount, Priority currentPriority,
+        public FlyingStateDTO(DateTime droneTimestamp,
+            IActorRef nodeRef,
+            MissionPath path,
+            TimeSpan age,
+            IReadOnlySet<IActorRef> knownNodes,
+            IReadOnlySet<WaitingMissionDTO> conflictSet,
+            IReadOnlySet<FlyingMissionDTO> flyingConflictMissions,
+            int negotiationsCount,
+            Priority currentPriority,
             Point2D currentPosition,
             TimeSpan doneFlyingTime,
-            TimeSpan remainingFlyingTime) : base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
+            TimeSpan remainingFlyingTime) : 
+            base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
         {
             _currentPosition = currentPosition;
             _flyTime = doneFlyingTime;
@@ -215,11 +250,20 @@ namespace Actors.DTO
             Error = error;
         }
 
-        internal ExitStateDTO(DateTime droneTimestamp, IActorRef nodeRef, MissionPath path, TimeSpan age, IReadOnlySet<IActorRef> knownNodes, IReadOnlySet<WaitingMissionDTO> conflictSet, IReadOnlySet<FlyingMissionDTO> flyingConflictMissions, int negotiationsCount, Priority currentPriority
-            , bool isMissionAccomplished,
+        public ExitStateDTO(DateTime droneTimestamp,
+            IActorRef nodeRef,
+            MissionPath path,
+            TimeSpan age,
+            IReadOnlySet<IActorRef> knownNodes,
+            IReadOnlySet<WaitingMissionDTO> conflictSet,
+            IReadOnlySet<FlyingMissionDTO> flyingConflictMissions,
+            int negotiationsCount,
+            Priority currentPriority,
+            bool isMissionAccomplished,
             string motivation,
             bool error,
-            DroneStateDTO precedentState) : base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
+            DroneStateDTO precedentState) : 
+            base(droneTimestamp, nodeRef, path, age, knownNodes, conflictSet, flyingConflictMissions, negotiationsCount, currentPriority)
         {
             _isMissionAccomplished = isMissionAccomplished;
             PrecedentState = precedentState;
