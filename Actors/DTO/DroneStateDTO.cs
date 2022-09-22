@@ -6,11 +6,8 @@ namespace Actors.DTO
 {
     public class DroneStateDTO
     {
-        
         public DateTime DroneTimestamp { get; } = DateTime.Now;
-
         public IActorRef NodeRef { get; }
-
         public MissionPath Path { get; }
         public TimeSpan Age { get; }
         public IReadOnlySet<IActorRef> KnownNodes { get; }
