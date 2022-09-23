@@ -25,7 +25,7 @@ namespace Actors.StateChangeNotifier
         {
             // spawn attore figlio per gestire il servizio di notifica
             _notificationServiceActor = context.Context.ActorOf(
-                StateChangeNotifierActor.Props(
+                NotifierActor.Props(
                     context.Context.Self,
                     initialSubscribed ?? new HashSet<IActorRef>()
                     ), 
@@ -50,7 +50,7 @@ namespace Actors.StateChangeNotifier
         /// <returns></returns>
         public IDroneStateVisitor GetStateChangeNotifierVisitor()
         {
-            return new StateChangeNotifierVisitor(_notificationServiceActor);
+            return new StateNotifierVisitor(_notificationServiceActor);
         }
 
     }
