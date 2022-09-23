@@ -8,34 +8,29 @@ namespace TerminalUI.Verbs
     [Verb("set-repository", HelpText = "Imposta il repository per le missioni spawnate da questo terminale")]
     internal class SetRepository : IVerb
     {
-        [Value(0, Required = true, HelpText = "Porta dell'ActorSystem con il repository")]
+        [Option('h', HelpText = "Hostname dell'ActorSystem", Default = "localhost")]
+        public string? Host { get; set; }
+
+        [Option('p', HelpText = "Porta dell'ActorSystem a cui collegarsi", Required = true)]
         public int Port { get; set; }
 
         public Environment Run(Environment env)
         {
-            if (env.ActorSystems.ContainsKey(Port))
-            {
-                var configs = SystemConfigs.GenericConfig;
-                configs.ActorName = "repository";
+            var configs = SystemConfigs.GenericConfig;
+            configs.ActorName = "repository";
 
-                var repositoryAPI = new RepositoryProvider(env.ActorSystems[Port], configs)
-                    .TryConnectToExistent(new Host("localhost", Port));
-                if (repositoryAPI is null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Error.WriteLine("Errore: repository non trovato!");
-                }
-                else
-                {
-                    env.RepositoryAPI = repositoryAPI;
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Repository impostato correttamente sulla porta {Port}");
-                }
+            var repositoryAPI = new RepositoryProvider(env.InterfaceActorSystem, configs)
+                .TryConnectToExistent(new Host(Host!, Port));
+            if (repositoryAPI is null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine("Errore: repository non trovato!");
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore: porta non utilizzata! Inizializzare prima un repository con spawn-repository");
+                env.RepositoryAPI = repositoryAPI;
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Repository impostato correttamente sulla porta {Port}");
             }
 
             return env;

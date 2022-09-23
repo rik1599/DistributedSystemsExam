@@ -6,7 +6,7 @@ using Environment = TerminalUI.Environment;
 
 Console.ResetColor();
 
-_ = Parser.Default.ParseArguments(args, LoadVerbs());
+_ = Parser.Default.ParseArguments(new string[1] {"help"}, LoadVerbs());
 var env = new Environment();
 
 string? line;
