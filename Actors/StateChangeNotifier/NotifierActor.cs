@@ -12,7 +12,7 @@ namespace Actors.StateChangeNotifier
     /// L'attore base probabilmente gli inoltra anche tutti i messaggi 
     /// del protocollo utilizzando <code>Forward(msg)</code>.
     /// </summary>
-    internal class StateChangeNotifierActor : ReceiveActor
+    internal class NotifierActor : ReceiveActor
     {
         /// <summary>
         /// Riferimento all'attore principale. Ogni messaggio che invio
@@ -45,13 +45,13 @@ namespace Actors.StateChangeNotifier
         public static Props Props(IActorRef mainActor, IReadOnlySet<IActorRef>? initialSubscribed = null)
         {
             return Akka.Actor.Props.Create(() => 
-            new StateChangeNotifierActor(
+            new NotifierActor(
                 mainActor, 
                 initialSubscribed ?? new HashSet<IActorRef>())
             );
         }
 
-        public StateChangeNotifierActor(IActorRef mainActor, IReadOnlySet<IActorRef> initialSubscribed)
+        public NotifierActor(IActorRef mainActor, IReadOnlySet<IActorRef> initialSubscribed)
         {
             _mainActor = mainActor;
             _subscribed = initialSubscribed.ToHashSet();

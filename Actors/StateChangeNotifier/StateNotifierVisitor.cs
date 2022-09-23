@@ -12,11 +12,11 @@ namespace Actors.StateChangeNotifier
     /// per aggiornare il notificatore di un avvenuto 
     /// cambio di stato. 
     /// </summary>
-    internal class StateChangeNotifierVisitor : IDroneStateVisitor
+    internal class StateNotifierVisitor : IDroneStateVisitor
     {
         private IActorRef _notificationServiceActor;
 
-        public StateChangeNotifierVisitor(IActorRef notificationServiceActor)
+        public StateNotifierVisitor(IActorRef notificationServiceActor)
         {
             _notificationServiceActor = notificationServiceActor;
         }
