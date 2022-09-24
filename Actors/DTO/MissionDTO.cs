@@ -13,20 +13,20 @@ namespace Actors.DTO
         
         public MissionPath MissionPath { get; }
 
-        protected MissionDTO(Mission mission)
+        public MissionDTO(IActorRef nodeRef, MissionPath missionPath)
         {
-            NodeRef = mission.NodeRef;
-            MissionPath = mission.Path;
+            NodeRef = nodeRef;
+            MissionPath = missionPath;
         }
 
         public static MissionDTO GetFlyingMissionDTO(FlyingMission flyingMission, Mission thisMission)
         {
-            return new FlyingMissionDTO(flyingMission, flyingMission.GetRemainingTimeForSafeStart(thisMission));
+            return new FlyingMissionDTO(flyingMission.NodeRef, flyingMission.Path, flyingMission.GetRemainingTimeForSafeStart(thisMission));
         }
 
         public static MissionDTO GetWaitingMissionDTO(WaitingMission waitingMission)
         {
-            return new WaitingMissionDTO(waitingMission, waitingMission.Priority);
+            return new WaitingMissionDTO(waitingMission.NodeRef, waitingMission.Path, waitingMission.Priority);
         }
     }
 
@@ -37,7 +37,8 @@ namespace Actors.DTO
     {
         public TimeSpan RemainingTimeForSafeStart { get; }
 
-        public FlyingMissionDTO(Mission mission, TimeSpan remainingTimeForSafeStart) : base(mission)
+        public FlyingMissionDTO(IActorRef nodeRef, MissionPath missionPath, TimeSpan remainingTimeForSafeStart) 
+            : base(nodeRef, missionPath)
         {
             RemainingTimeForSafeStart = remainingTimeForSafeStart;
         }
@@ -50,7 +51,8 @@ namespace Actors.DTO
     {
         public Priority Priority { get; }
 
-        public WaitingMissionDTO(Mission mission, Priority priority) : base(mission)
+        public WaitingMissionDTO(IActorRef nodeRef, MissionPath missionPath, Priority priority)
+            : base(nodeRef, missionPath)
         {
             Priority = priority;
         }
