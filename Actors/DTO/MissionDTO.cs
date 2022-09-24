@@ -37,7 +37,7 @@ namespace Actors.DTO
     {
         public TimeSpan RemainingTimeForSafeStart { get; }
 
-        internal FlyingMissionDTO(Mission mission, TimeSpan remainingTimeForSafeStart) : base(mission)
+        public FlyingMissionDTO(Mission mission, TimeSpan remainingTimeForSafeStart) : base(mission)
         {
             RemainingTimeForSafeStart = remainingTimeForSafeStart;
         }
@@ -50,7 +50,7 @@ namespace Actors.DTO
     {
         public Priority Priority { get; }
 
-        internal WaitingMissionDTO(Mission mission, Priority priority) : base(mission)
+        public WaitingMissionDTO(Mission mission, Priority priority) : base(mission)
         {
             Priority = priority;
         }
