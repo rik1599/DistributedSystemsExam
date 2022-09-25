@@ -33,6 +33,8 @@ namespace Actors.DroneStates
         /// </summary>
         private readonly Priority _priority;
 
+        internal Priority GetPriority() => _priority;
+
         public NegotiateState(DroneActorState precedentState) 
             : base(precedentState)
         {
@@ -61,6 +63,9 @@ namespace Actors.DroneStates
                 ActorContext.StartMessageTimeout(_metricTimeoutKey, _expectedMetrics.Count);
             }
 
+            // notifico cambio di stato
+            PerformVisit(ChangeStateNotifier);
+
             return NextState();
         }
 
@@ -75,7 +80,8 @@ namespace Actors.DroneStates
             _ = base.OnReceive(msg, sender);
             _ = _expectedMetrics.Remove(sender);
             _ = _expectedIntentions.Remove(sender);
-            return NextState();
+            var s = NextState();
+            return s;
         }
 
         internal override DroneActorState OnReceive(MetricMessage msg, IActorRef sender)
@@ -166,6 +172,11 @@ namespace Actors.DroneStates
             {
                 ActorRef.Tell(msg.MetricMessage, msg.Sender);
             }
+        }
+
+        public override void PerformVisit(IDroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

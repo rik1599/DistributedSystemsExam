@@ -3,19 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drones", "Drones\Drones.csproj", "{A19090B7-199F-449D-8EF7-561B80351156}"
-	ProjectSection(ProjectDependencies) = postProject
-		{50E5DAC5-CB15-4DB4-92FA-C6FBFA6EEF0D} = {50E5DAC5-CB15-4DB4-92FA-C6FBFA6EEF0D}
-	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Environment", "Environment\Environment.csproj", "{E039AE06-323D-4F5F-AD60-5E2CFAD780D6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{50E5DAC5-CB15-4DB4-92FA-C6FBFA6EEF0D} = {50E5DAC5-CB15-4DB4-92FA-C6FBFA6EEF0D}
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Actors", "Actors\Actors.csproj", "{50E5DAC5-CB15-4DB4-92FA-C6FBFA6EEF0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{CECE58C0-57FC-48E8-9656-55F3119E90C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{CECE58C0-57FC-48E8-9656-55F3119E90C8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DroneSystemAPI", "DroneSystemAPI\DroneSystemAPI.csproj", "{F1A3FAC1-C9F1-4D0A-974E-3D77E2782064}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalUI", "TerminalUI\TerminalUI.csproj", "{C0E843A8-107A-4ABC-9730-14D9F8998123}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A19090B7-199F-449D-8EF7-561B80351156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A19090B7-199F-449D-8EF7-561B80351156}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A19090B7-199F-449D-8EF7-561B80351156}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A19090B7-199F-449D-8EF7-561B80351156}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E039AE06-323D-4F5F-AD60-5E2CFAD780D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E039AE06-323D-4F5F-AD60-5E2CFAD780D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E039AE06-323D-4F5F-AD60-5E2CFAD780D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E039AE06-323D-4F5F-AD60-5E2CFAD780D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{50E5DAC5-CB15-4DB4-92FA-C6FBFA6EEF0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{50E5DAC5-CB15-4DB4-92FA-C6FBFA6EEF0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50E5DAC5-CB15-4DB4-92FA-C6FBFA6EEF0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +25,14 @@ Global
 		{CECE58C0-57FC-48E8-9656-55F3119E90C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CECE58C0-57FC-48E8-9656-55F3119E90C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CECE58C0-57FC-48E8-9656-55F3119E90C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1A3FAC1-C9F1-4D0A-974E-3D77E2782064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1A3FAC1-C9F1-4D0A-974E-3D77E2782064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1A3FAC1-C9F1-4D0A-974E-3D77E2782064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1A3FAC1-C9F1-4D0A-974E-3D77E2782064}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0E843A8-107A-4ABC-9730-14D9F8998123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0E843A8-107A-4ABC-9730-14D9F8998123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0E843A8-107A-4ABC-9730-14D9F8998123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0E843A8-107A-4ABC-9730-14D9F8998123}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

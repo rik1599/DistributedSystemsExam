@@ -6,9 +6,11 @@ using Akka.Actor;
 
 namespace Actors.DroneStates
 {
-    internal class WaitingState : DroneActorState
+    public class WaitingState : DroneActorState
     {
         private readonly Priority _priority;
+        internal Priority GetPriority() => _priority;
+
 
         public WaitingState(DroneActorState precedentState, Priority priority): base(precedentState)
         {
@@ -21,6 +23,10 @@ namespace Actors.DroneStates
             {
                 node.Tell(new WaitMeMessage());
             }
+
+            // notifico cambio di stato
+            PerformVisit(ChangeStateNotifier);
+
             return this;
         }
 
@@ -64,6 +70,11 @@ namespace Actors.DroneStates
             if (FlyingMissionsMonitor.GetFlyingMissions().Count == 0 && ConflictSet.GetGreaterPriorityMissions(_priority).Count == 0)
                 return CreateFlyingState(this).RunState();
             else return this;
+        }
+
+        public override void PerformVisit(IDroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

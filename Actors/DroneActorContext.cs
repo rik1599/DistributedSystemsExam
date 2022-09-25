@@ -6,7 +6,7 @@ using Actors.Messages.Internal;
 
 namespace Actors
 {
-    sealed class DroneActorContext
+    internal sealed class DroneActorContext
     {
         private readonly DateTime _timeSpawn = DateTime.Now;
         private readonly ITimerScheduler _timers;

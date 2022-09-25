@@ -19,12 +19,27 @@ namespace Actors.DroneStates
         private IActorRef? _flyingDroneActor;
 
         private bool _isMissionEnd = false;
+
+        /// <summary>
+        /// Ultimo valore della posizione del drone registrato. Si tiene
+        /// così in caso che la missione termini (e l'attore per la gestione
+        /// del volo non sia più disponibile) si possa ritornare
+        /// qualcosa quando viene chiamato il metodo GetCurrentPosition.
+        /// </summary>
+        private Point2D _lastPositionCache;
+
+        private readonly DateTime _startTime = DateTime.Now;
+        internal TimeSpan DoneFlyTime() => _startTime - DateTime.Now;
+        internal TimeSpan RemainingFlyTime() => MissionPath.ExpectedDuration() - DoneFlyTime();
         
-        public FlyingState(DroneActorState precedentState): base(precedentState) {}
+        public FlyingState(DroneActorState precedentState): base(precedentState) 
+        {
+            _lastPositionCache = MissionPath.StartPoint;
+        }
 
         internal override DroneActorState RunState()
         {
-            ActorContext.Log.Info("Sto partendo");
+            ActorContext.Log.Warning("Sto partendo");
             foreach (var node in ConflictSet.GetNodes())
             {
                 node.Tell(new FlyingResponse(MissionPath));
@@ -35,7 +50,11 @@ namespace Actors.DroneStates
                 FlyingDroneActor.Props(ActorContext.ThisMission, ActorRef), "fly-actor");
 
             // lo supervisiono (in modo da rilevare quando e come termina)
-            ActorContext.Context.WatchWith(_flyingDroneActor, new InternalMissionEnded());
+            // TODO: gestisci errore
+            ActorContext.Context.Watch(_flyingDroneActor);
+
+            // notifico cambio di stato
+            PerformVisit(ChangeStateNotifier);
 
             return this;
         }
@@ -88,15 +107,19 @@ namespace Actors.DroneStates
 
         internal override DroneActorState OnReceive(InternalMissionEnded msg, IActorRef sender)
         {
+            // se il messaggio duplicato, non faccio nulla
             if (_isMissionEnd)
-            {
-                // messaggio duplicato
                 return this;
-            }
 
             _isMissionEnd = true;
 
-            return CreateExitState(this).RunState();
+            _lastPositionCache = msg.Position;
+
+            // termino l'attore che gestisce il volo e cancello il riferimento
+            _flyingDroneActor.Tell(PoisonPill.Instance);
+            _flyingDroneActor = null;   
+            
+            return CreateExitState(this, true, "Mission ENDED! Killing myself").RunState();
         }
 
 
@@ -115,11 +138,30 @@ namespace Actors.DroneStates
         /// potrebbe non ritornare immediatamente una risposta)
         /// </summary>
         /// <returns></returns>
-        private Point2D GetCurrentPosition()
+        internal Point2D GetCurrentPosition()
         {
-            return _flyingDroneActor
-                .Ask<InternalPositionResponse>(new InternalPositionRequest())
-                .Result.Position;
+            // se l'attore del volo non esiste, uso il valore in cache
+            if (_flyingDroneActor is null)
+                return _lastPositionCache;
+
+            Task<InternalPositionResponse> t = _flyingDroneActor.Ask<InternalPositionResponse>(
+                new InternalPositionRequest(), new TimeSpan(0, 0, 10));
+
+            t.Wait();
+
+            if (t.IsCompleted)
+            {
+                _lastPositionCache = t.Result.Position;
+            }
+
+            // (se non sono riuscito a contattare l'attore, 
+            // uso il valore in cache)
+            return _lastPositionCache;
+        }
+
+        public override void PerformVisit(IDroneStateVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

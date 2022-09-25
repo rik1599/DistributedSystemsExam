@@ -5,6 +5,9 @@ using Actors.Messages.External;
 using Actors.Messages.Internal;
 using Actors.DroneStates;
 using Actors.Messages.Register;
+using Actors.Messages.User;
+using Actors.Messages.StateChangeNotifier;
+using Actors.StateChangeNotifier;
 
 namespace Actors
 {
@@ -14,24 +17,45 @@ namespace Actors
 
         private DroneActorState? _droneState;
 
+        private NotificationProtocol? _notificationProtocol;
+
+        /// <summary>
+        /// Eventuale riferimento a chi mi ha spawnato
+        /// </summary>
+        private readonly IActorRef? _spawner;
+
+        public DroneActor(IActorRef? spawner = null)
+        {
+            _spawner = spawner;
+        }
+
         /// <summary>
         /// Algoritmo di schedulazione delle partenze
         /// </summary>
         protected void AlgorithmRunBehaviour(ISet<IActorRef> nodes, MissionPath missionPath)
         {
-            // avvio lo stato iniziale
             var droneContext = new DroneActorContext(Context, nodes, new WaitingMission(Self, missionPath, Priority.NullPriority), Timers!);
-            _droneState = DroneActorState.CreateInitState(droneContext, Timers!).RunState();
 
-            ReceiveExternalMessages();
+            // avvio il servizio di notifica
+            _notificationProtocol = new NotificationProtocol(droneContext, 
+                _spawner is null ? null : new HashSet<IActorRef>() { _spawner }
+                );
+
+            // avvio lo stato iniziale
+            _droneState = DroneActorState.CreateInitState(droneContext, Timers!,
+                _notificationProtocol.GetStateChangeNotifierVisitor()).RunState();
+
+            ReceiveMainProtocolMessages();
             ReceiveInternalMessage();
+            HandleUserRequests();
+            HandleNotificationProtocol();
         }
 
         /// <summary>
         /// Ricevi e gestisci tutti i messaggi esterni del protocollo 
         /// di schedulazione dei voli.
         /// </summary>
-        private void ReceiveExternalMessages()
+        private void ReceiveMainProtocolMessages()
         {
             // la modalità di gestione dei messaggi dipende dallo stato del drone
             Receive<ConnectRequest> (msg => _droneState = _droneState!.OnReceive(msg, Sender));
@@ -53,14 +77,40 @@ namespace Actors
             Receive<InternalTimeoutEnded>    (msg => _droneState = _droneState!.OnReceive(msg, Sender));
         }
 
-        public static Props Props(IActorRef repository, MissionPath missionPath)
+        private void HandleUserRequests()
         {
-            return Akka.Actor.Props.Create(() => new RegisterDroneActor(repository, missionPath));
+            Receive<GetStatusRequest>(msg =>
+            {
+                StateDTOBuilderVisitor visitor = new StateDTOBuilderVisitor();
+                _droneState!.PerformVisit(visitor);
+
+                Sender.Tell(new GetStatusResponse(visitor.StateDTO!));
+            });
+
+            Receive<CancelMissionRequest>(msg =>
+            {
+                _droneState = DroneActorState.CreateExitState(
+                    _droneState!, false,
+                    "Mission cancelled", 
+                    false).RunState();
+
+                Sender.Tell(new CancelMissionResponse());
+            });
         }
 
-        public static Props Props(ISet<IActorRef> nodes, MissionPath missionPath)
+        private void HandleNotificationProtocol()
         {
-            return Akka.Actor.Props.Create(() => new SimpleDroneActor(nodes, missionPath));
+            Receive<INotificationProtocolMessage>(msg => _notificationProtocol!.OnReceive(msg));
+        }
+
+        public static Props Props(IActorRef repository, MissionPath missionPath, IActorRef? spawner=null)
+        {
+            return Akka.Actor.Props.Create(() => new RegisterDroneActor(repository, missionPath, spawner));
+        }
+
+        public static Props Props(ISet<IActorRef> nodes, MissionPath missionPath, IActorRef? spawner = null)
+        {
+            return Akka.Actor.Props.Create(() => new SimpleDroneActor(nodes, missionPath, spawner));
         }
     }
 
@@ -76,7 +126,7 @@ namespace Actors
         /// Procedura iniziale di connessione ad un repository
         /// per reperire tutti i possibili nodi.
         /// </summary>
-        public RegisterDroneActor(IActorRef repository, MissionPath missionPath)
+        public RegisterDroneActor(IActorRef repository, MissionPath missionPath, IActorRef? spawner = null) : base(spawner)
         {
             try
             {
@@ -98,7 +148,7 @@ namespace Actors
     /// </summary>
     internal class SimpleDroneActor : DroneActor
     {
-        public SimpleDroneActor(ISet<IActorRef> nodes, MissionPath missionPath)
+        public SimpleDroneActor(ISet<IActorRef> nodes, MissionPath missionPath, IActorRef? spawner = null) : base(spawner)
         {
             AlgorithmRunBehaviour(nodes.ToHashSet(), missionPath);
         }

@@ -81,9 +81,14 @@ namespace Actors.MissionPathPriority
         public TimeSpan TimeDistance(Point2D p)
         {
             // (la velocità si esprime in unità al secondo)
-            return TimeSpan.FromSeconds(
+            return p!=StartPoint ? TimeSpan.FromSeconds(
                 new Line2D(StartPoint, p).Length / Speed
-                );
+                ) : TimeSpan.Zero;
+        }
+
+        public TimeSpan ExpectedDuration()
+        {
+            return TimeDistance(EndPoint);
         }
     }
 }

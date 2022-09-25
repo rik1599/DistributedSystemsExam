@@ -47,9 +47,9 @@ namespace Actors
             var distanceToEnd = _mission.Path.PathSegment().EndPoint - _position;
             if (distanceToEnd.Normalize().Equals(-_mission.Path.PathSegment().Direction, 1e-3) || distanceToEnd.Length == 0)
             {
-                _supervisor.Tell(new InternalMissionEnded());
+                _supervisor.Tell(new InternalMissionEnded(_position));
                 _logger.Warning("Viaggio finito");
-                Self.Tell(PoisonPill.Instance);
+                // Self.Tell(PoisonPill.Instance);
             }
         }
 
