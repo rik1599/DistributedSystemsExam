@@ -38,9 +38,9 @@ namespace UnitTests
                 1.0F
                 );
 
-            Point2D? pc = missionPathA.ClosestConflictPoint(missionPathB);
+            Point2D? pc = missionPathA.ClosestConflictPoint(missionPathB, 0.0001f);
             Assert.NotNull(pc);
-            Assert.True(pc is not null && pc.Value.Equals(new Point2D(1, 1), 0.0001));
+            Assert.True(pc is not null && pc.Value.Equals(new Point2D(1, 1), 0.001));
         }
 
         [Fact]
