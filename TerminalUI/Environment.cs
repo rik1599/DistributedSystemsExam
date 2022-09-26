@@ -1,9 +1,6 @@
-﻿using Actors.DTO;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.Actor.Internal;
 using DroneSystemAPI;
-using DroneSystemAPI.APIClasses;
-using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 using DroneSystemAPI.APIClasses.Repository;
 
 namespace TerminalUI
