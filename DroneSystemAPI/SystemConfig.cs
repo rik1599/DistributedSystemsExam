@@ -7,7 +7,7 @@ namespace DroneSystemAPI
         public virtual string SystemName { get; set; } = "DroneDeliverySystem";
         public abstract string ActorName { get; set; }
 
-        public virtual string SpawnerActor { get; set; } = "spawner";
+        public string SpawnerActor { get; } = "spawner";
 
         public virtual string HostName { get; set; } = "localhost";
         public virtual int Port { get; set; } = 0;

@@ -31,6 +31,9 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem su cui spawnare la missione", Required = true)]
         public int Port { get; set; }
 
+        [Option('n', HelpText = "Nome della missione. Se non specificato viene generato automaticamente", Required = false)]
+        public string? MissionName { get; set; }
+
         public Environment Run(Environment env)
         {
             if (env.RepositoryAPI is null)
@@ -52,7 +55,8 @@ namespace TerminalUI.Verbs
             var mission = new MissionPath(start, end, Speed);
             var config = SystemConfigs.GenericConfig;
             var host = new Host(Host!, Port);
-            var ID = $"{mission.GetHashCode()}-{Host}:{Port}";
+            MissionName = MissionName is null ? MissionName : mission.GetHashCode().ToString();
+            var ID = $"{MissionName}-{Host}:{Port}";
             var missionAPI = new MissionSpawner(
                 env.InterfaceActorSystem,
                 env.RepositoryAPI,
@@ -74,7 +78,7 @@ namespace TerminalUI.Verbs
             env.Missions.Add(ID, missionInfo);
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(mission.GetHashCode());
+            Console.WriteLine(MissionName);
 
             return env;
         }
