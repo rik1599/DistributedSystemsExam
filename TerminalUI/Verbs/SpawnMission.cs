@@ -55,7 +55,7 @@ namespace TerminalUI.Verbs
             var mission = new MissionPath(start, end, Speed);
             var config = SystemConfigs.GenericConfig;
             var host = new Host(Host!, Port);
-            MissionName = MissionName is null ? MissionName : mission.GetHashCode().ToString();
+            MissionName = MissionName is not null ? MissionName : mission.GetHashCode().ToString();
             var ID = $"{MissionName}-{Host}:{Port}";
             var missionAPI = new MissionSpawner(
                 env.InterfaceActorSystem,

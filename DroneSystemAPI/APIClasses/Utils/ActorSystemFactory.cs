@@ -6,16 +6,16 @@ namespace DroneSystemAPI.APIClasses.Utils
 {
     public static class ActorSystemFactory
     {
-        public static ActorSystem Create(out int port)
+        public static ActorSystem Create(int port, out int assignedPort)
         {
             var config = SystemConfigs.GenericConfig;
+            config.Port = port;
 
             ActorSystemImpl? system;
             try
             {
                 system = ActorSystem.Create(config.SystemName, config.Config) as ActorSystemImpl;
-                var assignedPort = system!.LookupRoot.Provider.DefaultAddress.Port;
-                port = assignedPort!.Value;
+                assignedPort = system!.LookupRoot.Provider.DefaultAddress.Port!.Value;
                 system.ActorOf(Props.Create(() => new SpawnerActor()), config.SpawnerActor);
             }
             catch (Exception)
