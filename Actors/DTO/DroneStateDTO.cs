@@ -34,11 +34,11 @@ namespace Actors.DTO
             KnownNodes = droneContext.Nodes.ToHashSet();
 
             ConflictSet = conflictSet.Select<WaitingMission, WaitingMissionDTO>(
-                    mission => new WaitingMissionDTO(mission, mission.Priority))
+                    mission => (WaitingMissionDTO) MissionDTO.GetWaitingMissionDTO(mission))
                 .ToHashSet();
 
             FlyingConflictMissions = flyingConflictMissions.Select<FlyingMission, FlyingMissionDTO>(
-                    mission => new FlyingMissionDTO(mission, mission.GetRemainingTimeForSafeStart(droneContext.ThisMission)))
+                    mission => (FlyingMissionDTO) MissionDTO.GetFlyingMissionDTO(mission, droneContext.ThisMission))
                 .ToHashSet(); 
 
 

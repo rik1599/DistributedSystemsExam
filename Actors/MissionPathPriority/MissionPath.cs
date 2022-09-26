@@ -54,7 +54,7 @@ namespace Actors.MissionPathPriority
         /// </returns>
         public Point2D? ClosestConflictPoint(MissionPath p, double margin = MarginDistance)
         {
-            if (PathSegment().TryIntersect(p.PathSegment(), out var conflictPoint, Angle.FromRadians(0)))
+            /* if (PathSegment().TryIntersect(p.PathSegment(), out var conflictPoint, Angle.FromRadians(0)))
                 return conflictPoint;
 
             var minDistanceSegment = new SegmentDistanceCalculator(PathSegment(), p.PathSegment()).ComputeMinDistance();
@@ -63,7 +63,54 @@ namespace Actors.MissionPathPriority
                 PathSegment().TryIntersect(minDistanceSegment, out var minDistanceConflictPoint, Angle.FromRadians(0)))
                 return minDistanceConflictPoint;
             else
-                return null;
+                return null; */
+
+            // vettore direzione e direzione perpendicolare (* margine)
+            var direction = p.PathSegment().Direction.Normalize() * margin;
+            var perpendicular = p.PathSegment().Direction.Orthogonal.Normalize() * margin;
+
+            // vertici del poligono
+            Point2D startLeft = p.StartPoint - direction + perpendicular;
+            Point2D startRight = p.StartPoint - direction - perpendicular; 
+            Point2D endLeft = p.EndPoint + direction + perpendicular;
+            Point2D endRight = p.EndPoint + direction - perpendicular;
+
+            // controllo se il punto di partenza è già incluso nel poligono
+            if (new Polygon2D(startLeft, startRight, endRight, endLeft).EnclosesPoint(StartPoint)) 
+            { 
+                return new Point2D(StartPoint.X, StartPoint.Y);
+            }
+
+            // se non è incluso, costruisco i 4 segmenti e calcolo le intersezioni
+            // (seleziono la più vicina a start)
+            LineSegment2D[] marginSegments =
+            {
+                new LineSegment2D(startLeft, startRight),
+                new LineSegment2D(startRight, endRight),
+                new LineSegment2D(endRight, endLeft),
+                new LineSegment2D(endLeft, startLeft),
+            };
+
+            Point2D? conflictPoint = null;
+
+            foreach(var s in marginSegments)
+            {
+                Point2D intersect;
+                if (PathSegment().TryIntersect(s, out intersect, Angle.FromDegrees(0)))
+                {
+                    if (
+                        conflictPoint is null ||
+
+                        StartPoint.DistanceTo(intersect) <
+                        StartPoint.DistanceTo(conflictPoint.Value)
+                        )
+                    {
+                        conflictPoint = intersect;
+                    }
+                }
+            }
+
+            return conflictPoint;
         }
 
         public LineSegment2D PathSegment()
