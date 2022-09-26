@@ -67,16 +67,8 @@ namespace UnitTests.API
             var register = new RepositoryProvider(Sys).SpawnHere()!;
 
             // spawno una missione manualmente
-            _ = Sys.ActorOf(
-                DroneActor.Props(register.ActorRef, missionA)
-                    .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(Host.GetTestHost().GetSystemAddress(droneConfig.SystemName))
-                        ))),
-                "DroneA");
-
-            // uso il tool per ricavare un'istanza dell'API e le richiedo lo stato
-            var spawner = new MissionSpawner(Sys,
-                register, SimpleMissionAPI.Factory(), droneConfig);
+            var spawner = Sys.ActorOf<SpawnerActor>("spawner");
+            spawner.Ask(new SpawnActorRequest(DroneActor.Props(register.ActorRef, missionA), "DroneA")).Wait();
 
             IMissionAPI? a = new MissionProvider(Sys, droneConfig).TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
@@ -95,15 +87,17 @@ namespace UnitTests.API
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
             var config = SystemConfigs.DroneConfig;
+            config.SystemName = "test";
 
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
 
             // uso il tool per spawnare in remoto una missione
             // e ricavare un'istanza dell'API
+            Sys.ActorOf<SpawnerActor>("spawner");
             MissionSpawner spawner = new(Sys,
                 register, SimpleMissionAPI.Factory(), config);
-           
+
             IMissionAPI? a = spawner.SpawnRemote(Host.GetTestHost(), missionA, "DroneA");
             Assert.NotNull(a);
             Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);

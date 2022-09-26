@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using Actors;
+using Akka.Actor;
 
 namespace DroneSystemAPI.APIClasses.Utils
 {
@@ -24,9 +25,8 @@ namespace DroneSystemAPI.APIClasses.Utils
         {
             try
             {
-                var address = $"{systemAddress}/user/{actorName}";
+                var address = $"{systemAddress}/user/spawner/{actorName}";
                 return deployerSystem.ActorSelection(address).ResolveOne(_timeout).Result;
-
             } catch (ActorNotFoundException)
             {
                 return null;
@@ -51,17 +51,49 @@ namespace DroneSystemAPI.APIClasses.Utils
             }
         }
 
-        public static IActorRef? SpawnRemote(ActorSystem deployerSystem, Address remoteAddress, Props actorProps, string actorName)
+        public IActorRef? SpawnRemote(ActorSystem deployerSystem, Address remoteAddress, Props actorProps, string actorName)
         {
-            try
+            /* try
             {
                 return deployerSystem.ActorOf(
-                actorProps.WithDeploy(Deploy.None.WithScope(new RemoteScope(remoteAddress))),
-                actorName
+                    actorProps.WithDeploy(Deploy.None.WithScope(new RemoteScope(remoteAddress))),
+                    actorName
                 );
             }
             catch (InvalidActorNameException)
             {
+                return null;
+            } */
+
+            try
+            {
+                var remoteSpawner = deployerSystem
+                        .ActorSelection($"{remoteAddress}/user/spawner")
+                        .ResolveOne(_timeout).Result;
+
+                var result = remoteSpawner.Ask(
+                    new SpawnActorRequest(actorProps, actorName)).Result;
+
+                if (result is IActorRef @ref) 
+                    return @ref;
+                else 
+                    return null;
+            }/*
+            catch (ActorNotFoundException)
+            {
+                return null;
+            }
+            catch (AggregateException)
+            {
+                return null;
+            } 
+            catch (TimeoutException)
+            {
+                return null;
+            } */
+            catch (Exception e )
+            {
+                var x = e;
                 return null;
             }
         }

@@ -35,6 +35,8 @@ namespace UnitTests.API
             var config = SystemConfigs.RepositoryConfig;
             config.SystemName = Sys.Name;
 
+            Sys.ActorOf<SpawnerActor>("spawner");
+
             // spawn del registro (in remoto) usando il provider
             var registerProvider = new RepositoryProvider(Sys, config);
             RepositoryAPI register = registerProvider.SpawnRemote(Host.GetTestHost())!;
@@ -51,13 +53,9 @@ namespace UnitTests.API
             var config = SystemConfigs.RepositoryConfig;
             config.SystemName = Sys.Name;
 
-            // spawn del registro (in remoto)
-            _ = Sys.ActorOf(
-                DronesRepositoryActor.Props()
-                    .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.SystemName))
-                        ))),
-                config.ActorName);
+            // spawn del registro
+            var spawner = Sys.ActorOf<SpawnerActor>("spawner");
+            spawner.Ask(new SpawnActorRequest(DronesRepositoryActor.Props(), config.ActorName)).Wait();
 
             // connessione (usando il provider)
             var registerProvider = new RepositoryProvider(Sys, config);

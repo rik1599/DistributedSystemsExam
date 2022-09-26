@@ -11,14 +11,25 @@ namespace DroneSystemAPI.APIClasses.Mission
         private readonly ActorSystem _localSystem;
         private readonly SystemConfigs _config = SystemConfigs.DroneConfig;
 
+        /// <summary>
+        /// Lo strumento da utilizzare per generare le missioni
+        /// </summary>
+        private readonly IMissionAPIFactory _missionAPIFactory;
+
         public MissionProvider(ActorSystem localSystem)
         {
             _localSystem = localSystem;
+            _missionAPIFactory = ObserverMissionAPI.ObserverMissionAPI.Factory(_localSystem);
         }
 
         public MissionProvider(ActorSystem localSystem, SystemConfigs config) : this(localSystem)
         {
             _config = config;
+        }
+
+        public MissionProvider(ActorSystem localSystem, SystemConfigs config, IMissionAPIFactory missionAPIFactory) : this(localSystem, config)
+        {
+            _missionAPIFactory = missionAPIFactory;
         }
 
         /// <summary>
@@ -33,8 +44,7 @@ namespace DroneSystemAPI.APIClasses.Mission
                 Address.Parse(host.GetSystemAddress(_config.SystemName)),
                 missionName);
 
-            var missionAPI = ObserverMissionAPI.ObserverMissionAPI.Factory(_localSystem);
-            return (actorRef is null) ? null : missionAPI.GetMissionAPI(actorRef);
+            return (actorRef is null) ? null : _missionAPIFactory.GetMissionAPI(actorRef);
         }
     }
 
@@ -79,7 +89,7 @@ namespace DroneSystemAPI.APIClasses.Mission
 
         public IMissionAPI? SpawnRemote(Host host, MissionPath missionPath, string missionName)
         {
-            var actorRef = ActorProvider.SpawnRemote(
+            var actorRef = new ActorProvider().SpawnRemote(
                 _localSystem,
                 Address.Parse(host.GetSystemAddress(_config.SystemName)),
                 DroneActor.Props(_register.ActorRef, missionPath),

@@ -35,12 +35,15 @@ namespace UnitTests.API
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
 
+            var spawner = Sys.ActorOf<SpawnerActor>("spawner");
+            spawner.Ask(new SpawnActorRequest(DronesRepositoryActor.Props(), config.ActorName)).Wait();
+
             // creo il tool per lo spawn di missioni
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner missionSpawner = new(Sys,
                 register, ObserverMissionAPI.Factory(Sys), config);
 
             // spawno una missione
-            IMissionAPI a = spawner.SpawnHere(missionA, "DroneA")!;
+            IMissionAPI a = missionSpawner.SpawnHere(missionA, "DroneA")!;
             Assert.IsType<ObserverMissionAPI>(a);
 
             ObserverMissionAPI obsAPI = (ObserverMissionAPI) a;

@@ -30,8 +30,7 @@ namespace DroneSystemAPI.APIClasses.Repository
         /// <returns></returns>
         public RepositoryAPI? TryConnectToExistent(Host host)
         {
-            ActorProvider actorProvider = new ();
-            var actorRef = actorProvider.TryGetExistentActor(
+            var actorRef = new ActorProvider().TryGetExistentActor(
                 _localSystem, 
                 Address.Parse(host.GetSystemAddress(_config.SystemName)),
                 _config.ActorName);
@@ -59,7 +58,7 @@ namespace DroneSystemAPI.APIClasses.Repository
         /// <returns></returns>
         public RepositoryAPI? SpawnRemote(Host host)
         {
-            var actorRef = ActorProvider.SpawnRemote(
+            var actorRef = new ActorProvider().SpawnRemote(
                 _localSystem,
                 Address.Parse(host.GetSystemAddress(_config.SystemName)),
                 DronesRepositoryActor.Props(),
