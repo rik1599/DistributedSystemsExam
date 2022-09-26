@@ -3,6 +3,7 @@ using CommandLine;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Repository;
+using DroneSystemAPI.APIClasses.Utils;
 
 namespace TerminalUI.Verbs
 {
@@ -24,7 +25,7 @@ namespace TerminalUI.Verbs
                 configs.ActorName = "repository";
                 configs.Port = Port;
 
-                system = ActorSystemFactory.CreateActorSystem(env, configs, out var port);
+                system = ActorSystemFactory.Create(out var port);
                 if (system is not null)
                 {
                     Port = port;

@@ -55,7 +55,7 @@ namespace Actors
     public class SpawnActorRequest
     {
         public Props ActorProps { get; }
-        public String ActorName { get; }
+        public string ActorName { get; }
 
         public SpawnActorRequest(Props actorProps, string actorName)
         {

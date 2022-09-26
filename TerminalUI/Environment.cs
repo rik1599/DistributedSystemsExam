@@ -33,29 +33,4 @@ namespace TerminalUI
             }
         }
     }
-
-    internal class ActorSystemFactory
-    {
-        public static ActorSystem? CreateActorSystem(Environment env, SystemConfigs config, out int port)
-        {
-            ActorSystemImpl? system;
-            try
-            {
-                system = ActorSystem.Create(config.SystemName, config.Config) as ActorSystemImpl;
-                var assignedPort = system!.LookupRoot.Provider.DefaultAddress.Port;
-                env.ActorSystems.Add(assignedPort!.Value, system);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"ActorSystem creato alla porta {assignedPort}");
-                port = assignedPort.Value;
-            }
-            catch (Exception)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Porta già utilizzata!");
-                system = null;
-                port = 0;
-            }
-            return system;
-        }
-    }
 }

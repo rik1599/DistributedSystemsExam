@@ -4,8 +4,11 @@ namespace DroneSystemAPI
 {
     public abstract class SystemConfigs
     {
-        public virtual string SystemName { get; set; } = "ActorSystem";
+        public virtual string SystemName { get; set; } = "DroneDeliverySystem";
         public abstract string ActorName { get; set; }
+
+        public virtual string SpawnerActor { get; set; } = "spawner";
+
         public virtual string HostName { get; set; } = "localhost";
         public virtual int Port { get; set; } = 0;
 
