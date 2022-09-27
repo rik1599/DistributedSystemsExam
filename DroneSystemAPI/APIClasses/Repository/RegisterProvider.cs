@@ -42,10 +42,10 @@ namespace DroneSystemAPI.APIClasses.Repository
         /// <returns></returns>
         public RepositoryAPI? SpawnHere()
         {
-            var actorRef = RemoteLocationAPI.SpawnLocally(
-                _localSystem,
+            var actorRef = _localSystem.ActorOf(
                 DronesRepositoryActor.Props(),
                 _config.ActorName);
+
             return actorRef is null ? null : new RepositoryAPI(actorRef);
         }
 

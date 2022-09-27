@@ -108,17 +108,5 @@ namespace DroneSystemAPI.APIClasses.Utils
                 return false;
             }
         }
-
-        public static IActorRef? SpawnLocally(ActorSystem localActorSystem, Props actorProps, string actorName)
-        {
-            try
-            {
-                return localActorSystem.ActorOf(actorProps, actorName);
-            }
-            catch (InvalidActorNameException)
-            {
-                return null;
-            }
-        }
     }
 }

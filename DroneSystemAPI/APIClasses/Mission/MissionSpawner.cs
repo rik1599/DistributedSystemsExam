@@ -76,8 +76,7 @@ namespace DroneSystemAPI.APIClasses.Mission
 
         public IMissionAPI? SpawnHere(MissionPath missionPath, string missionName)
         {
-            var actorRef = RemoteLocationAPI.SpawnLocally(
-                _localSystem,
+            var actorRef = _localSystem.ActorOf(
                 DroneActor.Props(_register.ActorRef, missionPath),
                 missionName);
 
