@@ -189,7 +189,7 @@ namespace UnitTests.API
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
             var config = SystemConfigs.DroneConfig;
-            config.SystemName = "Test";
+            config.SystemName = "test";
 
             // creo il registro
             RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;

@@ -20,23 +20,21 @@ namespace DroneSystemAPI.APIClasses.Utils
         /// </summary>
         private ActorSystem _interfaceActorSystem;
 
-        public RemoteLocationAPI(ActorSystem interfaceActorSystem) 
+        public DeployPointDetails DeployPointDetails { get; }
+
+        public RemoteLocationAPI(ActorSystem interfaceActorSystem, DeployPointDetails deployPointDetails) 
         {
             _interfaceActorSystem = interfaceActorSystem;
+            DeployPointDetails = deployPointDetails;
             _timeout = DEFAULT_TIMEOUT;
         }
 
-        public RemoteLocationAPI(ActorSystem interfaceActorSystem, TimeSpan timeout) 
-        {
-            _interfaceActorSystem = interfaceActorSystem;
-            _timeout = timeout;
-        }
-
-        public IActorRef? TryGetExistentActor(ActorSystem deployerSystem, Address systemAddress, string actorName)
+        public IActorRef? TryGetExistentActor(string actorName)
         {
             try
             {
-                var address = $"{systemAddress}/user/spawner/{actorName}";
+                // var address = $"{systemAddress}/user/spawner/{actorName}";
+                var address = DeployPointDetails.SpawnerAddress() + "/" + actorName;
                 return _interfaceActorSystem.ActorSelection(address).ResolveOne(_timeout).Result;
             } catch (ActorNotFoundException)
             {
@@ -62,12 +60,12 @@ namespace DroneSystemAPI.APIClasses.Utils
             }
         }
 
-        public IActorRef? SpawnRemote(ActorSystem deployerSystem, Address remoteAddress, Props actorProps, string actorName)
+        public IActorRef? SpawnRemote(Props actorProps, string actorName)
         {
             try
             {
                 var remoteSpawner = _interfaceActorSystem
-                        .ActorSelection($"{remoteAddress}/user/spawner")
+                        .ActorSelection(DeployPointDetails.SpawnerAddress())
                         .ResolveOne(_timeout).Result;
 
                 var result = remoteSpawner.Ask(

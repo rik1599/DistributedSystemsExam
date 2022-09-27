@@ -38,7 +38,7 @@ namespace UnitTests.API
         {
             DeployPointInitializer initializer = new DeployPointInitializer(Sys);
 
-            var remoteLocation = new RemoteLocationAPI(Sys);
+            var remoteLocation = new RemoteLocationAPI(Sys, DeployPointDetails.GetTestDetails());
 
             Assert.True(true);
             initializer.Init();
@@ -54,14 +54,10 @@ namespace UnitTests.API
         {
             new DeployPointInitializer(Sys).Init();
 
-            var remoteLocation = new RemoteLocationAPI(Sys);
+            var remoteLocation = new RemoteLocationAPI(Sys, DeployPointDetails.GetTestDetails());
 
-            var echoActorRef = remoteLocation.SpawnRemote(
-                Sys, 
-                Address.Parse(Host.GetTestHost().GetSystemAddress("test")), 
-                EchoTestActor.Props(), 
-                "echo"
-                );
+            var echoActorRef = remoteLocation
+                .SpawnRemote(EchoTestActor.Props(), "echo");
 
             Assert.IsAssignableFrom<IActorRef>(echoActorRef);
 
@@ -80,20 +76,11 @@ namespace UnitTests.API
             IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
 
-            var remoteLocation = new RemoteLocationAPI(Sys);
+            var remoteLocation = new RemoteLocationAPI(Sys, DeployPointDetails.GetTestDetails());
 
-            _ = remoteLocation.SpawnRemote(
-                Sys,
-                Address.Parse(Host.GetTestHost().GetSystemAddress("test")),
-                EchoTestActor.Props(),
-                "echo"
-                );
+            _ = remoteLocation.SpawnRemote(EchoTestActor.Props(), "echo");
 
-            var echoActorRef = remoteLocation.TryGetExistentActor(
-                Sys,
-                Address.Parse(Host.GetTestHost().GetSystemAddress("test")),
-                "echo"
-                );
+            var echoActorRef = remoteLocation.TryGetExistentActor("echo");
 
             Assert.IsAssignableFrom<IActorRef>(echoActorRef);
 
