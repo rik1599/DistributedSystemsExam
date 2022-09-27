@@ -38,7 +38,7 @@ namespace UnitTests.API
         {
             DeployPointInitializer initializer = new DeployPointInitializer(Sys);
 
-            var remoteLocation = new RemoteLocationAPI();
+            var remoteLocation = new RemoteLocationAPI(Sys);
 
             Assert.True(true);
             initializer.Init();
@@ -54,7 +54,7 @@ namespace UnitTests.API
         {
             new DeployPointInitializer(Sys).Init();
 
-            var remoteLocation = new RemoteLocationAPI();
+            var remoteLocation = new RemoteLocationAPI(Sys);
 
             var echoActorRef = remoteLocation.SpawnRemote(
                 Sys, 
@@ -80,7 +80,7 @@ namespace UnitTests.API
             IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
 
-            var remoteLocation = new RemoteLocationAPI();
+            var remoteLocation = new RemoteLocationAPI(Sys);
 
             _ = remoteLocation.SpawnRemote(
                 Sys,

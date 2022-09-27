@@ -16,5 +16,20 @@ namespace DroneSystemAPI.APIClasses
             Host = host;
             ActorSystemName = actorSystemName;
         }
+
+        public string SystemAddress()
+        {
+            return Host.GetSystemAddress(ActorSystemName);
+        }
+
+        public string SpawnerAddress()
+        {
+            return Host.GetSystemAddress(ActorSystemName) + "/user/spawner";
+        }
+
+        public static DeployPointDetails GetTestDetails()
+        {
+            return new DeployPointDetails(Host.GetTestHost(), "test");
+        }
     }
 }

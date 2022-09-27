@@ -48,7 +48,10 @@ namespace UnitTests.API
         {
             new DeployPointInitializer(Sys).Init();
 
-            IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
+            String spawnerAddress = DeployPointDetails.GetTestDetails().SpawnerAddress();
+            Assert.Equal("akka://test/user/spawner", spawnerAddress);
+
+            IActorRef spawner = Sys.ActorSelection(spawnerAddress)
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
 
             var res = spawner.Ask(new SpawnActorTestMessage()).Result;
@@ -64,7 +67,7 @@ namespace UnitTests.API
         {
             new DeployPointInitializer(Sys).Init();
 
-            IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
+            IActorRef spawner = Sys.ActorSelection(DeployPointDetails.GetTestDetails().SpawnerAddress())
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
 
             var echoActorRef = spawner.Ask<IActorRef>(
@@ -85,7 +88,7 @@ namespace UnitTests.API
         {
             new DeployPointInitializer(Sys).Init();
 
-            IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
+            IActorRef spawner = Sys.ActorSelection(DeployPointDetails.GetTestDetails().SpawnerAddress())
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
 
             spawner.Ask<IActorRef>(
@@ -94,7 +97,7 @@ namespace UnitTests.API
                     "echo"
                 )).Wait();
 
-            var echoActorRef = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner/echo"))
+            var echoActorRef = Sys.ActorSelection(DeployPointDetails.GetTestDetails().SpawnerAddress() + "/echo")
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
 
             var res = echoActorRef.Ask<String>("hello world").Result;

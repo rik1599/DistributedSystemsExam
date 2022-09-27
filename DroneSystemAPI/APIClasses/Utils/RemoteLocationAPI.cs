@@ -14,13 +14,21 @@ namespace DroneSystemAPI.APIClasses.Utils
         public static readonly TimeSpan DEFAULT_TIMEOUT = new (0, 0, 10);
         private readonly TimeSpan _timeout;
 
-        public RemoteLocationAPI() 
+        /// <summary>
+        /// Actor system locale utilizzato per interfacciarsi 
+        /// con Akka.NET
+        /// </summary>
+        private ActorSystem _interfaceActorSystem;
+
+        public RemoteLocationAPI(ActorSystem interfaceActorSystem) 
         {
+            _interfaceActorSystem = interfaceActorSystem;
             _timeout = DEFAULT_TIMEOUT;
         }
 
-        public RemoteLocationAPI(TimeSpan timeout) 
+        public RemoteLocationAPI(ActorSystem interfaceActorSystem, TimeSpan timeout) 
         {
+            _interfaceActorSystem = interfaceActorSystem;
             _timeout = timeout;
         }
 
@@ -29,7 +37,7 @@ namespace DroneSystemAPI.APIClasses.Utils
             try
             {
                 var address = $"{systemAddress}/user/spawner/{actorName}";
-                return deployerSystem.ActorSelection(address).ResolveOne(_timeout).Result;
+                return _interfaceActorSystem.ActorSelection(address).ResolveOne(_timeout).Result;
             } catch (ActorNotFoundException)
             {
                 return null;
@@ -58,7 +66,7 @@ namespace DroneSystemAPI.APIClasses.Utils
         {
             try
             {
-                var remoteSpawner = deployerSystem
+                var remoteSpawner = _interfaceActorSystem
                         .ActorSelection($"{remoteAddress}/user/spawner")
                         .ResolveOne(_timeout).Result;
 
