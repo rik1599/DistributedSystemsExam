@@ -9,17 +9,17 @@ namespace DroneSystemAPI.APIClasses.Utils
     /// - spawnare attori (localmente o su sistemi remoti avviati)
     /// 
     /// </summary>
-    public class ActorProvider
+    public class RemoteLocationAPI
     {
         public static readonly TimeSpan DEFAULT_TIMEOUT = new (0, 0, 10);
         private readonly TimeSpan _timeout;
 
-        public ActorProvider() 
+        public RemoteLocationAPI() 
         {
             _timeout = DEFAULT_TIMEOUT;
         }
 
-        public ActorProvider(TimeSpan timeout) 
+        public RemoteLocationAPI(TimeSpan timeout) 
         {
             _timeout = timeout;
         }

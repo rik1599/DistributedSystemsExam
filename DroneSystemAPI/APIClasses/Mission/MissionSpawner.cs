@@ -39,7 +39,7 @@ namespace DroneSystemAPI.APIClasses.Mission
         /// <returns></returns>
         public IMissionAPI? TryConnectToExistent(Host host, string missionName)
         {
-            var actorRef = new ActorProvider().TryGetExistentActor(
+            var actorRef = new RemoteLocationAPI().TryGetExistentActor(
                 _localSystem,
                 Address.Parse(host.GetSystemAddress(_config.SystemName)),
                 missionName);
@@ -78,7 +78,7 @@ namespace DroneSystemAPI.APIClasses.Mission
 
         public IMissionAPI? SpawnHere(MissionPath missionPath, string missionName)
         {
-            var actorRef = ActorProvider.SpawnLocally(
+            var actorRef = RemoteLocationAPI.SpawnLocally(
                 _localSystem,
                 DroneActor.Props(_register.ActorRef, missionPath),
                 missionName);
@@ -89,7 +89,7 @@ namespace DroneSystemAPI.APIClasses.Mission
 
         public IMissionAPI? SpawnRemote(Host host, MissionPath missionPath, string missionName)
         {
-            var actorRef = new ActorProvider().SpawnRemote(
+            var actorRef = new RemoteLocationAPI().SpawnRemote(
                 _localSystem,
                 Address.Parse(host.GetSystemAddress(_config.SystemName)),
                 DroneActor.Props(_register.ActorRef, missionPath),
