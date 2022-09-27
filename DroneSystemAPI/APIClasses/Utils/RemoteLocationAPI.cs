@@ -56,18 +56,6 @@ namespace DroneSystemAPI.APIClasses.Utils
 
         public IActorRef? SpawnRemote(ActorSystem deployerSystem, Address remoteAddress, Props actorProps, string actorName)
         {
-            /* try
-            {
-                return deployerSystem.ActorOf(
-                    actorProps.WithDeploy(Deploy.None.WithScope(new RemoteScope(remoteAddress))),
-                    actorName
-                );
-            }
-            catch (InvalidActorNameException)
-            {
-                return null;
-            } */
-
             try
             {
                 var remoteSpawner = deployerSystem

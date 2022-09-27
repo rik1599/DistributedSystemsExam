@@ -9,25 +9,26 @@ using System.Threading.Tasks;
 
 namespace DroneSystemAPI.APIClasses
 {
-    public class LocationInitializerAPI
+    public class DeployPointInitializer
     {
         public Host ThisHost { get; }
         public ActorSystem _thisActorSystem { get; }
 
         private IActorRef? _spawnerActor;
 
-        public LocationInitializerAPI(ActorSystem thisActorSystem)
+        public DeployPointInitializer(ActorSystem thisActorSystem)
         {
             _thisActorSystem = thisActorSystem;
             ThisHost = _resolveHostFromActorSystem(thisActorSystem);
         }
 
-        public LocationInitializerAPI(Host host, string systemName)
+        public DeployPointInitializer(DeployPointDetails deployPointDetails)
         {
-           ThisHost = host;
+           ThisHost = deployPointDetails.Host;
+
             _thisActorSystem = ActorSystem.Create(
-                systemName, 
-                _resolveHookonFromHost(host)
+                deployPointDetails.ActorSystemName, 
+                _resolveHookonFromHost(deployPointDetails.Host)
                 );
         }
 

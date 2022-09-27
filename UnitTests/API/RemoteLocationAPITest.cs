@@ -36,7 +36,7 @@ namespace UnitTests.API
         [Fact]
         public void CheckSpawnerThroughAPITest()
         {
-            LocationInitializerAPI initializer = new LocationInitializerAPI(Sys);
+            DeployPointInitializer initializer = new DeployPointInitializer(Sys);
 
             var remoteLocation = new RemoteLocationAPI();
 
@@ -52,7 +52,7 @@ namespace UnitTests.API
         [Fact]
         public void RemoteSpawnThroughAPITest()
         {
-            new LocationInitializerAPI(Sys).Init();
+            new DeployPointInitializer(Sys).Init();
 
             var remoteLocation = new RemoteLocationAPI();
 
@@ -75,7 +75,7 @@ namespace UnitTests.API
         [Fact]
         public void RemoteGetRefThroughAPITest()
         {
-            new LocationInitializerAPI(Sys).Init();
+            new DeployPointInitializer(Sys).Init();
 
             IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;

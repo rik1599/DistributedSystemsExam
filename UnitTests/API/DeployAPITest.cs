@@ -33,7 +33,7 @@ namespace UnitTests.API
         [Fact]
         public void SetupLocationTest()
         {
-            LocationInitializerAPI initializer = new LocationInitializerAPI(Sys);
+            DeployPointInitializer initializer = new DeployPointInitializer(Sys);
 
             Assert.True(!initializer.IsInitialized());
             initializer.Init();
@@ -46,7 +46,7 @@ namespace UnitTests.API
         [Fact]
         public void CheckSpawnerTest()
         {
-            new LocationInitializerAPI(Sys).Init();
+            new DeployPointInitializer(Sys).Init();
 
             IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
@@ -62,7 +62,7 @@ namespace UnitTests.API
         [Fact]
         public void RemoteSpawnTest()
         {
-            new LocationInitializerAPI(Sys).Init();
+            new DeployPointInitializer(Sys).Init();
 
             IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
@@ -83,7 +83,7 @@ namespace UnitTests.API
         [Fact]
         public void RemoteSpawnReachabilityTest()
         {
-            new LocationInitializerAPI(Sys).Init();
+            new DeployPointInitializer(Sys).Init();
 
             IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
