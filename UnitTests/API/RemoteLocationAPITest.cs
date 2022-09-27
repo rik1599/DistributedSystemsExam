@@ -5,13 +5,16 @@ using Akka.TestKit.Xunit2;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Repository;
+using DroneSystemAPI.APIClasses.Utils;
 
 namespace UnitTests.API
 {
+    
+
     /// <summary>
     /// Test dei componenti che si usano per fare il deployment.
     /// </summary>
-    public class DeployAPITest : TestKit
+    public class RemoteLocationAPITest : TestKit
     {
         private class EchoTestActor : UntypedActor
         {
@@ -28,50 +31,39 @@ namespace UnitTests.API
 
         /// <summary>
         /// Verifica se spawno correttamente un attore spawner
-        /// in una locazione. 
+        /// in una locazione (tramite API remote)
         /// </summary>
         [Fact]
-        public void SetupLocationTest()
+        public void CheckSpawnerThroughAPITest()
         {
             LocationInitializerAPI initializer = new LocationInitializerAPI(Sys);
 
-            Assert.True(!initializer.IsInitialized());
+            var remoteLocation = new ActorProvider();
+
+            Assert.True(true);
             initializer.Init();
-            Assert.True(initializer.IsInitialized());
+            Assert.True(true);
         }
 
+
         /// <summary>
-        /// Inizializza una locazione e verifica l'esistenza dello spawner
+        /// Spawna e prova a contattare l'attore
         /// </summary>
         [Fact]
-        public void CheckSpawnerTest()
+        public void RemoteSpawnThroughAPITest()
         {
             new LocationInitializerAPI(Sys).Init();
 
-            IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
-                .ResolveOne(new TimeSpan(0, 0, 5)).Result;
+            var remoteLocation = new ActorProvider();
 
-            var res = spawner.Ask(new SpawnActorTestMessage()).Result;
-            Assert.IsType<bool>(res);
-            Assert.True((bool) res);
-        }
+            var echoActorRef = remoteLocation.SpawnRemote(
+                Sys, 
+                Address.Parse(Host.GetTestHost().GetSystemAddress("test")), 
+                EchoTestActor.Props(), 
+                "echo"
+                );
 
-        /// <summary>
-        /// Spawna  e prova a contattare l'attore
-        /// </summary>
-        [Fact]
-        public void RemoteSpawnTest()
-        {
-            new LocationInitializerAPI(Sys).Init();
-
-            IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
-                .ResolveOne(new TimeSpan(0, 0, 5)).Result;
-
-            var echoActorRef = spawner.Ask<IActorRef>(
-                new SpawnActorRequest(
-                    EchoTestActor.Props(), 
-                    "echo"
-                )).Result;
+            Assert.IsAssignableFrom<IActorRef>(echoActorRef);
 
             var res = echoActorRef.Ask<String>("hello world").Result;
             Assert.Equal("hello world", res);
@@ -81,21 +73,29 @@ namespace UnitTests.API
         /// Spawna tramite API remote e ottieni attore tramite actor selection
         /// </summary>
         [Fact]
-        public void RemoteSpawnReachabilityTest()
+        public void RemoteGetRefThroughAPITest()
         {
             new LocationInitializerAPI(Sys).Init();
 
             IActorRef spawner = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner"))
                 .ResolveOne(new TimeSpan(0, 0, 5)).Result;
 
-            spawner.Ask<IActorRef>(
-                new SpawnActorRequest(
-                    EchoTestActor.Props(),
-                    "echo"
-                )).Wait();
+            var remoteLocation = new ActorProvider();
 
-            var echoActorRef = Sys.ActorSelection(Host.GetTestHost().GetActorAddress("test", "spawner/echo"))
-                .ResolveOne(new TimeSpan(0, 0, 5)).Result;
+            _ = remoteLocation.SpawnRemote(
+                Sys,
+                Address.Parse(Host.GetTestHost().GetSystemAddress("test")),
+                EchoTestActor.Props(),
+                "echo"
+                );
+
+            var echoActorRef = remoteLocation.TryGetExistentActor(
+                Sys,
+                Address.Parse(Host.GetTestHost().GetSystemAddress("test")),
+                "echo"
+                );
+
+            Assert.IsAssignableFrom<IActorRef>(echoActorRef);
 
             var res = echoActorRef.Ask<String>("hello world").Result;
             Assert.Equal("hello world", res);

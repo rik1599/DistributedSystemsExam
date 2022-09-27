@@ -12,9 +12,12 @@ namespace DroneSystemAPI.APIClasses.Utils
     public class ActorProvider
     {
         public static readonly TimeSpan DEFAULT_TIMEOUT = new (0, 0, 10);
-        private readonly TimeSpan _timeout = DEFAULT_TIMEOUT;
+        private readonly TimeSpan _timeout;
 
-        public ActorProvider() { }
+        public ActorProvider() 
+        {
+            _timeout = DEFAULT_TIMEOUT;
+        }
 
         public ActorProvider(TimeSpan timeout) 
         {
