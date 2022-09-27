@@ -40,9 +40,9 @@ namespace UnitTests.API
 
             var remoteLocation = new RemoteLocationAPI(Sys, DeployPointDetails.GetTestDetails());
 
-            Assert.True(true);
+            Assert.True(!remoteLocation.Verify());
             initializer.Init();
-            Assert.True(true);
+            Assert.True(remoteLocation.Verify());
         }
 
 
@@ -57,7 +57,7 @@ namespace UnitTests.API
             var remoteLocation = new RemoteLocationAPI(Sys, DeployPointDetails.GetTestDetails());
 
             var echoActorRef = remoteLocation
-                .SpawnRemote(EchoTestActor.Props(), "echo");
+                .SpawnActor(EchoTestActor.Props(), "echo");
 
             Assert.IsAssignableFrom<IActorRef>(echoActorRef);
 
@@ -78,9 +78,9 @@ namespace UnitTests.API
 
             var remoteLocation = new RemoteLocationAPI(Sys, DeployPointDetails.GetTestDetails());
 
-            _ = remoteLocation.SpawnRemote(EchoTestActor.Props(), "echo");
+            _ = remoteLocation.SpawnActor(EchoTestActor.Props(), "echo");
 
-            var echoActorRef = remoteLocation.TryGetExistentActor("echo");
+            var echoActorRef = remoteLocation.GetActorRef("echo");
 
             Assert.IsAssignableFrom<IActorRef>(echoActorRef);
 

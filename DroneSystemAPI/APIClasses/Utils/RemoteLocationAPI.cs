@@ -29,7 +29,13 @@ namespace DroneSystemAPI.APIClasses.Utils
             _timeout = DEFAULT_TIMEOUT;
         }
 
-        public IActorRef? TryGetExistentActor(string actorName)
+        /// <summary>
+        /// Ottieni il riferimento di un attore che si trova su
+        /// questa locazione remota.
+        /// </summary>
+        /// <param name="actorName"></param>
+        /// <returns></returns>
+        public IActorRef? GetActorRef(string actorName)
         {
             try
             {
@@ -48,23 +54,18 @@ namespace DroneSystemAPI.APIClasses.Utils
             //      le eccezioni per dare un idea del tipo di errore
         }
 
-        public static IActorRef? SpawnLocally(ActorSystem localActorSystem, Props actorProps, string actorName)
+        /// <summary>
+        /// Spawna un attore sulla locazione remota (attraverso
+        /// il meccanismo dello spawner).
+        /// </summary>
+        /// <param name="actorProps"></param>
+        /// <param name="actorName"></param>
+        /// <returns></returns>
+        public IActorRef? SpawnActor(Props actorProps, string actorName)
         {
             try
             {
-                return localActorSystem.ActorOf(actorProps, actorName);
-            }
-            catch (InvalidActorNameException)
-            {
-                return null;
-            }
-        }
-
-        public IActorRef? SpawnRemote(Props actorProps, string actorName)
-        {
-            try
-            {
-                var remoteSpawner = _interfaceActorSystem
+                IActorRef remoteSpawner = _interfaceActorSystem
                         .ActorSelection(DeployPointDetails.SpawnerAddress())
                         .ResolveOne(_timeout).Result;
 
@@ -75,22 +76,47 @@ namespace DroneSystemAPI.APIClasses.Utils
                     return @ref;
                 else 
                     return null;
-            }/*
-            catch (ActorNotFoundException)
+            }
+            catch (Exception)
             {
+                // TODO: gestire meglio eccezioni (valutare di non gestirle)
                 return null;
             }
-            catch (AggregateException)
+        }
+
+        /// <summary>
+        /// Verifica che la locazione remota sia raggiungibile
+        /// e inizializzata.
+        /// </summary>
+        /// <returns></returns>
+        public bool Verify()
+        {
+            try
             {
-                return null;
-            } 
-            catch (TimeoutException)
+                IActorRef remoteSpawner = _interfaceActorSystem
+                        .ActorSelection(DeployPointDetails.SpawnerAddress())
+                        .ResolveOne(_timeout).Result;
+
+                var res = remoteSpawner.Ask(new SpawnActorTestMessage()).Result;
+                if (res is bool)
+                    return (bool) res;
+                else return false;
+            }
+            catch (Exception)
             {
-                return null;
-            } */
-            catch (Exception e )
+                // TODO: gestire meglio eccezioni (valutare di non gestirle)
+                return false;
+            }
+        }
+
+        public static IActorRef? SpawnLocally(ActorSystem localActorSystem, Props actorProps, string actorName)
+        {
+            try
             {
-                var x = e;
+                return localActorSystem.ActorOf(actorProps, actorName);
+            }
+            catch (InvalidActorNameException)
+            {
                 return null;
             }
         }
