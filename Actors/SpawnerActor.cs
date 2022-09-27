@@ -18,11 +18,26 @@ namespace Actors
 
         public SpawnerActor()
         {
-            Receive<SpawnActorRequest>((msg) =>
+            Receive<SpawnActorRequest>((msg) => OnReceive(msg));
+            Receive<SpawnActorTestMessage>((msg) => OnReceive(msg));
+        }
+
+        private void OnReceive(SpawnActorRequest msg)
+        {
+            try
             {
                 IActorRef child = Context.ActorOf(msg.ActorProps, msg.ActorName);
                 Sender.Tell(child);
-            });
+            }
+            catch (Exception ex)
+            {
+                Sender.Tell(ex);
+            }
+        }
+
+        private void OnReceive(SpawnActorTestMessage msg)
+        {
+            Sender.Tell(true);
         }
 
         protected override SupervisorStrategy SupervisorStrategy()
@@ -62,5 +77,10 @@ namespace Actors
             ActorProps = actorProps;
             ActorName = actorName;
         }
+    }
+
+    public class SpawnActorTestMessage
+    {
+
     }
 }
