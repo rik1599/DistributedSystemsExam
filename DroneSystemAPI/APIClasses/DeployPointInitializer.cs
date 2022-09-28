@@ -16,6 +16,8 @@ namespace DroneSystemAPI.APIClasses
 
         private IActorRef? _spawnerActor;
 
+        public IActorRef? SpawnerActor { get { return _spawnerActor; } }
+
         public DeployPointInitializer(ActorSystem thisActorSystem)
         {
             _thisActorSystem = thisActorSystem;

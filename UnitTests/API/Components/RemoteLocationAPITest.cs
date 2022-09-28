@@ -7,7 +7,7 @@ using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Repository;
 using DroneSystemAPI.APIClasses.Utils;
 
-namespace UnitTests.API
+namespace UnitTests.API.Components
 {
     
 
