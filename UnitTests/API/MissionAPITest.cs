@@ -35,11 +35,13 @@ namespace UnitTests.API
             var config = SystemConfigs.DroneConfig;
             
             // creo il registro
-            var register = new RepositoryProvider(Sys).SpawnHere();
+            var register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
 
             // creo il tool per lo spawn di missioni
             var spawner = new MissionSpawner(Sys, 
-                register!, SimpleMissionAPI.Factory(), config);
+                register, SimpleMissionAPI.Factory(), config);
 
             // spawno due missioni 
             IMissionAPI a = spawner.SpawnHere(missionA, "DroneA")!;
@@ -64,11 +66,13 @@ namespace UnitTests.API
             droneConfig.SystemName = "test";
 
             // creo il registro
-            var register = new RepositoryProvider(Sys).SpawnHere()!;
+            var register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
 
             // spawno una missione manualmente
             var spawner = Sys.ActorOf<SpawnerActor>("spawner");
-            spawner.Ask(new SpawnActorRequest(DroneActor.Props(register.ActorRef, missionA), "DroneA")).Wait();
+            spawner.Ask(new SpawnActorRequest(DroneActor.Props(register, missionA), "DroneA")).Wait();
 
             IMissionAPI? a = new MissionProvider(Sys, droneConfig).TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
@@ -89,13 +93,16 @@ namespace UnitTests.API
             var config = SystemConfigs.DroneConfig;
             config.SystemName = "test";
 
-            // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
+            new DeployPointInitializer(Sys).Init();
 
+            // creo il registro
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
+            ;
             // uso il tool per spawnare in remoto una missione
             // e ricavare un'istanza dell'API
-            Sys.ActorOf<SpawnerActor>("spawner");
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner spawner = new MissionSpawner(Sys,
                 register, SimpleMissionAPI.Factory(), config);
 
             IMissionAPI? a = spawner.SpawnRemote(Host.GetTestHost(), missionA, "DroneA");
@@ -118,12 +125,16 @@ namespace UnitTests.API
             config.SystemName = "test";
 
             // creo il registro (e mi ci iscrivo)
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
-            register.ActorRef.Tell(new RegisterRequest(TestActor));
-            ExpectMsgFrom<RegisterResponse>(register.ActorRef);
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
+
+
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
 
             // creo il tool per lo spawn di missioni
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner spawner = new MissionSpawner(Sys,
                 register, SimpleMissionAPI.Factory(), config);
 
             // spawno una missione

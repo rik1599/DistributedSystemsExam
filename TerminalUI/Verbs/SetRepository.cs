@@ -21,6 +21,7 @@ namespace TerminalUI.Verbs
 
             var repositoryAPI = new RepositoryProvider(env.InterfaceActorSystem, configs)
                 .TryConnectToExistent(new Host(Host!, Port));
+
             if (repositoryAPI is null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;

@@ -62,16 +62,16 @@ namespace TerminalUI.Verbs
             return env;
         }
 
-        private RepositoryAPI? Spawn(ActorSystem actorSystem)
+        private IActorRef? Spawn(ActorSystem actorSystem)
         {
             var configs = SystemConfigs.GenericConfig;
             configs.ActorName = "repository";
 
-            var repositoryAPI =
+            var repositoryActorRef =
                     new RepositoryProvider(actorSystem, configs)
                     .SpawnRemote(new Host(Host!, Port));
 
-            if (repositoryAPI is null)
+            if (repositoryActorRef is null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.WriteLine("Errore! Host Remoto non raggiungibile");
@@ -81,7 +81,7 @@ namespace TerminalUI.Verbs
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Error.WriteLine("Repository creato");
             }
-            return repositoryAPI;
+            return repositoryActorRef;
         }
     }
 }

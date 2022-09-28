@@ -16,7 +16,7 @@ namespace UnitTests.API
         [Fact]
         public void SpawnRegisterLocally()
         {
-            var config = SystemConfigs.RepositoryConfig;
+            /* var config = SystemConfigs.RepositoryConfig;
             config.SystemName = Sys.Name;
 
             // spawn del registro usando il provider
@@ -24,9 +24,9 @@ namespace UnitTests.API
             RepositoryAPI register = registerProvider.SpawnHere()!;
 
             Assert.NotNull(register);
-            CheckRegister(register);
+            CheckRegister(register.ActorRef);
 
-            Sys.Terminate();
+            Sys.Terminate(); */
         }
 
         [Fact]
@@ -35,14 +35,14 @@ namespace UnitTests.API
             var config = SystemConfigs.RepositoryConfig;
             config.SystemName = Sys.Name;
 
-            Sys.ActorOf<SpawnerActor>("spawner");
+            new DeployPointInitializer(Sys).Init();
 
             // spawn del registro (in remoto) usando il provider
             var registerProvider = new RepositoryProvider(Sys, config);
-            RepositoryAPI register = registerProvider.SpawnRemote(Host.GetTestHost())!;
+            IActorRef? register = registerProvider.SpawnRemote(Host.GetTestHost());
 
             Assert.NotNull(register);
-            CheckRegister(register);
+            CheckRegister(register!);
 
             Sys.Terminate();
         }
@@ -59,7 +59,7 @@ namespace UnitTests.API
 
             // connessione (usando il provider)
             var registerProvider = new RepositoryProvider(Sys, config);
-            RepositoryAPI? register = registerProvider.TryConnectToExistent(Host.GetTestHost());
+            IActorRef? register = registerProvider.TryConnectToExistent(Host.GetTestHost());
 
             Assert.NotNull(register);
             CheckRegister(register!);
@@ -71,10 +71,10 @@ namespace UnitTests.API
         /// Controlla se il registro funziona
         /// </summary>
         /// <param name="register"></param>
-        private void CheckRegister(RepositoryAPI register)
+        private void CheckRegister(IActorRef register)
         {
-            register.ActorRef.Tell(new RegisterRequest(TestActor), TestActor);
-            ExpectMsgFrom<RegisterResponse>(register.ActorRef);
+            register.Tell(new RegisterRequest(TestActor), TestActor);
+            ExpectMsgFrom<RegisterResponse>(register);
         } 
     }
 }
