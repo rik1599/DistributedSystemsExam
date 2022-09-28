@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using DroneSystemAPI;
+using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Utils;
 
 namespace TerminalUI.Verbs
@@ -13,7 +14,18 @@ namespace TerminalUI.Verbs
         {
             try
             {
-                _ = ActorSystemFactory.Create(Port, out var port);
+                _ = ActorSystemFactory.Create(
+
+                    // dettagli della locazione
+                    new DeployPointDetails(
+                        new Host("localhost", Port), 
+                        Config2.Default().SystemName
+                        ), 
+
+                    // porta reale dove viene creato il sistema
+                    // (in caso che io abbia passato 0 come input)
+                    out var port);
+
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Actor system creato alla porta {port}");
             }

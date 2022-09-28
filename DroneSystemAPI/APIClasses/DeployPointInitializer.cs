@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DroneSystemAPI.APIClasses
 {
+    [Obsolete("Not used any more", true)]
     public class DeployPointInitializer
     {
         public Host ThisHost { get; }

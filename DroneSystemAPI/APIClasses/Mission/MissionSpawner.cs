@@ -6,6 +6,7 @@ using DroneSystemAPI.APIClasses.Utils;
 
 namespace DroneSystemAPI.APIClasses.Mission
 {
+    [Obsolete("Not used any more", true)]
     public class MissionProvider
     {
         private readonly ActorSystem _localSystem;
@@ -46,6 +47,7 @@ namespace DroneSystemAPI.APIClasses.Mission
         }
     }
 
+    [Obsolete("Not used any more", true)]
     public class MissionSpawner
     {
         private readonly ActorSystem _localSystem;

@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Akka.Actor.Internal;
+using Akka.Configuration;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Repository;
@@ -9,22 +10,22 @@ namespace TerminalUI
     internal class Environment
     {
         public IDictionary<int, ActorSystem> ActorSystems { get; }
+
         public ActorSystem InterfaceActorSystem { get; }
-        // public IActorRef? RepositoryAPI { get; set; }
+
         public IDictionary<string, MissionInfo> Missions { get; }
 
         /// <summary>
-        /// 
+        /// API principale per coordinare il sistema (da "client")
         /// </summary>
         public DroneDeliverySystemAPI DroneDeliverySystemAPI { get; }
 
         public Environment()
         {
             // inizializzo actor system locale usato a scopo di interfaccia
-            var config = SystemConfigs.GenericConfig;
-            config.SystemName = "InterfaceActorSystem";
-            config.Port = 0;
-            InterfaceActorSystem = ActorSystem.Create(config.SystemName, config.Config);
+            InterfaceActorSystem = ActorSystem.Create(
+                "InterfaceActorSystem",
+                ConfigurationFactory.ParseString(_interfaceActorSystemHookon()));
 
             // inizializzo le liste degli actor system gestiti localmente
             ActorSystems = new Dictionary<int, ActorSystem>();
@@ -47,5 +48,24 @@ namespace TerminalUI
                 system.Value.Terminate();
             }
         }
+
+        private static string _interfaceActorSystemHookon()
+        {
+            return @$"
+akka {{
+    loglevel = WARNING
+    actor {{
+        provider = remote
+    }}
+    remote {{
+        dot-netty.tcp {{
+            port = 0
+            hostname = localhost
+        }}
+    }}
+}}";
+        }
+
+
     }
 }
