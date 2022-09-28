@@ -7,6 +7,7 @@ namespace DroneSystemAPI.APIClasses.Repository
     /// <summary>
     /// Strumento per il reperimento o per lo spawn di un registro dei nodi.
     /// </summary>
+    [Obsolete("Not used any more", true)]
     public class RepositoryProvider
     {
         private readonly ActorSystem _localSystem;

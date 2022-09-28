@@ -12,8 +12,10 @@ using Actors.Messages.Register;
 using Actors.Messages.External;
 using DroneSystemAPI;
 
-namespace UnitTests.API
+namespace UnitTests.API.Deprecated
 {
+    /*
+    
     /// <summary>
     /// Rappresentazione di situazioni nelle quali un nuovo nodo 
     /// spawna e deve gestirsi dei semplici conflitti (con un unico
@@ -156,5 +158,5 @@ namespace UnitTests.API
 
             Sys.Terminate();
         }
-    }
+    } */
 }

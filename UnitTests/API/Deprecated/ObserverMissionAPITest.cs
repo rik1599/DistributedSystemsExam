@@ -10,8 +10,9 @@ using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 using DroneSystemAPI;
 
-namespace UnitTests.API
+namespace UnitTests.API.Deprecated
 {
+    /*
     /// <summary>
     /// Rappresentazione di situazioni nelle quali un nuovo nodo 
     /// spawna e deve gestirsi dei semplici conflitti (con un unico
@@ -218,5 +219,5 @@ namespace UnitTests.API
             Sys.Terminate();
         }
         #endregion
-    }
+    }*/
 }

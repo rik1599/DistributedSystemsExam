@@ -7,10 +7,10 @@ using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Repository;
 using DroneSystemAPI.APIClasses.Utils;
 
-namespace UnitTests.API.Components
+namespace UnitTests.API.Deprecated.Components
 {
     
-
+    /*
     /// <summary>
     /// Test dei componenti che si usano per fare il deployment.
     /// </summary>
@@ -87,5 +87,5 @@ namespace UnitTests.API.Components
             var res = echoActorRef.Ask<String>("hello world").Result;
             Assert.Equal("hello world", res);
         }
-    }
+    }*/
 }

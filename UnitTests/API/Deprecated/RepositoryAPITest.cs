@@ -6,8 +6,9 @@ using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Repository;
 
-namespace UnitTests.API
+namespace UnitTests.API.Deprecated
 {
+    /*
     public class RepositoryAPITest : TestKit
     {
         /// <summary>
@@ -16,7 +17,7 @@ namespace UnitTests.API
         [Fact]
         public void SpawnRegisterLocally()
         {
-            /* var config = SystemConfigs.RepositoryConfig;
+            var config = SystemConfigs.RepositoryConfig;
             config.SystemName = Sys.Name;
 
             // spawn del registro usando il provider
@@ -26,7 +27,7 @@ namespace UnitTests.API
             Assert.NotNull(register);
             CheckRegister(register.ActorRef);
 
-            Sys.Terminate(); */
+            Sys.Terminate();
         }
 
         [Fact]
@@ -76,5 +77,5 @@ namespace UnitTests.API
             register.Tell(new RegisterRequest(TestActor), TestActor);
             ExpectMsgFrom<RegisterResponse>(register);
         } 
-    }
+    }*/
 }

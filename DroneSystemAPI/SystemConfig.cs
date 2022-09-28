@@ -2,6 +2,7 @@
 
 namespace DroneSystemAPI
 {
+    [Obsolete("Not used any more", true)]
     public abstract class SystemConfigs
     {
         public virtual string SystemName { get; set; } = "DroneDeliverySystem";
@@ -58,12 +59,14 @@ akka {{
         }
     }
 
+    [Obsolete("Not used any more", true)]
     internal class DroneSystemConfig : SystemConfigs
     {
         public override string SystemName { get; set; } = "DroneActorSystem";
         public override string ActorName { get; set; } = "Drone";
     }
 
+    [Obsolete("Not used any more", true)]
     internal class DroneRepositoryConfig : SystemConfigs
     {
         public override string SystemName { get; set; } = "RepositoryActorSystem";
@@ -71,6 +74,7 @@ akka {{
         public override int Port { get; set; } = 8080;
     }
 
+    [Obsolete("Not used any more", true)]
     internal class GenericConfig : SystemConfigs
     {
         public override string ActorName { get; set; } = string.Empty;
