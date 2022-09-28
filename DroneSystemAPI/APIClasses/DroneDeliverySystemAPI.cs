@@ -39,6 +39,31 @@ namespace DroneSystemAPI.APIClasses
         }
 
         /// <summary>
+        /// Verifica se una locazione remota è attiva
+        /// </summary>
+        /// <param name="remoteHost"></param>
+        /// <returns></returns>
+        public bool VerifyLocation(Host remoteHost)
+        {
+            try
+            {
+                RemoteLocationAPI remoteLocation = new RemoteLocationAPI(
+                _interfaceActorSystem,
+                new DeployPointDetails(remoteHost, SystemName));
+
+                return remoteLocation.Verify();
+            } catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool ReadyToSpawnMissions()
+        {
+            return RepositoryAddress is not null;
+        }
+
+        /// <summary>
         /// Dispiega un un repository su una locazione remota
         /// </summary>
         /// <param name="remoteHost">Indirizzo della locazione (inizializzata)</param>

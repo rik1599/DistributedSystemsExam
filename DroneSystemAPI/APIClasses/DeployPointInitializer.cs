@@ -12,7 +12,7 @@ namespace DroneSystemAPI.APIClasses
     public class DeployPointInitializer
     {
         public Host ThisHost { get; }
-        public ActorSystem _thisActorSystem { get; }
+        public ActorSystem ThisActorSystem { get; }
 
         private IActorRef? _spawnerActor;
 
@@ -20,18 +20,18 @@ namespace DroneSystemAPI.APIClasses
 
         public DeployPointInitializer(ActorSystem thisActorSystem)
         {
-            _thisActorSystem = thisActorSystem;
+            ThisActorSystem = thisActorSystem;
             ThisHost = _resolveHostFromActorSystem(thisActorSystem);
         }
 
         public DeployPointInitializer(DeployPointDetails deployPointDetails)
         {
-           ThisHost = deployPointDetails.Host;
-
-            _thisActorSystem = ActorSystem.Create(
+            ThisActorSystem = ActorSystem.Create(
                 deployPointDetails.ActorSystemName, 
                 _resolveHookonFromHost(deployPointDetails.Host)
                 );
+
+            ThisHost = _resolveHostFromActorSystem(ThisActorSystem);
         }
 
 
@@ -41,7 +41,7 @@ namespace DroneSystemAPI.APIClasses
         /// </summary>
         public void Init()
         {
-            _spawnerActor = _thisActorSystem.ActorOf(Props.Create(() => new SpawnerActor()), "spawner");
+            _spawnerActor = ThisActorSystem.ActorOf(Props.Create(() => new SpawnerActor()), "spawner");
         }
 
 
