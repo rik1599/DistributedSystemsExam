@@ -23,9 +23,8 @@ namespace TerminalUI.Verbs
             {
                 var configs = SystemConfigs.GenericConfig;
                 configs.ActorName = "repository";
-                configs.Port = Port;
 
-                system = ActorSystemFactory.Create(out var port);
+                system = ActorSystemFactory.Create(Port, out var port);
                 if (system is not null)
                 {
                     Port = port;

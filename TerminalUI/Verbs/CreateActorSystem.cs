@@ -11,12 +11,9 @@ namespace TerminalUI.Verbs
         public int Port { get; set; }
         public Environment Run(Environment env)
         {
-            var config = SystemConfigs.GenericConfig;
-            config.Port = Port;
-
             try
             {
-                _ = ActorSystemFactory.Create(out var port);
+                _ = ActorSystemFactory.Create(Port, out var port);
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Actor system creato alla porta {port}");
             }
