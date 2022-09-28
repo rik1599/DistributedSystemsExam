@@ -13,12 +13,12 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem a cui collegarsi", Required = true)]
         public int Port { get; set; }
 
-        [Value(0, HelpText = "ID della missione", Required = true)]
-        public int Mission { get; set; }
+        [Value(0, HelpText = "Nome della missione", Required = true)]
+        public string? MissionName { get; set; }
 
         public Environment Run(Environment env)
         {
-            var ID = $"{Mission}-{Host!}:{Port}";
+            var ID = $"{MissionName}-{Host!}:{Port}";
             if (!env.Missions.ContainsKey(ID))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -29,7 +29,7 @@ namespace TerminalUI.Verbs
             var missionInfo = env.Missions[ID];
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine($@"
-ID locale: {Mission}
+ID locale: {MissionName}
 Host: {missionInfo.Host}
 Missione terminata: {missionInfo.IsTerminated}
 Notifiche: {{
