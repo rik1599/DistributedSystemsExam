@@ -17,57 +17,74 @@ namespace TerminalUI.Verbs
         public int Port { get; set; }
 
         public Environment Run(Environment env)
-        {
-            ActorSystem? system;
-            if (Host == "localhost" && !env.ActorSystems.ContainsKey(Port))
+        {  
+            if (env.DroneDeliverySystemAPI.HasRepository())
             {
-                var configs = SystemConfigs.GenericConfig;
-                configs.ActorName = "repository";
-
-                system = ActorSystemFactory.Create(Port, out var port);
-                if (system is not null)
-                {
-                    Port = port;
-                }
-                else
-                    return env;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Errore: allo stato attuale esiste già un repository: " +
+                    $"{env.DroneDeliverySystemAPI.RepositoryAddress}.");
+                return env;
+            }
+            
+            if (Port == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine("Errore! Impossibile creare il repository senza impostare un host.");
+                return env;
             }
 
-            if (Host == "localhost" && env.ActorSystems.ContainsKey(Port))
+            Host host = new Host(Host, Port);
+            if (!env.DroneDeliverySystemAPI.VerifyLocation(host))
             {
-                system = env.ActorSystems[Port];
-            }
-            else
-            {
-                system = env.InterfaceActorSystem;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Errore! nella locazione {host} non esiste un actor system attivo");
+                return env;
             }
 
-            var repository = Spawn(system);
+            // var repository = Spawn(env);
+
+            try
+            {
+                env.DroneDeliverySystemAPI.DeployRepository(host);
+            } catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Errore durante il dispiegamento del repository\n{e}");
+                return env;
+            }
+
+            // todo: remove
+            env.RepositoryAPI = env.DroneDeliverySystemAPI.RepositoryAddress;
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Repository creato correttamente: {env.DroneDeliverySystemAPI.RepositoryAddress}");
+
+            /*
             if (repository is not null)
             {
                 if (env.RepositoryAPI is null)
                 {
                     env.RepositoryAPI = repository;
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Repository impostato correttamente sul {new Host(Host!, Port)}");
+                    Console.WriteLine($"Repository creato impostato correttamente sul {new Host(Host!, Port)}");
                 }
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.WriteLine("Errore! Impossibile creare il repository");
-            }
+            } */
 
             return env;
         }
 
-        private IActorRef? Spawn(ActorSystem actorSystem)
+        private IActorRef? Spawn(Environment env)
         {
             var configs = SystemConfigs.GenericConfig;
             configs.ActorName = "repository";
 
             var repositoryActorRef =
-                    new RepositoryProvider(actorSystem, configs)
+                    new RepositoryProvider(env.InterfaceActorSystem, configs)
                     .SpawnRemote(new Host(Host!, Port));
 
             if (repositoryActorRef is null)

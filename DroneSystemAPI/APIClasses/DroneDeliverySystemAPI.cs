@@ -58,7 +58,7 @@ namespace DroneSystemAPI.APIClasses
             }
         }
 
-        public bool ReadyToSpawnMissions()
+        public bool HasRepository()
         {
             return RepositoryAddress is not null;
         }
