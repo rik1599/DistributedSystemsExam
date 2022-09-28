@@ -29,6 +29,7 @@ namespace TerminalUI
             do
             {
                 var newNotifications = await API.AskForUpdates();
+                
                 Notifications.AddRange(newNotifications);
             } while (Notifications.Last() is not ExitStateDTO);
 

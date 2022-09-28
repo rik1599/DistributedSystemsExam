@@ -16,11 +16,11 @@ namespace TerminalUI.Verbs
         public int Port { get; set; }
 
         [Value(0, HelpText = "ID della missione", Required = true)]
-        public int Mission { get; set; }
+        public string? MissionName { get; set; }
 
         public Environment Run(Environment env)
         {
-            var ID = $"{Mission}-{Host!}:{Port}";
+            var ID = $"{MissionName}-{Host!}:{Port}";
             if (env.Missions.ContainsKey(ID))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -28,21 +28,38 @@ namespace TerminalUI.Verbs
                 return env;
             }
 
-            var configs = SystemConfigs.GenericConfig;
             var host = new Host(Host!, Port);
 
-            if (new MissionProvider(env.InterfaceActorSystem, configs)
-                .TryConnectToExistent(host, ID) is not ObserverMissionAPI missionAPI)
+            ObserverMissionAPI? missionAPI;
+
+            try
+            {
+                missionAPI = env.DroneDeliverySystemAPI
+                    .ConnectToMission(host, ID,
+                    ObserverMissionAPI.Factory(env.InterfaceActorSystem)) 
+                    as ObserverMissionAPI;
+
+                if (missionAPI is null)
+                    throw new Exception("L''istanza ricevuta è nulla");
+            }
+            catch (Exception e)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore! Impossibile collegarsi alla missione");
+                Console.Error.WriteLine($"Errore! Impossibile collegarsi alla missione {MissionName} " +
+                    $"su {host}. E' possibile che la missione sia già terminata (oppure mai esistita)." +
+                    $"\nEccezione rilevata:\n{e}");
+                return env;
             }
-            else
-            {
-                env.Missions.Add(ID, new MissionInfo(host, missionAPI));
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Missione aggiunta a quelle osservate");
-            }
+
+            env.Missions.Add(ID, new MissionInfo(host, missionAPI!));
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"La missione {MissionName} (eseguita su {host})" +
+                $"è stata aggiunta a quelle osservate.");
+            
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"Usa il comando log {MissionName} -p{host.Port} [-h{host.HostName}] per " +
+                $"leggere le notifiche ricevute fin'ora.");
+
             return env;
         }
     }

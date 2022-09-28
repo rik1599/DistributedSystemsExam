@@ -6,6 +6,7 @@ using DroneSystemAPI.APIClasses.Utils;
 
 namespace DroneSystemAPI.APIClasses.Mission
 {
+    [Obsolete("Not used any more", true)]
     public class MissionProvider
     {
         private readonly ActorSystem _localSystem;
@@ -39,15 +40,14 @@ namespace DroneSystemAPI.APIClasses.Mission
         /// <returns></returns>
         public IMissionAPI? TryConnectToExistent(Host host, string missionName)
         {
-            var actorRef = new ActorProvider().TryGetExistentActor(
-                _localSystem,
-                Address.Parse(host.GetSystemAddress(_config.SystemName)),
-                missionName);
+            var actorRef = new RemoteLocationAPI(_localSystem, new DeployPointDetails(host, _config.SystemName))
+                .GetActorRef(missionName);
 
             return (actorRef is null) ? null : _missionAPIFactory.GetMissionAPI(actorRef);
         }
     }
 
+    [Obsolete("Not used any more", true)]
     public class MissionSpawner
     {
         private readonly ActorSystem _localSystem;
@@ -56,21 +56,21 @@ namespace DroneSystemAPI.APIClasses.Mission
         /// <summary>
         /// Il registro indicato alle misioni generate
         /// </summary>
-        private readonly RepositoryAPI _register;
+        private readonly IActorRef _register;
 
         /// <summary>
         /// Lo strumento da utilizzare per generare le missioni
         /// </summary>
         private readonly IMissionAPIFactory _missionAPIFactory;
 
-        public MissionSpawner(ActorSystem localSystem, RepositoryAPI register, IMissionAPIFactory missionAPIFactory)
+        public MissionSpawner(ActorSystem localSystem, IActorRef register, IMissionAPIFactory missionAPIFactory)
         {
             _localSystem = localSystem;
             _register = register;
             _missionAPIFactory = missionAPIFactory;
         }
 
-        public MissionSpawner(ActorSystem localSystem, RepositoryAPI register, IMissionAPIFactory missionAPIFactory, SystemConfigs config) 
+        public MissionSpawner(ActorSystem localSystem, IActorRef register, IMissionAPIFactory missionAPIFactory, SystemConfigs config) 
             : this(localSystem, register, missionAPIFactory)
         {
             _config = config;
@@ -78,9 +78,8 @@ namespace DroneSystemAPI.APIClasses.Mission
 
         public IMissionAPI? SpawnHere(MissionPath missionPath, string missionName)
         {
-            var actorRef = ActorProvider.SpawnLocally(
-                _localSystem,
-                DroneActor.Props(_register.ActorRef, missionPath),
+            var actorRef = _localSystem.ActorOf(
+                DroneActor.Props(_register, missionPath),
                 missionName);
 
             return actorRef is null ? null : _missionAPIFactory.GetMissionAPI(actorRef);
@@ -89,11 +88,8 @@ namespace DroneSystemAPI.APIClasses.Mission
 
         public IMissionAPI? SpawnRemote(Host host, MissionPath missionPath, string missionName)
         {
-            var actorRef = new ActorProvider().SpawnRemote(
-                _localSystem,
-                Address.Parse(host.GetSystemAddress(_config.SystemName)),
-                DroneActor.Props(_register.ActorRef, missionPath),
-                missionName);
+            var actorRef = new RemoteLocationAPI(_localSystem, new DeployPointDetails(host, _config.SystemName))
+                .SpawnActor(DroneActor.Props(_register, missionPath), missionName);
 
             return actorRef is null ? null : _missionAPIFactory.GetMissionAPI(actorRef);
         }
