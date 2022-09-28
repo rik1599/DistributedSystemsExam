@@ -12,6 +12,7 @@ using Actors.Messages.Register;
 using Actors.Messages.External;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses.Utils;
+using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 
 namespace UnitTests.API.System
 {
@@ -20,14 +21,16 @@ namespace UnitTests.API.System
     /// spawna e deve gestirsi dei semplici conflitti (con un unico
     /// altro nodo).
     /// </summary>
-    public class MissionAPITest2 : TestKit
+    public class ObserverMissionAPITest2 : TestKit
     {
         private readonly string _systemName;
         private readonly string _repositoryActorName;
 
         private DroneDeliverySystemAPI _api;
 
-        public MissionAPITest2()
+        IMissionAPIFactory _factory;
+
+        public ObserverMissionAPITest2()
         {
             _systemName = Sys.Name;
             _repositoryActorName = "repository";
@@ -38,6 +41,8 @@ namespace UnitTests.API.System
 
             _api = new DroneDeliverySystemAPI(Sys, _systemName, _repositoryActorName);
             _api.DeployRepository(Host.GetTestHost());
+
+            _factory = ObserverMissionAPI.Factory(Sys);
         }
 
         protected override void Dispose(bool disposing)
@@ -46,6 +51,96 @@ namespace UnitTests.API.System
             Sys.Terminate();
         }
 
+        #region verifica observer
+        /// <summary>
+        /// Avvio di una missione (in locale) e monitoraggio 
+        /// dei vari passaggi con un observer API
+        /// </summary>
+        [Fact]
+        public void ObserveFlyingMission()
+        {
+            var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
+
+            // spawno una missione
+            IMissionAPI a = _api.SpawnMission(
+                Host.GetTestHost(),
+                missionA,
+                "DroneA",
+                _factory);
+            
+            Assert.IsType<ObserverMissionAPI>(a);
+
+            ObserverMissionAPI obsAPI = (ObserverMissionAPI)a;
+
+            // ricevo tutte le notifiche
+            IList<DroneStateDTO> notifications = new List<DroneStateDTO>();
+            do
+            {
+                var newNotifications = obsAPI.AskForUpdates().Result;
+
+                foreach (var n in newNotifications)
+                {
+                    notifications.Add(n);
+                }
+
+            } // while (notifications.Last() is ExitStateDTO);
+            while (notifications.Count < 4);
+
+            // mi assicuro di aver ricevuto le notifiche
+            // che mi aspettavo (nell'ordine giusto)
+            Assert.IsType<InitStateDTO>(notifications[0]);
+            Assert.IsType<NegotiateStateDTO>(notifications[1]);
+            Assert.IsType<FlyingStateDTO>(notifications[2]);
+            Assert.IsType<ExitStateDTO>(notifications[3]);
+        }
+
+        /// <summary>
+        /// Crea un'API per connetterti ad una missione già esistente.
+        /// Uso l'API per osservarla.
+        /// </summary>
+        [Fact]
+        public void ObserveExistingMission()
+        {
+            var missionA = new MissionPath(Point2D.Origin, new Point2D(25, 25), 10.0f);
+
+            // spawno una missione manualmente
+            RemoteLocationAPI remoteLocationAPI = new RemoteLocationAPI(
+                Sys, DeployPointDetails.GetTestDetails());
+
+            remoteLocationAPI.SpawnActor(
+                DroneActor.Props(_api.RepositoryAddress!, missionA),
+                "DroneA");
+
+            // creo una seconda API per l'osservazione
+            ObserverMissionAPI? obsAPI = (ObserverMissionAPI?) 
+                _api.ConnectToMission(Host.GetTestHost(), "DroneA", _factory);
+
+            // ricevo tutte le notifiche
+            IList<DroneStateDTO> notifications = new List<DroneStateDTO>();
+            do
+            {
+                var newNotifications = obsAPI!.AskForUpdates().Result;
+
+                foreach (var n in newNotifications)
+                {
+                    notifications.Add(n);
+                }
+
+            } // while (notifications.Last() is ExitStateDTO);
+            while (notifications.Count < 4);
+
+            // mi assicuro di aver ricevuto le notifiche
+            // che mi aspettavo (nell'ordine giusto)
+            Assert.IsType<InitStateDTO>(notifications[0]);
+            Assert.IsType<NegotiateStateDTO>(notifications[1]);
+            Assert.IsType<FlyingStateDTO>(notifications[2]);
+            Assert.IsType<ExitStateDTO>(notifications[3]);
+
+            Sys.Terminate();
+        }
+        #endregion
+
+        #region test di retro-compatibilità
 
         /// <summary>
         /// Semplice tentativo di avvio di una missione 
@@ -62,13 +157,13 @@ namespace UnitTests.API.System
                 Host.GetTestHost(), 
                 missionA, 
                 "DroneA",
-                SimpleMissionAPI.Factory());
+                _factory);
 
             IMissionAPI b = _api.SpawnMission(
                 Host.GetTestHost(),
                 missionB,
                 "DroneB",
-                SimpleMissionAPI.Factory());
+                _factory);
 
             // richiedo ad entrambe lo stato
             var aStatus = a.GetCurrentStatus();
@@ -119,7 +214,7 @@ namespace UnitTests.API.System
                 Host.GetTestHost(),
                 missionA,
                 "DroneA",
-                SimpleMissionAPI.Factory());
+                _factory);
 
             // mi aspetto la connessione e la negoziazione
             ExpectMsgFrom<ConnectRequest>(a.GetDroneRef());
@@ -136,8 +231,6 @@ namespace UnitTests.API.System
             ExpectNoMsg(new TimeSpan(0, 0, 7));
         }
 
-        #region casi eccezionali
-
         /// <summary>
         /// mi collego ad una missione che non esiste e verifico che lanci un'eccezione
         /// </summary>
@@ -146,7 +239,7 @@ namespace UnitTests.API.System
         {
             Assert.ThrowsAny<Exception>(
                 () => _api.ConnectToMission(
-                    Host.GetTestHost(), "Drone746", SimpleMissionAPI.Factory())
+                    Host.GetTestHost(), "Drone746", _factory)
             );
         }
 
@@ -162,13 +255,13 @@ namespace UnitTests.API.System
 
             Assert.ThrowsAny<Exception>(
                 () => api2.SpawnMission(
-                    Host.GetTestHost(), missionA, "DroneA", SimpleMissionAPI.Factory())
+                    Host.GetTestHost(), missionA, "DroneA", _factory)
             );
 
             // riprovo e mi aspetto che vada
             api2.SetRepository(Host.GetTestHost());
             Assert.IsAssignableFrom<IMissionAPI>(api2.SpawnMission(
-                    Host.GetTestHost(), missionA, "DroneA", SimpleMissionAPI.Factory()));
+                    Host.GetTestHost(), missionA, "DroneA", _factory));
 
         }
 
@@ -183,13 +276,13 @@ namespace UnitTests.API.System
 
             // spawno la missione
             _api.SpawnMission(Host.GetTestHost(), 
-                missionA, "DroneA", SimpleMissionAPI.Factory());
+                missionA, "DroneA", _factory);
 
             // provo a connettermi senza impostare il registro
             var api2 = new DroneDeliverySystemAPI(Sys, _systemName, _repositoryActorName);
 
             IMissionAPI a = api2.ConnectToMission(
-                Host.GetTestHost(), "DroneA", SimpleMissionAPI.Factory());
+                Host.GetTestHost(), "DroneA", _factory);
 
             Assert.NotNull(a);
             Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
