@@ -11,8 +11,6 @@ namespace UnitTests.API.System
 {
     public class RepositoryAPITest2 : TestKit
     {
-        private readonly DeployPointInitializer _remoteLocationInitializer;
-
         private readonly string _systemName; 
         private readonly string _repositoryActorName;
 
@@ -21,8 +19,7 @@ namespace UnitTests.API.System
             _systemName = Sys.Name;
             _repositoryActorName = "repository";
 
-            _remoteLocationInitializer = new DeployPointInitializer(Sys);
-            _remoteLocationInitializer.Init();
+            Sys.ActorOf(Props.Create(() => new SpawnerActor()), "spawner");
         }
 
         protected override void Dispose(bool disposing)
@@ -81,6 +78,6 @@ namespace UnitTests.API.System
         {
             register.Tell(new RegisterRequest(TestActor), TestActor);
             ExpectMsgFrom<RegisterResponse>(register);
-        } 
+        }
     }
 }

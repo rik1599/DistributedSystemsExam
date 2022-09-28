@@ -78,7 +78,7 @@ namespace DroneSystemAPI.APIClasses
 
             if (!remoteLocation.Verify())
                 throw new Exception($"Impossibile dispiegare il registro. " +
-                    $"La locazione {remoteHost} non è valida");
+                    $"La locazione {remoteHost} non è attiva.");
 
             RepositoryAddress = remoteLocation
                 .SpawnActor(DronesRepositoryActor.Props(), RepositoryActorName);
@@ -99,8 +99,8 @@ namespace DroneSystemAPI.APIClasses
                 new DeployPointDetails(remoteHost, SystemName));
 
             if (!remoteLocation.Verify())
-                throw new Exception($"Impossibile dispiegare il registro. " +
-                    $"La locazione {remoteHost} non è valida");
+                throw new Exception($"Impossibile connettersi al registro. " +
+                    $"La locazione {remoteHost} non è attiva.");
 
             RepositoryAddress = remoteLocation.GetActorRef(RepositoryActorName);
 
@@ -114,7 +114,29 @@ namespace DroneSystemAPI.APIClasses
             string missionName, 
             IMissionAPIFactory missionAPIFactory)
         {
-            throw new NotImplementedException();
+            if (!HasRepository())
+                throw new Exception($"Impossibile dispiegare la missione {missionName} senza " +
+                    $"prima impostare un repository.");
+
+            // verifica locazione remota
+            RemoteLocationAPI remoteLocation = new RemoteLocationAPI(
+                _interfaceActorSystem,
+                new DeployPointDetails(remoteHost, SystemName));
+
+            if (!remoteLocation.Verify())
+                throw new Exception($"Impossibile dispiegare la missione {missionName}. " +
+                    $"La locazione {remoteHost} non è attiva.");
+
+            // spawn
+            IActorRef? missionAddress = remoteLocation
+                .SpawnActor(DroneActor.Props(RepositoryAddress!, missionPath), missionName);
+
+            if (missionAddress is null)
+                throw new Exception(
+                    $"Il dispiegamento della missione {missionName} su {remoteHost} non è andata a buon fine.");
+
+            // costruzione dell'API
+            return missionAPIFactory.GetMissionAPI(missionAddress!);
         }
 
         /// <summary>
@@ -129,7 +151,22 @@ namespace DroneSystemAPI.APIClasses
             string missionName,
             IMissionAPIFactory missionAPIFactory)
         {
-            throw new NotImplementedException();
+            RemoteLocationAPI remoteLocation = new RemoteLocationAPI(
+                _interfaceActorSystem,
+                new DeployPointDetails(remoteHost, SystemName));
+
+            if (!remoteLocation.Verify())
+                throw new Exception($"Impossibile connettersi alla missione. " +
+                    $"La locazione {remoteHost} non è attiva.");
+
+            IActorRef? missionAddress = remoteLocation.GetActorRef(missionName);
+
+            if (missionAddress is null)
+                throw new Exception(
+                    $"Il collegamento alla missione {missionName} su {remoteHost} non è andato a buon fine.");
+
+            // costruzione dell'API
+            return missionAPIFactory.GetMissionAPI(missionAddress!);
         }
 
     }
