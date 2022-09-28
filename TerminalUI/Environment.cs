@@ -10,7 +10,7 @@ namespace TerminalUI
     {
         public IDictionary<int, ActorSystem> ActorSystems { get; }
         public ActorSystem InterfaceActorSystem { get; }
-        public IActorRef? RepositoryAPI { get; set; }
+        // public IActorRef? RepositoryAPI { get; set; }
         public IDictionary<string, MissionInfo> Missions { get; }
 
         /// <summary>

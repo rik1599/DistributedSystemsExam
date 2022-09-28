@@ -36,7 +36,7 @@ namespace TerminalUI.Verbs
 
         public Environment Run(Environment env)
         {
-            if (env.RepositoryAPI is null)
+            if (!env.DroneDeliverySystemAPI.HasRepository())
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.WriteLine("Errore! Imposta prima un repository con spawn-repository o set-repository!");
@@ -59,7 +59,7 @@ namespace TerminalUI.Verbs
             var ID = $"{MissionName}-{Host}:{Port}";
             var missionAPI = new MissionSpawner(
                 env.InterfaceActorSystem,
-                env.RepositoryAPI,
+                env.DroneDeliverySystemAPI.RepositoryAddress!,
                 ObserverMissionAPI.Factory(env.InterfaceActorSystem),
                 config).SpawnRemote(host, mission, ID) as ObserverMissionAPI;
 
