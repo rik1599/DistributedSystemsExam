@@ -46,11 +46,11 @@ namespace TerminalUI.Verbs
             Console.WriteLine($@"
 ID locale: {MissionName}
 Host: {missionInfo.Host}
+Attore drone: {missionInfo.API.GetDroneRef()}
 Missione terminata: {missionInfo.IsTerminated}
-Notifiche: {{
+Notifiche: [
     {PrintNotifications(missionInfo)}
-}}
-");
+]");
 
             return env;
         }
@@ -70,7 +70,6 @@ Notifiche: {{
                     Console.Error.WriteLine("Attenzione: il ping è fallito " +
                         "(potrebbe essere semplicemente che la missione è terminata). " +
                         $"Eccezione:\n{e}");
-
                 }
             }         
         }
@@ -81,15 +80,6 @@ Notifiche: {{
             var stringBuilder = new StringBuilder();
             foreach (var notification in notifications)
             {
-                //                stringBuilder.Append($@"
-                //    {{
-                //        Type: {notification.GetType()}
-                //        Timestamp: {notification.DroneTimestamp}
-                //        Age: {notification.Age}
-                //        Posizione attuale: {notification.CurrentPosition}
-                //    }}
-                //");
-
                 var dtoToStringTool = new StringFromDTOOrchestrator(notification);
 
                 if (Short)
@@ -111,8 +101,7 @@ Notifiche: {{
                         StringFromDTOOrchestrator.OutputType.SMART));
                 }
 
-               
-                //  Missione terminata con successo: {notification.IsMissionAccomplished}
+                stringBuilder.Append(",\n");
             }
             return stringBuilder.ToString();
         }

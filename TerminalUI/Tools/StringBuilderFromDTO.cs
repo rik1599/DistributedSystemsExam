@@ -33,9 +33,9 @@ namespace TerminalUI.Tools
         public StringBuilderFromDTO AddBasicInfo()
         {
             _dtoAsString = _dtoAsString 
-                + $"\n\tType: {_dto.GetType()};"
-                + $"\n\tAge: {_dto.Age}; "
-                + $"\n\tPosizione attuale: {_dto.CurrentPosition}; ";
+                + $"\n\tType: {_dto.GetType()},"
+                + $"\n\tAge: {_dto.Age},"
+                + $"\n\tPosizione attuale: {_dto.CurrentPosition},";
 
             return this;
         }
@@ -43,35 +43,35 @@ namespace TerminalUI.Tools
         public StringBuilderFromDTO AddConflictInfo() 
         {
             _dtoAsString = _dtoAsString
-                + $"\n\tNumero Negoziazione: {_dto.NegotiationsCount};"
-                + $"\n\tPriorità: {_applyIndent(_dto.CurrentPriority.ToString())};"
+                + $"\n\tNumero Negoziazione: {_dto.NegotiationsCount}, "
+                + $"\n\tPriorità: {_applyIndent(_dto.CurrentPriority.ToString())}, "
                 + "\n\tMissioni che attendo (p>mia): ["
                     + String.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
                     {
                         return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())};"
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())};"
-                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString())};" 
-                            + "\n}, ", 2);
-                    })) + "\t]; "
+                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())}, "
+                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())}, "
+                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString())}, " 
+                            + "\n}", 2);
+                    })) + "\n\t], "
                 + "\n\tMissioni che MI attendono (p<mia): ["
                     + String.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
                     {
                         return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())};"
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())};"
-                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString())};"
-                            + "\n}, ", 2);
-                    })) + "\t]; "
+                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())}, "
+                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())}, "
+                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString())}, "
+                            + "\n}", 2);
+                    })) + "\n\t], "
                 + "\n\tMissioni in volo: ["
                     + String.Join(", ", _dto.FlyingConflictMissions.Select(m =>
                     {
                         return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())};"
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())};"
-                            + $"\n\tSafe-Time-To-Fly: {m.RemainingTimeForSafeStart};"
+                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())}, "
+                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())}, "
+                            + $"\n\tSafe-Time-To-Fly: {m.RemainingTimeForSafeStart}, "
                             + "\n}, ", 2);
-                    })) + "\t]; ";
+                    })) + "\n\t], ";
 
             return this;
         }
@@ -83,7 +83,7 @@ namespace TerminalUI.Tools
                     + String.Join(", ", _dto.KnownNodes.Select(n =>
                     {
                         return $"\n\t\t{n}";
-                    })) + "\t]; ";
+                    })) + "\n\t], ";
 
             if (_dto is InitStateDTO @dto)
             {
@@ -92,11 +92,11 @@ namespace TerminalUI.Tools
                     + String.Join(", ", @dto.MissingConnections.Select(n =>
                     {
                         return $"\n\t\t{n}";
-                    })) + "\t]; ";
+                    })) + "\n\t], ";
             } else
             {
                 _dtoAsString = _dtoAsString +
-                    $"\n\tConnessioni mancanti: [\t]";
+                    $"\n\tConnessioni mancanti: [ ]";
             }
 
             return this;
