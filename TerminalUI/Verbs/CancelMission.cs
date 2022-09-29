@@ -1,4 +1,5 @@
-﻿using CommandLine;
+﻿using Akka.Actor;
+using CommandLine;
 
 namespace TerminalUI.Verbs
 {
@@ -11,26 +12,44 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem a cui collegarsi", Required = true)]
         public int Port { get; set; }
 
-        [Value(0, HelpText = "ID della missione", Required = true)]
-        public int Mission { get; set; }
+        [Option('p', HelpText = "Forza la terminazione inviando una poison pill", Required = false, Default = false)]
+        public bool ForceKill { get; set; }
+
+        [Value(0, HelpText = "Nome della missione", Required = true)]
+        public string? MissionName { get; set; }
 
         public Environment Run(Environment env)
         {
-            var ID = $"{Mission}-{Host!}:{Port}";
+            var ID = $"{MissionName}-{Host!}:{Port}";
             if (!env.Missions.ContainsKey(ID))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore! Missione non registrata! Devi prima collegarti con connect-mission o spawn-mission");
+                Console.Error.WriteLine("Errore! Missione non registrata! Devi prima collegarti con connect-to-mission o spawn-mission");
                 return env;
             }
 
-            if (!env.Missions[ID].IsTerminated)
+            try
             {
-                var missionAPI = env.Missions[ID].API;
-                missionAPI.Cancel().Wait();
-            }
+                if (!env.Missions[ID].IsTerminated)
+                {
+                    var missionAPI = env.Missions[ID].API;
 
-            env.Missions.Remove(ID);
+                    if (ForceKill)
+                        missionAPI.GetDroneRef().Tell(PoisonPill.Instance);
+                    else 
+                        missionAPI.Cancel().Wait();
+                }
+
+                env.Missions.Remove(ID);
+
+            } catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine("Errore nella cancellazione della missione. " +
+                    $"Rilevata eccezione:\n{e}");
+                return env;
+            }
+            
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("OK: Missione cancellata");

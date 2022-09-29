@@ -15,7 +15,7 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem a cui collegarsi", Required = true)]
         public int Port { get; set; }
 
-        [Value(0, HelpText = "ID della missione", Required = true)]
+        [Value(0, HelpText = "Nome della missione", Required = true)]
         public string? MissionName { get; set; }
 
         public Environment Run(Environment env)
