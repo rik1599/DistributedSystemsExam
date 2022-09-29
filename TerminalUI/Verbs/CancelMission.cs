@@ -12,7 +12,7 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem a cui collegarsi", Required = true)]
         public int Port { get; set; }
 
-        [Option('p', HelpText = "Forza la terminazione inviando una poison pill", Required = false, Default = false)]
+        [Option('k', "kill", HelpText = "Forza la terminazione inviando una poison pill", Default = false)]
         public bool ForceKill { get; set; }
 
         [Value(0, HelpText = "Nome della missione", Required = true)]
@@ -38,21 +38,44 @@ namespace TerminalUI.Verbs
                         missionAPI.GetDroneRef().Tell(PoisonPill.Instance);
                     else 
                         missionAPI.Cancel().Wait();
+
+                    env.Missions[ID].IsTerminated = true;
                 }
 
-                env.Missions.Remove(ID);
+                // (non rimuovo, così posso continuare ad untilizzare il log)
+                // env.Missions.Remove(ID);
 
             } catch (Exception e)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore nella cancellazione della missione. " +
+                Console.Error.WriteLine("(Possibile) errore nella cancellazione della missione. " +
                     $"Rilevata eccezione:\n{e}");
                 return env;
             }
-            
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("OK: Missione cancellata");
+            if (ForceKill)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Error.WriteLine("Poison pill consegnata alla missione con successo. Non si può però garantire che " +
+                    "sia effettivamente terminata.");
+                
+                Console.WriteLine($"E' ancora possibile usare il comando log {MissionName} " +
+                    $"-p{env.Missions[ID].Host.Port} [-h{env.Missions[ID].Host.HostName}] per " +
+                    "leggere le notifiche ricevute fin'ora.");
+
+                Console.WriteLine($"Si può anche provare ancora a contattare la missione con il comando ping {MissionName} " +
+                    $"-p{env.Missions[ID].Host.Port} [-h{env.Missions[ID].Host.HostName}].");
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("OK: Missione cancellata. ");
+                Console.WriteLine($"E' ancora possibile usare il comando log {MissionName} " +
+                    $"-p{env.Missions[ID].Host.Port} [-h{env.Missions[ID].Host.HostName}] per " +
+                    "leggere le notifiche ricevute fin'ora.");
+            }
+
+                
 
             return env;
         }

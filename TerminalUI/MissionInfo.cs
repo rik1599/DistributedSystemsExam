@@ -7,7 +7,7 @@ namespace TerminalUI
 {
     internal class MissionInfo
     {
-        public bool IsTerminated { get; private set; }
+        public bool IsTerminated { get; set; }
         public Host Host { get; set; }
         public List<DroneStateDTO> Notifications { get; }
         

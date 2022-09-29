@@ -21,8 +21,12 @@ namespace TerminalUI.Verbs
         [Option('s', "short", HelpText = "Stampa solo una versione sintetica", Default = false)]
         public bool Short { get; set; }
 
-        [Option("log", HelpText = "Salva il ping sul log della missione", Default = false)]
+        [Option('l', "log", HelpText = "Salva il ping sul log della missione", Default = false)]
         public bool Log { get; set; }
+
+        [Option('f', "force", HelpText = "Forza il ping anche se la missione risulta terminata", Default = false)]
+        public bool ForcePing { get; set; }
+
 
         [Value(0, HelpText = "Nome della missione", Required = true)]
         public string? MissionName { get; set; }
@@ -48,12 +52,23 @@ namespace TerminalUI.Verbs
 
             if (missionInfo.IsTerminated)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Attenzione, la missione risulta terminata. " +
-                    $"usa il comando log {MissionName} -p{Port} [-h{Host}] per visualizzare" +
-                    $"le ultime notifiche ricevute.");
-                return env;
+                if (!ForcePing) 
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Error.WriteLine("Attenzione, la missione risulta terminata.");
+                    Console.Error.WriteLine($"usa il comando log {MissionName} -p{Port} [-h{Host}] per visualizzare" +
+                    $"le ultime notifiche ricevute. Se vuoi provare lo stesso a fare un ping, usa l'opzione -f");
+                    return env;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Attenzione, la missione risulta terminata (si tenta ugualmente di fare un ping).");
+                }
             }
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Tentativo di ping in corso...");
 
             DroneStateDTO pingResult;
 
@@ -64,10 +79,14 @@ namespace TerminalUI.Verbs
             }
             catch (Exception e)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Errore: il tentativo di ping è fallito. Eccezione rilevata:\n{e}");
+
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Error.WriteLine("Attenzione: il ping è fallito " +
-                    "(potrebbe essere semplicemente che la missione è terminata). " +
-                    $"Eccezione:\n{e}");
+                Console.WriteLine("Attenzione: potrebbe essere semplicemente che la missione sia terminata " +
+                    $"prima che il messaggio di ping sia giunto a destinazione. Usa il comando log {MissionName} " +
+                    $"-p{env.Missions[ID].Host.Port} [-h{env.Missions[ID].Host.HostName}] per " +
+                    "leggere le notifiche ricevute fin'ora.");
                 return env;
 
             }

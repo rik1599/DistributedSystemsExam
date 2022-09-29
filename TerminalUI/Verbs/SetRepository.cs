@@ -14,16 +14,11 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem a cui collegarsi", Required = true)]
         public int Port { get; set; }
 
+        [Option('f', HelpText = "Forza l'impostazione del nuovo repository anche se c'è già uno.", Default = false)]
+        public bool Force { get; set; }
+
         public Environment Run(Environment env)
         {
-            if (env.DroneDeliverySystemAPI.HasRepository())
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine($"Errore: allo stato attuale esiste già un repository: " +
-                    $"{env.DroneDeliverySystemAPI.RepositoryAddress}.");
-                return env;
-            }
-
             if (Port == 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -32,6 +27,23 @@ namespace TerminalUI.Verbs
             }
 
             Host host = new Host(Host!, Port);
+
+            if (env.DroneDeliverySystemAPI.HasRepository())
+            {
+                if (!Force)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Error.WriteLine($"Errore: allo stato attuale esiste già un repository: " +
+                        $"{env.DroneDeliverySystemAPI.RepositoryAddress}. Usa l'opzione -f per forzare l'operazione.");
+                    return env;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"Attenzione: il repository {env.DroneDeliverySystemAPI.RepositoryAddress} verrà sovrascritto.");
+                    Console.WriteLine($"E' possibile re-impostarlo con il comando set-repository -pPorta [-hNomeHost] -f");
+                }
+            }
 
             try
             {
