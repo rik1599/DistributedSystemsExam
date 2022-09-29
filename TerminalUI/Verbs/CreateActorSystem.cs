@@ -14,7 +14,7 @@ namespace TerminalUI.Verbs
         {
             try
             {
-                _ = ActorSystemFactory.Create(
+                var actorSystem = ActorSystemFactory.Create(
 
                     // dettagli della locazione
                     new DeployPointDetails(
@@ -26,8 +26,10 @@ namespace TerminalUI.Verbs
                     // (in caso che io abbia passato 0 come input)
                     out var port);
 
+                env.ActorSystems.Add(port, actorSystem);
+
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Actor system creato alla porta {port}");
+                Console.WriteLine($"Creato actor system porta {port}");
             }
             catch (Exception e)
             {
