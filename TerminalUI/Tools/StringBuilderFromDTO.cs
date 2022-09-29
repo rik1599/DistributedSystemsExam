@@ -44,31 +44,31 @@ namespace TerminalUI.Tools
         {
             _dtoAsString = _dtoAsString
                 + $"\n\tNumero Negoziazione: {_dto.NegotiationsCount}, "
-                + $"\n\tPriorità: {_applyIndent(_dto.CurrentPriority.ToString())}, "
+                + $"\n\tPriorità: {_applyIndent(_dto.CurrentPriority.ToString()!)}, "
                 + "\n\tMissioni che attendo (p>mia): ["
                     + String.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
                     {
                         return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())}, "
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())}, "
-                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString())}, " 
+                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString()!)}, "
+                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString()!)}, "
+                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString()!)}, " 
                             + "\n}", 2);
                     })) + "\n\t], "
                 + "\n\tMissioni che MI attendono (p<mia): ["
                     + String.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
                     {
                         return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())}, "
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())}, "
-                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString())}, "
+                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString()!)}, "
+                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString()!)}, "
+                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString()!)}, "
                             + "\n}", 2);
                     })) + "\n\t], "
                 + "\n\tMissioni in volo: ["
                     + String.Join(", ", _dto.FlyingConflictMissions.Select(m =>
                     {
                         return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString())}, "
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString())}, "
+                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString()!)}, "
+                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString()!)}, "
                             + $"\n\tSafe-Time-To-Fly: {m.RemainingTimeForSafeStart}, "
                             + "\n}, ", 2);
                     })) + "\n\t], ";

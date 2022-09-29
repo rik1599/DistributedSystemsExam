@@ -72,8 +72,8 @@ namespace Actors.MissionPathPriority
         public override string? ToString()
         {
             return "\n{"
-                + $"\n\tMetricValue: {MetricValue};"
-                + $"\n\tNodeRef: {NodeRef};"
+                + $"\n\tMetricValue: {MetricValue}, "
+                + $"\n\tNodeRef: {NodeRef}, "
                 + "\n}";
         }
     }

@@ -141,9 +141,9 @@ namespace Actors.MissionPathPriority
         public override string? ToString()
         {
             return "\n{"
-                + $"\n\tStart: {StartPoint};"
-                + $"\n\tEnd: {EndPoint};"
-                + $"\n\tExpectedTime: { ExpectedDuration()};"
+                + $"\n\tStart: {StartPoint}, "
+                + $"\n\tEnd: {EndPoint}, "
+                + $"\n\tExpectedTime: {ExpectedDuration()}, "
                 + "\n}";
         }
     }
