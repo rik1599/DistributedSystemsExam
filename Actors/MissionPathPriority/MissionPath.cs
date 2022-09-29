@@ -137,5 +137,14 @@ namespace Actors.MissionPathPriority
         {
             return TimeDistance(EndPoint);
         }
+
+        public override string? ToString()
+        {
+            return "\n{"
+                + $"\n\tStart: {StartPoint};"
+                + $"\n\tEnd: {EndPoint};"
+                + $"\n\tExpectedTime: { ExpectedDuration()};"
+                + "\n}";
+        }
     }
 }

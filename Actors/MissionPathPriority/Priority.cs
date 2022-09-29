@@ -68,6 +68,14 @@ namespace Actors.MissionPathPriority
             // con identificatore più piccolo
             return - NodeRef.CompareTo(other.NodeRef);
         }
+
+        public override string? ToString()
+        {
+            return "\n{"
+                + $"\n\tMetricValue: {MetricValue};"
+                + $"\n\tNodeRef: {NodeRef};"
+                + "\n}";
+        }
     }
 
     internal class InfinitePriority : Priority

@@ -2,7 +2,7 @@
 
 namespace TerminalUI.Verbs
 {
-    [Verb("ls", HelpText = "Lista tutti gli actor system attivi con la relativa porta")]
+    [Verb("ls", HelpText = "Lista tutti gli actor system generati in questa sessione con la relativa porta")]
     internal class ListCommand : IVerb
     {
         [Option('m', SetName = "missions", HelpText = "Elenca le missioni (invece degli ActorSystems) generate in questa sessione", Default = false)]

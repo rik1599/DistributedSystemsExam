@@ -29,11 +29,24 @@ namespace TerminalUI
             do
             {
                 var newNotifications = await API.AskForUpdates();
-                
-                Notifications.AddRange(newNotifications);
+
+                lock (_notificationLock)
+                {
+                    Notifications.AddRange(newNotifications);
+                }
             } while (Notifications.Last() is not ExitStateDTO);
 
             IsTerminated = true;
+        }
+
+        private readonly object _notificationLock = new object();
+
+        public void SafeAddNotification(DroneStateDTO droneStateDTO)
+        {
+            lock (_notificationLock)
+            {
+                Notifications.Add(droneStateDTO);
+            }
         }
 
         public override string ToString()
