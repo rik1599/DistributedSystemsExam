@@ -6,8 +6,9 @@ using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Repository;
 
-namespace UnitTests.API
+namespace UnitTests.API.Deprecated
 {
+    /*
     public class RepositoryAPITest : TestKit
     {
         /// <summary>
@@ -24,7 +25,7 @@ namespace UnitTests.API
             RepositoryAPI register = registerProvider.SpawnHere()!;
 
             Assert.NotNull(register);
-            CheckRegister(register);
+            CheckRegister(register.ActorRef);
 
             Sys.Terminate();
         }
@@ -35,12 +36,14 @@ namespace UnitTests.API
             var config = SystemConfigs.RepositoryConfig;
             config.SystemName = Sys.Name;
 
+            new DeployPointInitializer(Sys).Init();
+
             // spawn del registro (in remoto) usando il provider
             var registerProvider = new RepositoryProvider(Sys, config);
-            RepositoryAPI register = registerProvider.SpawnRemote(Host.GetTestHost())!;
+            IActorRef? register = registerProvider.SpawnRemote(Host.GetTestHost());
 
             Assert.NotNull(register);
-            CheckRegister(register);
+            CheckRegister(register!);
 
             Sys.Terminate();
         }
@@ -51,17 +54,13 @@ namespace UnitTests.API
             var config = SystemConfigs.RepositoryConfig;
             config.SystemName = Sys.Name;
 
-            // spawn del registro (in remoto)
-            _ = Sys.ActorOf(
-                DronesRepositoryActor.Props()
-                    .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.SystemName))
-                        ))),
-                config.ActorName);
+            // spawn del registro
+            var spawner = Sys.ActorOf<SpawnerActor>("spawner");
+            spawner.Ask(new SpawnActorRequest(DronesRepositoryActor.Props(), config.ActorName)).Wait();
 
             // connessione (usando il provider)
             var registerProvider = new RepositoryProvider(Sys, config);
-            RepositoryAPI? register = registerProvider.TryConnectToExistent(Host.GetTestHost());
+            IActorRef? register = registerProvider.TryConnectToExistent(Host.GetTestHost());
 
             Assert.NotNull(register);
             CheckRegister(register!);
@@ -73,10 +72,10 @@ namespace UnitTests.API
         /// Controlla se il registro funziona
         /// </summary>
         /// <param name="register"></param>
-        private void CheckRegister(RepositoryAPI register)
+        private void CheckRegister(IActorRef register)
         {
-            register.ActorRef.Tell(new RegisterRequest(TestActor), TestActor);
-            ExpectMsgFrom<RegisterResponse>(register.ActorRef);
+            register.Tell(new RegisterRequest(TestActor), TestActor);
+            ExpectMsgFrom<RegisterResponse>(register);
         } 
-    }
+    }*/
 }

@@ -29,7 +29,7 @@ namespace Actors.DroneStates
         private Point2D _lastPositionCache;
 
         private readonly DateTime _startTime = DateTime.Now;
-        internal TimeSpan DoneFlyTime() => _startTime - DateTime.Now;
+        internal TimeSpan DoneFlyTime() => DateTime.Now - _startTime;
         internal TimeSpan RemainingFlyTime() => MissionPath.ExpectedDuration() - DoneFlyTime();
         
         public FlyingState(DroneActorState precedentState): base(precedentState) 

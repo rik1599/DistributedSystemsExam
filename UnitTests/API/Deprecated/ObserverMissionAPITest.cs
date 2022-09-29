@@ -10,8 +10,9 @@ using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 using DroneSystemAPI;
 
-namespace UnitTests.API
+namespace UnitTests.API.Deprecated
 {
+    /*
     /// <summary>
     /// Rappresentazione di situazioni nelle quali un nuovo nodo 
     /// spawna e deve gestirsi dei semplici conflitti (con un unico
@@ -33,14 +34,16 @@ namespace UnitTests.API
             var config = SystemConfigs.DroneConfig;
 
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
 
             // creo il tool per lo spawn di missioni
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner missionSpawner = new MissionSpawner(Sys,
                 register, ObserverMissionAPI.Factory(Sys), config);
 
             // spawno una missione
-            IMissionAPI a = spawner.SpawnHere(missionA, "DroneA")!;
+            IMissionAPI a = missionSpawner.SpawnHere(missionA, "DroneA")!;
             Assert.IsType<ObserverMissionAPI>(a);
 
             ObserverMissionAPI obsAPI = (ObserverMissionAPI) a;
@@ -82,17 +85,21 @@ namespace UnitTests.API
             config.SystemName = "test";
 
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository"); ;
 
             // creo il tool per lo spawn di missioni
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner spawner = new MissionSpawner(Sys,
                 register, ObserverMissionAPI.Factory(Sys), config);
 
             // spawno una missione
-            _ = spawner.SpawnHere(missionA, "DroneA");
+            var spawnerActor = Sys.ActorOf<SpawnerActor>("spawner");
+            spawnerActor.Ask(new SpawnActorRequest(DroneActor.Props(register, missionA), "DroneA")).Wait();
+
 
             // creo una seconda API per l'osservazione
-            ObserverMissionAPI? obsAPI = (ObserverMissionAPI?) new MissionProvider(Sys, config)
+            ObserverMissionAPI? obsAPI = (ObserverMissionAPI?) new MissionProvider(Sys, config, ObserverMissionAPI.Factory(Sys))
                 .TryConnectToExistent(Host.GetTestHost(), "DroneA");
 
             // ricevo tutte le notifiche
@@ -134,10 +141,12 @@ namespace UnitTests.API
             var config = SystemConfigs.DroneConfig;
 
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository"); ;
 
             // creo il tool per lo spawn di missioni
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner spawner = new MissionSpawner(Sys,
                 register, ObserverMissionAPI.Factory(Sys), config);
 
             // spawno due missioni 
@@ -163,21 +172,15 @@ namespace UnitTests.API
             config.SystemName = "test";
 
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository"); ;
 
             // spawno una missione manualmente
-            _ = Sys.ActorOf(
-                DroneActor.Props(register.ActorRef, missionA)
-                    .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(Host.GetTestHost().GetSystemAddress(config.SystemName))
-                        ))),
-                "DroneA");
-
+            var spawnerActor = Sys.ActorOf<SpawnerActor>("spawner");
+            spawnerActor.Ask(new SpawnActorRequest(DroneActor.Props(register, missionA), "DroneA")).Wait();
 
             // uso il tool per ricavare un'istanza dell'API e le richiedo lo stato
-            MissionSpawner spawner = new(Sys,
-                register, ObserverMissionAPI.Factory(Sys), config);
-
             IMissionAPI? a = new MissionProvider(Sys, config).TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
             Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
@@ -195,14 +198,19 @@ namespace UnitTests.API
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
             var config = SystemConfigs.DroneConfig;
+            config.SystemName = Sys.Name;
 
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository"); ;
 
             // uso il tool per spawnare in remoto una missione
             // e ricavare un'istanza dell'API
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner spawner = new MissionSpawner(Sys,
                 register, ObserverMissionAPI.Factory(Sys), config);
+
+            _ = Sys.ActorOf<SpawnerActor>("spawner");
 
             IMissionAPI a = spawner.SpawnRemote(Host.GetTestHost(), missionA, "DroneA")!;
             Assert.NotNull(a);
@@ -211,5 +219,5 @@ namespace UnitTests.API
             Sys.Terminate();
         }
         #endregion
-    }
+    }*/
 }

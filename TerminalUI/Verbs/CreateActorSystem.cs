@@ -1,19 +1,41 @@
 ﻿using CommandLine;
 using DroneSystemAPI;
+using DroneSystemAPI.APIClasses;
+using DroneSystemAPI.APIClasses.Utils;
 
 namespace TerminalUI.Verbs
 {
-    [Verb("create-actor-system", HelpText = "Genera un ActorSystem su questo Host con porta specificata")]
+    [Verb("create-actor-system", HelpText = "Genera un ActorSystem locale con porta specificata")]
     internal class CreateActorSystem : IVerb
     {
         [Option('p', HelpText = "Porta su cui generare l'ActorSystem", Default = 0)]
         public int Port { get; set; }
         public Environment Run(Environment env)
         {
-            var config = SystemConfigs.GenericConfig;
-            config.Port = Port;
+            try
+            {
+                var actorSystem = ActorSystemFactory.Create(
 
-            _ = ActorSystemFactory.CreateActorSystem(env, config, out var _);
+                    // dettagli della locazione
+                    new DeployPointDetails(
+                        new Host("localhost", Port), 
+                        Config2.Default().SystemName
+                        ), 
+
+                    // porta reale dove viene creato il sistema
+                    // (in caso che io abbia passato 0 come input)
+                    out var port);
+
+                env.ActorSystems.Add(port, actorSystem);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Creato actor system porta {port}");
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"ERRORE: {e.Message}");
+            }
 
             return env;
         }

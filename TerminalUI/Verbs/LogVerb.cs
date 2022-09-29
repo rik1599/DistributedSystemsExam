@@ -1,6 +1,7 @@
 ﻿using Akka.Util.Internal;
 using CommandLine;
 using System.Text;
+using TerminalUI.Tools;
 
 namespace TerminalUI.Verbs
 {
@@ -13,12 +14,25 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem a cui collegarsi", Required = true)]
         public int Port { get; set; }
 
-        [Value(0, HelpText = "ID della missione", Required = true)]
-        public int Mission { get; set; }
+        [Option('v', "verbose", HelpText = "Stampa tutti i dettagli", Default =false)]
+        public bool Verbose { get; set; }
+
+        [Option('s', "short", HelpText = "Stampa solo una versione sintetica", Default = false)]
+        public bool Short { get; set; }
+
+        [Value(0, HelpText = "Nome della missione", Required = true)]
+        public string? MissionName { get; set; }
 
         public Environment Run(Environment env)
-        {
-            var ID = $"{Mission}-{Host!}:{Port}";
+        {            
+            if (Verbose && Short)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine("Errore! non puoi stampare sia una versione sintetica che completa... deciditi :)");
+                return env;
+            }
+            
+            var ID = $"{MissionName}-{Host!}:{Port}";
             if (!env.Missions.ContainsKey(ID))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -27,35 +41,67 @@ namespace TerminalUI.Verbs
             }
 
             var missionInfo = env.Missions[ID];
+
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine($@"
-ID locale: {Mission}
+ID locale: {MissionName}
 Host: {missionInfo.Host}
+Attore drone: {missionInfo.API.GetDroneRef()}
 Missione terminata: {missionInfo.IsTerminated}
-Notifiche: {{
+Notifiche: [
     {PrintNotifications(missionInfo)}
-}}
-");
+]");
 
             return env;
         }
 
-        private static string PrintNotifications(MissionInfo mission)
+        private void _tryPing(MissionInfo mission)
+        {
+            if (!mission.IsTerminated)
+            {
+                try
+                {
+                    var currentState = mission.API.GetCurrentStatus().Result;
+                    mission.SafeAddNotification(currentState);
+                }
+                catch (Exception e)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Error.WriteLine("Attenzione: il ping è fallito " +
+                        "(potrebbe essere semplicemente che la missione è terminata). " +
+                        $"Eccezione:\n{e}");
+                }
+            }         
+        }
+
+        private string PrintNotifications(MissionInfo mission)
         {
             var notifications = mission.Notifications.ToArray().Reverse();
             var stringBuilder = new StringBuilder();
             foreach (var notification in notifications)
             {
-                stringBuilder.Append($@"
-    {{
-        Type: {notification.GetType()}
-        Timestamp: {notification.DroneTimestamp}
-        Age: {notification.Age}
-        Posizione attuale: {notification.CurrentPosition}
-    }}
-");
+                var dtoToStringTool = new StringFromDTOOrchestrator(notification);
 
-                //  Missione terminata con successo: {notification.IsMissionAccomplished}
+                if (Short)
+                {
+                    stringBuilder.Append(
+                        dtoToStringTool.GetString(1, 
+                        StringFromDTOOrchestrator.OutputType.MINIMAL));
+                }
+                else if (Verbose)
+                {
+                    stringBuilder.Append(
+                        dtoToStringTool.GetString(1,
+                        StringFromDTOOrchestrator.OutputType.COMPLETE));
+                }
+                else
+                {
+                    stringBuilder.Append(
+                        dtoToStringTool.GetString(1,
+                        StringFromDTOOrchestrator.OutputType.SMART));
+                }
+
+                stringBuilder.Append(",\n");
             }
             return stringBuilder.ToString();
         }

@@ -7,7 +7,7 @@ namespace TerminalUI
 {
     internal class MissionInfo
     {
-        public bool IsTerminated { get; private set; }
+        public bool IsTerminated { get; set; }
         public Host Host { get; set; }
         public List<DroneStateDTO> Notifications { get; }
         
@@ -29,10 +29,24 @@ namespace TerminalUI
             do
             {
                 var newNotifications = await API.AskForUpdates();
-                Notifications.AddRange(newNotifications);
+
+                lock (_notificationLock)
+                {
+                    Notifications.AddRange(newNotifications);
+                }
             } while (Notifications.Last() is not ExitStateDTO);
 
             IsTerminated = true;
+        }
+
+        private readonly object _notificationLock = new object();
+
+        public void SafeAddNotification(DroneStateDTO droneStateDTO)
+        {
+            lock (_notificationLock)
+            {
+                Notifications.Add(droneStateDTO);
+            }
         }
 
         public override string ToString()

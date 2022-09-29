@@ -31,12 +31,23 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem su cui spawnare la missione", Required = true)]
         public int Port { get; set; }
 
+        [Option('n', HelpText = "Nome della missione. Se non specificato viene generato automaticamente", Required = false)]
+        public string? MissionName { get; set; }
+
         public Environment Run(Environment env)
         {
-            if (env.RepositoryAPI is null)
+            if (!env.DroneDeliverySystemAPI.HasRepository())
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.WriteLine("Errore! Imposta prima un repository con spawn-repository o set-repository!");
+                return env;
+            }
+
+            Host host = new Host(Host!, Port);
+            if (!env.DroneDeliverySystemAPI.VerifyLocation(host))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Errore! nella locazione {host} non esiste un actor system attivo");
                 return env;
             }
 
@@ -49,24 +60,31 @@ namespace TerminalUI.Verbs
                 return env;
             }
 
-            var mission = new MissionPath(start, end, Speed);
-            var config = SystemConfigs.GenericConfig;
-            var host = new Host(Host!, Port);
-            var ID = $"{mission.GetHashCode()}-{Host}:{Port}";
-            var missionAPI = new MissionSpawner(
-                env.InterfaceActorSystem,
-                env.RepositoryAPI,
-                ObserverMissionAPI.Factory(env.InterfaceActorSystem),
-                config).SpawnRemote(host, mission, ID) as ObserverMissionAPI;
+            var missionPath = new MissionPath(start, end, Speed);
+
+            // costruzione di un nome univoco per la missione
+            MissionName = (MissionName is not null)
+                ? MissionName 
+                : missionPath.GetHashCode().ToString();
+            var ID = $"{MissionName}-{Host}:{Port}";
+
+            ObserverMissionAPI? missionAPI;
 
             try
             {
+                missionAPI = env.DroneDeliverySystemAPI
+                    .SpawnMission(host, missionPath, ID, 
+                    ObserverMissionAPI.Factory(env.InterfaceActorSystem)) 
+                    as ObserverMissionAPI;
+
+                // ping
                 _ = missionAPI!.GetCurrentStatus().Result;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore! Impossibile creare la missione sull'host specificato");
+                Console.Error.WriteLine($"Errore! La creazione della missione {MissionName} " +
+                    $"sull'host {host} specificato è fallita per colpa di un'eccezione:\n{e}");
                 return env;
             }
 
@@ -74,7 +92,11 @@ namespace TerminalUI.Verbs
             env.Missions.Add(ID, missionInfo);
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(mission.GetHashCode());
+            Console.WriteLine("Missione avviata!");
+            Console.WriteLine($"Nome:\t{MissionName}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"Usa il comando log {MissionName} -p{host.Port} [-h{host.HostName}] per " +
+                $"leggere le notifiche ricevute fin'ora.");
 
             return env;
         }

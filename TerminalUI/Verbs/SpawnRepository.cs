@@ -3,6 +3,7 @@ using CommandLine;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
 using DroneSystemAPI.APIClasses.Repository;
+using DroneSystemAPI.APIClasses.Utils;
 
 namespace TerminalUI.Verbs
 {
@@ -15,72 +16,58 @@ namespace TerminalUI.Verbs
         [Option('p', HelpText = "Porta dell'ActorSystem", Default = 0)]
         public int Port { get; set; }
 
+        [Option('f', HelpText = "Forza la creazione del nuovo repository anche se c'è già uno.", Default = false)]
+        public bool Force { get; set; }
+
         public Environment Run(Environment env)
         {
-            ActorSystem? system;
-            if (Host == "localhost" && !env.ActorSystems.ContainsKey(Port))
-            {
-                var configs = SystemConfigs.GenericConfig;
-                configs.ActorName = "repository";
-                configs.Port = Port;
-
-                system = ActorSystemFactory.CreateActorSystem(env, configs, out var port);
-                if (system is not null)
-                {
-                    Port = port;
-                }
-                else
-                    return env;
-            }
-
-            if (Host == "localhost" && env.ActorSystems.ContainsKey(Port))
-            {
-                system = env.ActorSystems[Port];
-            }
-            else
-            {
-                system = env.InterfaceActorSystem;
-            }
-
-            var repository = Spawn(system);
-            if (repository is not null)
-            {
-                if (env.RepositoryAPI is null)
-                {
-                    env.RepositoryAPI = repository;
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Repository impostato correttamente sul {new Host(Host!, Port)}");
-                }
-            }
-            else
+            if (Port == 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore! Impossibile creare il repository");
+                Console.Error.WriteLine("Errore! Impossibile creare il repository senza impostare un host.");
+                return env;
             }
+
+            Host host = new Host(Host!, Port);
+
+            if (!env.DroneDeliverySystemAPI.VerifyLocation(host))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Errore! nella locazione {host} non esiste un actor system attivo");
+                return env;
+            }
+
+
+            if (env.DroneDeliverySystemAPI.HasRepository())
+            {
+                if (!Force)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Error.WriteLine($"Errore: allo stato attuale esiste già un repository: " +
+                        $"{env.DroneDeliverySystemAPI.RepositoryAddress}. Usa l'opzione -f per forzare l'operazione.");
+                    return env;
+                } else
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"Attenzione: il repository {env.DroneDeliverySystemAPI.RepositoryAddress} verrà sovrascritto.");
+                    Console.WriteLine($"E' possibile re-impostarlo con il comando set-repository -pPorta [-hNomeHost] -f");
+                }
+            }
+            
+            try
+            {
+                env.DroneDeliverySystemAPI.DeployRepository(host);
+            } catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Errore durante il dispiegamento del repository. Rilevata eccezione:\n{e}");
+                return env;
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Repository creato correttamente: {env.DroneDeliverySystemAPI.RepositoryAddress}");
 
             return env;
-        }
-
-        private RepositoryAPI? Spawn(ActorSystem actorSystem)
-        {
-            var configs = SystemConfigs.GenericConfig;
-            configs.ActorName = "repository";
-
-            var repositoryAPI =
-                    new RepositoryProvider(actorSystem, configs)
-                    .SpawnRemote(new Host(Host!, Port));
-
-            if (repositoryAPI is null)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore! Host Remoto non raggiungibile");
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Error.WriteLine("Repository creato");
-            }
-            return repositoryAPI;
         }
     }
 }

@@ -12,8 +12,10 @@ using Actors.Messages.Register;
 using Actors.Messages.External;
 using DroneSystemAPI;
 
-namespace UnitTests.API
+namespace UnitTests.API.Deprecated
 {
+    /*
+    
     /// <summary>
     /// Rappresentazione di situazioni nelle quali un nuovo nodo 
     /// spawna e deve gestirsi dei semplici conflitti (con un unico
@@ -35,11 +37,13 @@ namespace UnitTests.API
             var config = SystemConfigs.DroneConfig;
             
             // creo il registro
-            var register = new RepositoryProvider(Sys).SpawnHere();
+            var register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
 
             // creo il tool per lo spawn di missioni
             var spawner = new MissionSpawner(Sys, 
-                register!, SimpleMissionAPI.Factory(), config);
+                register, SimpleMissionAPI.Factory(), config);
 
             // spawno due missioni 
             IMissionAPI a = spawner.SpawnHere(missionA, "DroneA")!;
@@ -64,19 +68,13 @@ namespace UnitTests.API
             droneConfig.SystemName = "test";
 
             // creo il registro
-            var register = new RepositoryProvider(Sys).SpawnHere()!;
+            var register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
 
             // spawno una missione manualmente
-            _ = Sys.ActorOf(
-                DroneActor.Props(register.ActorRef, missionA)
-                    .WithDeploy(Deploy.None.WithScope(new RemoteScope(
-                        Address.Parse(Host.GetTestHost().GetSystemAddress(droneConfig.SystemName))
-                        ))),
-                "DroneA");
-
-            // uso il tool per ricavare un'istanza dell'API e le richiedo lo stato
-            var spawner = new MissionSpawner(Sys,
-                register, SimpleMissionAPI.Factory(), droneConfig);
+            var spawner = Sys.ActorOf<SpawnerActor>("spawner");
+            spawner.Ask(new SpawnActorRequest(DroneActor.Props(register, missionA), "DroneA")).Wait();
 
             IMissionAPI? a = new MissionProvider(Sys, droneConfig).TryConnectToExistent(Host.GetTestHost(), "DroneA");
             Assert.NotNull(a);
@@ -95,15 +93,20 @@ namespace UnitTests.API
             var missionA = new MissionPath(Point2D.Origin, new Point2D(100, 100), 10.0f);
 
             var config = SystemConfigs.DroneConfig;
+            config.SystemName = "test";
+
+            new DeployPointInitializer(Sys).Init();
 
             // creo il registro
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
-
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
+            ;
             // uso il tool per spawnare in remoto una missione
             // e ricavare un'istanza dell'API
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner spawner = new MissionSpawner(Sys,
                 register, SimpleMissionAPI.Factory(), config);
-           
+
             IMissionAPI? a = spawner.SpawnRemote(Host.GetTestHost(), missionA, "DroneA");
             Assert.NotNull(a);
             Assert.IsAssignableFrom<DroneStateDTO>(a!.GetCurrentStatus().Result);
@@ -124,12 +127,16 @@ namespace UnitTests.API
             config.SystemName = "test";
 
             // creo il registro (e mi ci iscrivo)
-            RepositoryAPI register = new RepositoryProvider(Sys).SpawnHere()!;
-            register.ActorRef.Tell(new RegisterRequest(TestActor));
-            ExpectMsgFrom<RegisterResponse>(register.ActorRef);
+            IActorRef register = Sys.ActorOf(
+                DronesRepositoryActor.Props(),
+                "repository");
+
+
+            register.Tell(new RegisterRequest(TestActor));
+            ExpectMsgFrom<RegisterResponse>(register);
 
             // creo il tool per lo spawn di missioni
-            MissionSpawner spawner = new(Sys,
+            MissionSpawner spawner = new MissionSpawner(Sys,
                 register, SimpleMissionAPI.Factory(), config);
 
             // spawno una missione
@@ -151,5 +158,5 @@ namespace UnitTests.API
 
             Sys.Terminate();
         }
-    }
+    } */
 }

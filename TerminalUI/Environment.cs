@@ -1,9 +1,8 @@
-﻿using Actors.DTO;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.Actor.Internal;
+using Akka.Configuration;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
-using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 using DroneSystemAPI.APIClasses.Repository;
 
 namespace TerminalUI
@@ -11,19 +10,33 @@ namespace TerminalUI
     internal class Environment
     {
         public IDictionary<int, ActorSystem> ActorSystems { get; }
+
         public ActorSystem InterfaceActorSystem { get; }
-        public RepositoryAPI? RepositoryAPI { get; set; }
+
         public IDictionary<string, MissionInfo> Missions { get; }
+
+        /// <summary>
+        /// API principale per coordinare il sistema (da "client")
+        /// </summary>
+        public DroneDeliverySystemAPI DroneDeliverySystemAPI { get; }
+
         public Environment()
         {
+            // inizializzo actor system locale usato a scopo di interfaccia
+            InterfaceActorSystem = ActorSystem.Create(
+                "InterfaceActorSystem",
+                ConfigurationFactory.ParseString(_interfaceActorSystemHookon()));
+
+            // inizializzo le liste degli actor system gestiti localmente
             ActorSystems = new Dictionary<int, ActorSystem>();
-
-            var config = SystemConfigs.GenericConfig;
-            config.SystemName = "InterfaceActorSystem";
-            config.Port = 0;
-
-            InterfaceActorSystem = ActorSystem.Create(config.SystemName, config.Config);
             Missions = new Dictionary<string, MissionInfo>();
+
+            // inizializzo API
+            DroneDeliverySystemAPI = new DroneDeliverySystemAPI(
+                InterfaceActorSystem,
+                Config2.Default().SystemName,
+                Config2.Default().RepositoryActorName
+                );
         }
 
         public void Terminate()
@@ -35,30 +48,24 @@ namespace TerminalUI
                 system.Value.Terminate();
             }
         }
-    }
 
-    internal class ActorSystemFactory
-    {
-        public static ActorSystem? CreateActorSystem(Environment env, SystemConfigs config, out int port)
+        private static string _interfaceActorSystemHookon()
         {
-            ActorSystemImpl? system;
-            try
-            {
-                system = ActorSystem.Create(config.SystemName, config.Config) as ActorSystemImpl;
-                var assignedPort = system!.LookupRoot.Provider.DefaultAddress.Port;
-                env.ActorSystems.Add(assignedPort!.Value, system);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"ActorSystem creato alla porta {assignedPort}");
-                port = assignedPort.Value;
-            }
-            catch (Exception)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Porta già utilizzata!");
-                system = null;
-                port = 0;
-            }
-            return system;
+            return @$"
+akka {{
+    loglevel = WARNING
+    actor {{
+        provider = remote
+    }}
+    remote {{
+        dot-netty.tcp {{
+            port = 0
+            hostname = localhost
+        }}
+    }}
+}}";
         }
+
+
     }
 }
