@@ -7,6 +7,9 @@
     - [Esecuzione dell'applicazione da console](#esecuzione-dellapplicazione-da-console)
     - [Compilazione manuale](#compilazione-manuale)
   - [Uso dell'applicazione da console](#uso-dellapplicazione-da-console)
+    - [Help e utilities varie](#help-e-utilities-varie)
+    - [Creazione e gestione degli actor system](#creazione-e-gestione-degli-actor-system)
+    - [Note](#note)
 
 ## Introduzione
 
@@ -75,4 +78,27 @@ Si noti che compilando come spiegato nell'applicazione da terminale si visualizz
 
 ## Uso dell'applicazione da console
 
-[...work in progress...]
+L'interfaccia al sistema, per ora è un'applicazione da terminale. Di seguito si riporta una breve guida su come usare l'applicazione. 
+
+### Help e utilities varie
+
+- Per conoscere tutti i comandi, usare
+
+        help
+
+- Per conoscere tutte le opzioni di un comando, usare
+        
+        help NOME_COMANDO
+
+- Per pulire la console, usare
+
+        clear
+
+
+### Creazione e gestione degli actor system
+
+
+
+
+### Note
+
