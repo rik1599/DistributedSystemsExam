@@ -74,3 +74,5 @@ In alternativa a tale procedura, si può sempre fare affidamento a *Visual Studi
 Si noti che compilando come spiegato nell'applicazione da terminale si visualizzeranno anche degli output di debug (forse anche utili a comprendere il funzionamento del sistema).
 
 ## Uso dell'applicazione da console
+
+[...work in progress...]
