@@ -10,6 +10,11 @@ namespace TerminalUI.Verbs
     {
         [Option('p', HelpText = "Porta su cui generare l'ActorSystem", Default = 0)]
         public int Port { get; set; }
+
+        [Option('h', HelpText = "Hostname dell'ActorSystem, usare localhost (se si desidera eseguire il sistema solo su questo computer), oppure inserire il proprio indirizzo IP", Default = "localhost")]
+        public string? Hostname { get; set; }
+
+
         public Environment Run(Environment env)
         {
             try
@@ -18,7 +23,7 @@ namespace TerminalUI.Verbs
 
                     // dettagli della locazione
                     new DeployPointDetails(
-                        new Host("localhost", Port), 
+                        new Host(Hostname, Port), 
                         Config2.Default().SystemName
                         ), 
 
