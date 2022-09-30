@@ -12,7 +12,8 @@
     - [Creazione o impostazione del registro](#creazione-o-impostazione-del-registro)
     - [Creazione di missioni](#creazione-di-missioni)
     - [Panoramica generale di missioni e actor system](#panoramica-generale-di-missioni-e-actor-system)
-    - [Monitoraggio delle missioni](#monitoraggio-delle-missioni)
+    - [Monitoraggio delle missioni, notifiche e connessione a missioni remote](#monitoraggio-delle-missioni-notifiche-e-connessione-a-missioni-remote)
+    - [Comandi sulle missioni (ping e cancel)](#comandi-sulle-missioni-ping-e-cancel)
     - [Note](#note)
 
 ## Introduzione
@@ -158,23 +159,61 @@ Il comando per avviare una missione (su un actor system locale o remoto) è:
 
 Di seguito, si riporta un esempio di uso del comando per avviare una missione di nome <code>A</code> sull'actor-system creato nei comandi precedenti (si noti che - nel prototipo - le missioni possono essere dispiegate liberamente in qualunque actor system, anche in quelli già usati da altre missioni o dal registro):
 
-        spawn-mission 0 0 100 100 -p8080 -nA
+    spawn-mission 0 0 100 100 -p8080 -nA
 
 
 ### Panoramica generale di missioni e actor system
 
-[...work in progress...]
+Per visualizzare una panoramica generale del sistema (quindi degli actor system, delle missioni e del registro) usare il comando:
 
+    ls
 
-### Monitoraggio delle missioni
+Con le opzioni <code>-s</code>, <code>-m</code> e <code>-r</code> si può scegliere di visualizzare solo i sistemi, le missioni o il registro.
 
-[...work in progress...]
+Si noti che il comando permette di vedere solo ciò che è stato avviato da questa istanza dell'applicazione (o ciò a cui ci si è collegati).
+
+### Monitoraggio delle missioni, notifiche e connessione a missioni remote
+
+Una volta creata una missione, l'interfaccia crea automaticamente una connessione che permette di ricevere notifiche. Nella release <code>1.1.0</code> le notifiche vengono inviate direttamente dalla missione (ad una serie di "iscritti") ad ogni cambiamento di stato. 
+
+- Per visualizzare tutte le notifiche ricevute per una missione, usare il comando:
+
+        log NOME_MISSIONE -pPORTA [-hHOST]
+
+    Di base, i vari stati vengono presentati in ordine di ricezione con un livello di dettaglio intermedio. Con l'opzione <code>-v</code> (<code>--verbose</code>) si può visualizzare tutti i dettagli di ogni stato; con l'opzione <code>-s</code> (<code>--short</code>) invece si può decidere di visualizzare solo una sintesi.
+
+- Per iniziare a monitorare missioni non lanciate da questa interfaccia, si può usare il comando:
+
+        connect-to-mission NOME_MISSIONE -pPORTA [-hHOST]
+
+    Dopo essersi collegati ad una certa missione, si ricevono immediatamente tutte le notifiche precedenti.
+
+### Comandi sulle missioni (ping e cancel)
+
+Sulle missioni sono stati implementati per ora solo due comandi.
+
+- Per richiedere lo stato attuale di una missione si può usare il comando:
+
+        ping NOME_MISSIONE -pPORTA [-hHOST]
+
+    Per chiamare tale comando, la missione deve essere monitorata (quindi creata con <code>spawn-mission</code> oppure collegata con <code>connect-to-mission</code>). Il comando ping ha inoltre diverse opzioni aggiuntive:
+
+    - con <code>-v</code> (<code>--verbose</code>) e <code>-s</code> (<code>--short</code>) si può visualizzare il risultato in modo completo o sintetico (di base, si usa la stessa politica del comando <code>log</code>);
+    - con <code>-l</code> (<code>--log</code>) si può aggiungere il risultato alla lista delle notifiche;
+    - con <code>-f</code> (<code>--force</code>) si può forzare il tentativo di ping, anche se la missione è segnata come terminata.
+
+- Per annullare una missione si può utilizzare il comando:
+
+        cancel-mission NOME_MISSIONE -pPORTA [-hHOST]
+
+    Come per <code>ping</code> e <code>log</code>, si può chiamare solo su missioni a cui si è connessi. Con l'opzione <code>-k</code> (<code>--kill</code>) si può inviare una <code>PoisonPill</code> invece che una richiesta di annullamento; ciò porterà la missione a terminare in modo brutale (senza avvertire eventuali nodi con cui stava comunicando).
 
 ### Note
 
-- Nella release <code>1.1.0</code> **NON** si sono predispositi i comandi per spawnare actor system visibili in rete. Nel codice attualmente caricato sul branch <code>dev</code> però si è implementata l'opzione <code>-h</code>, che permette di fissare un IP e spawnare un actor system esposto alla rete:
+- Nella release <code>1.1.0</code> **NON** si sono predispositi i comandi per spawnare actor system visibili in rete. Nel concreto, ciò rende l'applicazione eseguibile solo lavorando da un computer (e usando <code>localhost</code> come IP). Nel codice attualmente caricato sul branch <code>dev</code> però si è implementata l'opzione <code>-h</code>, che permette di fissare un IP e spawnare un actor system esposto alla rete:
 
         create-actor-system -p8080 -hINDIRIZZO_IP
+
 
 
 
