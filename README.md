@@ -1,5 +1,13 @@
 # Esame di Sistemi Distribuiti: sistema di coordinamento di una flotta di droni per le consegne
 
+- [Esame di Sistemi Distribuiti: sistema di coordinamento di una flotta di droni per le consegne](#esame-di-sistemi-distribuiti-sistema-di-coordinamento-di-una-flotta-di-droni-per-le-consegne)
+  - [Introduzione](#introduzione)
+  - [Struttura del codice](#struttura-del-codice)
+  - [Compilazione ed esecuzione](#compilazione-ed-esecuzione)
+    - [Esecuzione dell'applicazione da console](#esecuzione-dellapplicazione-da-console)
+    - [Compilazione manuale](#compilazione-manuale)
+  - [Uso dell'applicazione da console](#uso-dellapplicazione-da-console)
+
 ## Introduzione
 
 Il progetto ha come scopo la realzzazione di una soluzione che permetta ad una *flotta di droni* (simulata) di *coordinare i propri spostamenti in uno spazio aereo*, al fine di evitare le collisioni 
@@ -65,4 +73,4 @@ In alternativa a tale procedura, si può sempre fare affidamento a *Visual Studi
 
 Si noti che compilando come spiegato nell'applicazione da terminale si visualizzeranno anche degli output di debug (forse anche utili a comprendere il funzionamento del sistema).
 
-
+## Uso dell'applicazione da console
