@@ -9,6 +9,10 @@
   - [Uso dell'applicazione da console](#uso-dellapplicazione-da-console)
     - [Help e utilities varie](#help-e-utilities-varie)
     - [Creazione e gestione degli actor system](#creazione-e-gestione-degli-actor-system)
+    - [Creazione o impostazione del registro](#creazione-o-impostazione-del-registro)
+    - [Creazione di missioni](#creazione-di-missioni)
+    - [Panoramica generale di missioni e actor system](#panoramica-generale-di-missioni-e-actor-system)
+    - [Monitoraggio delle missioni](#monitoraggio-delle-missioni)
     - [Note](#note)
 
 ## Introduzione
@@ -97,8 +101,82 @@ L'interfaccia al sistema, per ora è un'applicazione da terminale. Di seguito si
 
 ### Creazione e gestione degli actor system
 
+Per eseguire le missioni, è necessario avviare almeno un <code>ActorSystem</code>. Un actor system, in *Akka.NET* è una locazione dove si eseguono gli attori e - in un contesto di rete - è caratterizzata da un **indirizzo IP** e da una **porta**. 
+
+- per avviare un actor system (**gestito dall'istanza locale** dell'applicazione da console), usare il comando: 
+
+        create-actor-system
+
+    Il sistema assegnerà automanticamente una porta libera. Se si desidera scegliere la porta, utilizzare l'opzione <code>-p</code>, come mostrato di seguito:
+
+        create-actor-system -p8080
+
+    L'actor system sarà accessibile anche da altre istanze del programma (ad esempio, creabili eseguendo più volte l'applicazione da console), ma non sarà visibile in rete (a tal proposito, vedere le [note](#note)).
+
+- Per spegnere un actor system (tra quelli gestiti da questa istanza dell'applicazione) usare il comando:
+
+        terminate-actor-system -p8080
+
+- se termino questa istanza dell'applicazione, tutti gli actor system ovviamente smetteranno di funzionare, così come gli attori dispiegati in essi.
+
+    Si noti però che, potendo dispiegare attori anche su actor system non gestiti da me, se termino, questi continueranno ad eseguire.
+
+### Creazione o impostazione del registro
+
+Il registro (o *repository*) dei nodi è l'unica componente centralizzata del sistema. Consiste in un server che gli attori delle missioni contattano **una sola volta** per ricevere una lista degli altri attori presenti nel sistema.
+
+Per avviare le missioni, è necessario creare o impostare un registro.
+
+- Per avviare un registro su un actor system (locale o remoto) usare il comando:
+
+        spawn-repository -p8080 [-hHOST]
+
+- Per usare un registro già esistente usare il comando 
+
+        set-repository -p8080 [-hHOST]
+
+- Se si ha già creato/impostato un registro, i comandi <code>spawn</code> e <code>set</code> daranno errore. Usare l'opzione <code>-f</code> per forzare la scelta.
+
+- Come si può osservare, il parametro per l'host <code>-h</code> non è obbligatorio. Di base si utilizza come valore <code>localhost</code>.
+
+### Creazione di missioni
+
+Una missione è visibile come la richiesta di percorrere una tratta da un punto di partenza <code>(START_X,START_Y)</code> ad uno di arrivo <code>(END_X,END_Y)</code>. 
+
+Il comando per avviare una missione (su un actor system locale o remoto) è:
+
+        spawn-mission START_X START_Y END_X END_Y -pPORTA [-hHOST] [-nNOME_MISSIONE] 
 
 
+- I primi quattro parametri rappresentano le coordinate del punto di partenza e di quello di arrivo, sono **numeri interi** e sono **obbligatori**.
+
+- L'opzione <code>-p</code> è la porta dell'actor system dove avviare l'attore ed è anch'essa obbligatoria. L'host <code>-h</code> invece non è obbligatorio; come per i registri, anche in questo caso se non si specifica viene usato come valore <code>localhost</code>.
+
+- L'opzione <code>-n</code> permette di dare un nome alla missione. Il nome viene usato per identificare la missione, peranto è bene sia univoco almeno all'interno dell'actor system dove è stata spawnata (**anche rispetto a missioni passate già terminate**). 
+
+    Il parametro non è obbligatorio; se non si imposta nulla, il sistema genera automaticamente un codice numerico.
+
+Di seguito, si riporta un esempio di uso del comando per avviare una missione di nome <code>A</code> sull'actor-system creato nei comandi precedenti (si noti che - nel prototipo - le missioni possono essere dispiegate liberamente in qualunque actor system, anche in quelli già usati da altre missioni o dal registro):
+
+        spawn-mission 0 0 100 100 -p8080 -nA
+
+
+### Panoramica generale di missioni e actor system
+
+[...work in progress...]
+
+
+### Monitoraggio delle missioni
+
+[...work in progress...]
 
 ### Note
+
+- Nella release <code>1.1.0</code> **NON** si sono predispositi i comandi per spawnare actor system visibili in rete. Nel codice attualmente caricato sul branch <code>dev</code> però si è implementata l'opzione <code>-h</code>, che permette di fissare un IP e spawnare un actor system esposto alla rete:
+
+        create-actor-system -p8080 -hINDIRIZZO_IP
+
+
+
+
 
