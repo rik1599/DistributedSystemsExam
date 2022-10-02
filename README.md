@@ -14,7 +14,7 @@
     - [Panoramica generale di missioni e actor system](#panoramica-generale-di-missioni-e-actor-system)
     - [Monitoraggio delle missioni, notifiche e connessione a missioni remote](#monitoraggio-delle-missioni-notifiche-e-connessione-a-missioni-remote)
     - [Comandi sulle missioni (ping e cancel)](#comandi-sulle-missioni-ping-e-cancel)
-    - [Note](#note)
+    - [Dispiegamento del sistema in rete](#dispiegamento-del-sistema-in-rete)
 
 ## Introduzione
 
@@ -54,7 +54,7 @@ Per una panoramica della struttura del codice si può fare riferimento ai diagra
 
 ### Esecuzione dell'applicazione da console
 
-Per usare l'applicazione da console, è sufficente scaricare e avviare l'eseguibile più adatto per il proprio sistema operativo dagli asset dell'[ultima release](https://github.com/rik1599/DistributedSystemsExam/releases/tag/v1.1.0). 
+Per usare l'applicazione da console, è sufficente scaricare e avviare l'eseguibile più adatto per il proprio sistema operativo dagli asset dell'[ultima release](https://github.com/rik1599/DistributedSystemsExam/releases/tag/v1.1.1). 
 
 
 ### Compilazione manuale
@@ -112,7 +112,9 @@ Per eseguire le missioni, è necessario avviare almeno un <code>ActorSystem</cod
 
         create-actor-system -p8080
 
-    L'actor system sarà accessibile anche da altre istanze del programma (ad esempio, creabili eseguendo più volte l'applicazione da console), ma non sarà visibile in rete (a tal proposito, vedere le [note](#note)).
+    L'actor system sarà accessibile anche da altre istanze del programma (ad esempio, creabili eseguendo più volte l'applicazione da console), ma non sarà visibile in rete. Per renderlo visibile in rete bisogna esplicitamente assegnarli l'indirizzo IP con il parametro <code>-h</code>. 
+    
+    A tal proposito, leggere la nota sul [dispiegamento del sistema in rete](#dispiegamento-del-sistema-in-rete).
 
 - Per spegnere un actor system (tra quelli gestiti da questa istanza dell'applicazione) usare il comando:
 
@@ -121,6 +123,7 @@ Per eseguire le missioni, è necessario avviare almeno un <code>ActorSystem</cod
 - se termino questa istanza dell'applicazione, tutti gli actor system ovviamente smetteranno di funzionare, così come gli attori dispiegati in essi.
 
     Si noti però che, potendo dispiegare attori anche su actor system non gestiti da me, se termino, questi continueranno ad eseguire.
+
 
 ### Creazione o impostazione del registro
 
@@ -159,7 +162,15 @@ Il comando per avviare una missione (su un actor system locale o remoto) è:
 
 Di seguito, si riporta un esempio di uso del comando per avviare una missione di nome <code>A</code> sull'actor-system creato nei comandi precedenti (si noti che - nel prototipo - le missioni possono essere dispiegate liberamente in qualunque actor system, anche in quelli già usati da altre missioni o dal registro):
 
-    spawn-mission 0 0 100 100 -p8080 -nA
+        spawn-mission 0 0 100 100 -p8080 -nA
+
+**NOTA**: quando successivamente ci si riferirà alla missione, si dovrà sempre specificare il nome (senza <code>-n</code>), la porta (con l'opzione <code>-p</code>) e - se diverso da <code>localhost</code> - l'indirizzo (con l'opzione <code>-h</code>). Struttura di un comando chiamato sulla missione spawnata nel comando precedente:
+
+        COMANDO_SU_MISSIONE A -p8080 [altre opzioni varie]
+
+Esempio di comando su missione spawnata in rete:
+
+        COMANDO_SU_MISSIONE A -p8080 -h192.168.1.192 [altre opzioni varie]
 
 
 ### Panoramica generale di missioni e actor system
@@ -174,7 +185,7 @@ Si noti che il comando permette di vedere solo ciò che è stato avviato da ques
 
 ### Monitoraggio delle missioni, notifiche e connessione a missioni remote
 
-Una volta creata una missione, l'interfaccia crea automaticamente una connessione che permette di ricevere notifiche. Nella release <code>1.1.0</code> le notifiche vengono inviate direttamente dalla missione (ad una serie di "iscritti") ad ogni cambiamento di stato. 
+Una volta creata una missione, l'interfaccia crea automaticamente una connessione che permette di ricevere notifiche. Dalla release <code>1.1.0</code> le notifiche vengono inviate direttamente dalla missione (ad una serie di "iscritti") ad ogni cambiamento di stato. 
 
 - Per visualizzare tutte le notifiche ricevute per una missione, usare il comando:
 
@@ -208,11 +219,16 @@ Sulle missioni sono stati implementati per ora solo due comandi.
 
     Come per <code>ping</code> e <code>log</code>, si può chiamare solo su missioni a cui si è connessi. Con l'opzione <code>-k</code> (<code>--kill</code>) si può inviare una <code>PoisonPill</code> invece che una richiesta di annullamento; ciò porterà la missione a terminare in modo brutale (senza avvertire eventuali nodi con cui stava comunicando).
 
-### Note
+### Dispiegamento del sistema in rete
 
-- Nella release <code>1.1.0</code> **NON** si sono predispositi i comandi per spawnare actor system visibili in rete. Nel concreto, ciò rende l'applicazione eseguibile solo lavorando da un computer (e usando <code>localhost</code> come IP). Nel codice attualmente caricato sul branch <code>dev</code> però si è implementata l'opzione <code>-h</code>, che permette di fissare un IP e spawnare un actor system esposto alla rete:
+Dalla release <code>1.1.1</code> si sono predisposti i comandi che permettono di dispiegare il sistema in rete. Per dispiegare un sistema in rete, in fase di creazione degli ActorSystem si specifica l'indirizzo IP (quello della macchina corrente) con il parametro <code>-h</code>. Esempio:
 
-        create-actor-system -p8080 -hINDIRIZZO_IP
+        create-actor-system -p8080 -h192.168.1.192
+
+L'host verrà poi specificato anche in tutti gli altri comandi, sempre con l'opzione <code>-h</code>.
+
+**NOTA IMPORTANTE**: non mescolare ActorSystem locali e remoti. Se in fase di creazione si assegna all'host un valore <code>-hlocalhost</code>, al momento il sistema non risulterà visibile in rete. Attualmente assegnare esplicitamente il proprio indirizzo IP e la stringa <code>localhost</code> **NON** è equivalente.
+
 
 
 
