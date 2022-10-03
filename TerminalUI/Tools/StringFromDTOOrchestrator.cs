@@ -8,7 +8,7 @@ namespace TerminalUI.Tools
     /// tipo)
     /// 
     /// [TODO (poco prioritario): correggere questa soluzione 
-    /// terribile con un più elegante Vistor sul DTO.]
+    /// terribile con un più elegante Visitor sul DTO.]
     /// </summary>
     public class StringFromDTOOrchestrator
     {
@@ -27,25 +27,27 @@ namespace TerminalUI.Tools
 
         private void AddPreferredInfoAccordingToType()
         {
-            if (_bobTheBuilder.DTO is InitStateDTO)
+            switch (_bobTheBuilder.DTO)
             {
-                _bobTheBuilder.AddConnectionDetails();
+                case InitStateDTO _:
+                    _bobTheBuilder.AddConnectionDetails();
+                    break;
 
-            } 
-            else if (_bobTheBuilder.DTO is NegotiateStateDTO || 
-                _bobTheBuilder.DTO is WaitingStateDTO)
-            {
-                _bobTheBuilder.AddConflictInfo();
+                case NegotiateStateDTO _:
+                    _bobTheBuilder.AddConflictInfo();
+                    break;
 
-            } 
-            else if (_bobTheBuilder.DTO is FlyingStateDTO)
-            {
-                _bobTheBuilder.AddFlyDetails();
+                case WaitingStateDTO _:
+                    _bobTheBuilder.AddConflictInfo();
+                    break;
 
-            } 
-            else if (_bobTheBuilder.DTO is ExitStateDTO)
-            {
-                _bobTheBuilder.AddExitDetails();
+                case FlyingStateDTO _:
+                    _bobTheBuilder.AddFlyDetails();
+                    break;
+
+                case ExitStateDTO _:
+                    _bobTheBuilder.AddExitDetails();
+                    break;
             }
         }
 

@@ -50,7 +50,7 @@ namespace TerminalUI.Tools
                             + "\n}", 2);
                     })) + "\n\t], "
                 + "\n\tMissioni che MI attendono (p<mia): ["
-                    + string.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
+                    + string.Join(", ", _dto.GetSmallerPriorityMissions().Select(m =>
                     {
                         return ApplyIndent("\n{"
                             + $"\n\tNodeRef: {ApplyIndent(m.NodeRef.ToString()!)}, "

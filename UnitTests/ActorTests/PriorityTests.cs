@@ -1,7 +1,7 @@
 using Actors.MissionPathPriority;
 using MathNet.Spatial.Euclidean;
 
-namespace UnitTests
+namespace UnitTests.ActorTests
 {
     public class PriorityTests
     {
