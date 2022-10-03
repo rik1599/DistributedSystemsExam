@@ -54,7 +54,7 @@ Per una panoramica della struttura del codice si può fare riferimento ai diagra
 
 ### Esecuzione dell'applicazione da console
 
-Per usare l'applicazione da console, è sufficente scaricare e avviare l'eseguibile più adatto per il proprio sistema operativo dagli asset dell'[ultima release](https://github.com/rik1599/DistributedSystemsExam/releases/tag/v1.1.1). 
+Per usare l'applicazione da console, è sufficente scaricare e avviare l'eseguibile più adatto per il proprio sistema operativo dagli asset dell'[ultima release](https://github.com/rik1599/DistributedSystemsExam/releases/tag/v1.1.2). 
 
 
 ### Compilazione manuale
