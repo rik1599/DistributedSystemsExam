@@ -1,7 +1,5 @@
 ﻿using CommandLine;
-using DroneSystemAPI.APIClasses.Repository;
 using DroneSystemAPI.APIClasses;
-using DroneSystemAPI;
 
 namespace TerminalUI.Verbs
 {
@@ -26,7 +24,7 @@ namespace TerminalUI.Verbs
                 return env;
             }
 
-            Host host = new Host(Host!, Port);
+            var host = new Host(Host!, Port);
 
             if (env.DroneDeliverySystemAPI.HasRepository())
             {
@@ -61,26 +59,6 @@ namespace TerminalUI.Verbs
 
 
             return env;
-            /*
-            var configs = SystemConfigs.GenericConfig;
-            configs.ActorName = "repository";
-
-            var repositoryAPI = new RepositoryProvider(env.InterfaceActorSystem, configs)
-                .TryConnectToExistent(new Host(Host!, Port));
-
-            if (repositoryAPI is null)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Errore: repository non trovato!");
-            }
-            else
-            {
-                env.RepositoryAPI = repositoryAPI;
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Repository impostato correttamente sulla porta {Port}");
-            }
-
-            return env;*/
         }
     }
 }

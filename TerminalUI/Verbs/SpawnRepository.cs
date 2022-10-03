@@ -1,9 +1,5 @@
-﻿using Akka.Actor;
-using CommandLine;
-using DroneSystemAPI;
+﻿using CommandLine;
 using DroneSystemAPI.APIClasses;
-using DroneSystemAPI.APIClasses.Repository;
-using DroneSystemAPI.APIClasses.Utils;
 
 namespace TerminalUI.Verbs
 {
@@ -28,7 +24,7 @@ namespace TerminalUI.Verbs
                 return env;
             }
 
-            Host host = new Host(Host!, Port);
+            var host = new Host(Host!, Port);
 
             if (!env.DroneDeliverySystemAPI.VerifyLocation(host))
             {

@@ -1,12 +1,7 @@
 ﻿using Actors.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TerminalUI.Tools
-{   
+{
     /// <summary>
     /// Strumento per generare un output a partire 
     /// da un drone state DTO (facendo attenzione al 
@@ -22,7 +17,7 @@ namespace TerminalUI.Tools
             MINIMAL, SMART, COMPLETE,
         }
 
-        private StringBuilderFromDTO _bobTheBuilder;
+        private readonly StringBuilderFromDTO _bobTheBuilder;
 
         public StringFromDTOOrchestrator(DroneStateDTO dto)
         {
@@ -30,7 +25,7 @@ namespace TerminalUI.Tools
                 .AddBasicInfo();
         }
 
-        private void _addPreferredInfoAccordingToType()
+        private void AddPreferredInfoAccordingToType()
         {
             if (_bobTheBuilder.DTO is InitStateDTO)
             {
@@ -54,7 +49,7 @@ namespace TerminalUI.Tools
             }
         }
 
-        public String GetString(int indent = 0, OutputType outputType=OutputType.SMART)
+        public string GetString(int indent = 0, OutputType outputType=OutputType.SMART)
         {
             switch (outputType)
             {
@@ -68,7 +63,7 @@ namespace TerminalUI.Tools
                         .AddExitDetails()
                         .GetString(indent);
                 default:
-                    _addPreferredInfoAccordingToType();
+                    AddPreferredInfoAccordingToType();
                     return _bobTheBuilder.GetString(indent);
                 
             }

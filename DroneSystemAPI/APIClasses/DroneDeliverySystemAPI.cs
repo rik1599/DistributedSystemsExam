@@ -3,11 +3,6 @@ using Actors.MissionPathPriority;
 using Akka.Actor;
 using DroneSystemAPI.APIClasses.Mission;
 using DroneSystemAPI.APIClasses.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DroneSystemAPI.APIClasses
 {
@@ -24,12 +19,12 @@ namespace DroneSystemAPI.APIClasses
         /// Il nome di tutti gli actor system che compongono questo 
         /// sistema (ad eccezione di quelli "di interfaccia").
         /// </summary>
-        public String SystemName { get; }
+        public string SystemName { get; }
 
         /// <summary>
         /// Il nome che mi attendo abbia il nodo repository
         /// </summary>
-        public String RepositoryActorName { get; }
+        public string RepositoryActorName { get; }
 
         public DroneDeliverySystemAPI(ActorSystem interfaceActorSystem, string systemName, string repositoryActorName)
         {

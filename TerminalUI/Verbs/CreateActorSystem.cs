@@ -23,7 +23,7 @@ namespace TerminalUI.Verbs
 
                     // dettagli della locazione
                     new DeployPointDetails(
-                        new Host(Hostname, Port), 
+                        new Host(Hostname!, Port), 
                         Config2.Default().SystemName
                         ), 
 

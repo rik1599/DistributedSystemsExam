@@ -1,11 +1,6 @@
 ﻿using Actors;
 using Akka.Actor;
 using Akka.Actor.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DroneSystemAPI.APIClasses
 {
@@ -22,7 +17,7 @@ namespace DroneSystemAPI.APIClasses
         public DeployPointInitializer(ActorSystem thisActorSystem)
         {
             ThisActorSystem = thisActorSystem;
-            ThisHost = _resolveHostFromActorSystem(thisActorSystem);
+            ThisHost = ResolveHostFromActorSystem(thisActorSystem);
         }
 
         public DeployPointInitializer(DeployPointDetails deployPointDetails)
@@ -32,7 +27,7 @@ namespace DroneSystemAPI.APIClasses
                 _resolveHookonFromHost(deployPointDetails.Host)
                 );
 
-            ThisHost = _resolveHostFromActorSystem(ThisActorSystem);
+            ThisHost = ResolveHostFromActorSystem(ThisActorSystem);
         }
 
 
@@ -54,8 +49,8 @@ namespace DroneSystemAPI.APIClasses
             try
             {
                 var res = _spawnerActor.Ask(new SpawnActorTestMessage(), new TimeSpan(0,0,5)).Result;
-                if (res is bool)
-                    return (bool) res;
+                if (res is bool boolean)
+                    return boolean;
                 else 
                     return false;
             }
@@ -66,7 +61,7 @@ namespace DroneSystemAPI.APIClasses
             
         }
 
-        private static Host _resolveHostFromActorSystem(ActorSystem actorSystem)
+        private static Host ResolveHostFromActorSystem(ActorSystem actorSystem)
         {
             if (actorSystem is not ActorSystemImpl)
                 throw new CannotSolveHostException($"Errore, non riesco a ricavare un host dall'ActorSystem:\n{actorSystem}");

@@ -1,7 +1,6 @@
 ﻿using Actors.DTO;
 using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 using DroneSystemAPI.APIClasses;
-using Newtonsoft.Json;
 
 namespace TerminalUI
 {

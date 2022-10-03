@@ -1,8 +1,6 @@
 ﻿using Actors.MissionPathPriority;
 using CommandLine;
-using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
-using DroneSystemAPI.APIClasses.Mission;
 using DroneSystemAPI.APIClasses.Mission.ObserverMissionAPI;
 
 namespace TerminalUI.Verbs

@@ -98,9 +98,7 @@ namespace DroneSystemAPI.APIClasses.Utils
                         .ResolveOne(_timeout).Result;
 
                 var res = remoteSpawner.Ask(new SpawnActorTestMessage()).Result;
-                if (res is bool)
-                    return (bool) res;
-                else return false;
+                return res is bool boolean && boolean;
             }
             catch (Exception)
             {

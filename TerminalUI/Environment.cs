@@ -1,9 +1,7 @@
 ﻿using Akka.Actor;
-using Akka.Actor.Internal;
 using Akka.Configuration;
 using DroneSystemAPI;
 using DroneSystemAPI.APIClasses;
-using DroneSystemAPI.APIClasses.Repository;
 
 namespace TerminalUI
 {
@@ -25,7 +23,7 @@ namespace TerminalUI
             // inizializzo actor system locale usato a scopo di interfaccia
             InterfaceActorSystem = ActorSystem.Create(
                 "InterfaceActorSystem",
-                ConfigurationFactory.ParseString(_interfaceActorSystemHookon()));
+                ConfigurationFactory.ParseString(InterfaceActorSystemHocon));
 
             // inizializzo le liste degli actor system gestiti localmente
             ActorSystems = new Dictionary<int, ActorSystem>();
@@ -49,9 +47,7 @@ namespace TerminalUI
             }
         }
 
-        private static string _interfaceActorSystemHookon()
-        {
-            return @$"
+        private static string InterfaceActorSystemHocon => @"
 akka {{
     loglevel = WARNING
     actor {{
@@ -64,8 +60,6 @@ akka {{
         }}
     }}
 }}";
-        }
-
 
     }
 }

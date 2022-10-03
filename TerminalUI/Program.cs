@@ -1,5 +1,4 @@
-﻿
-using CommandLine;
+﻿using CommandLine;
 using System.Reflection;
 using TerminalUI.Verbs;
 using Environment = TerminalUI.Environment;

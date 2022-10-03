@@ -1,7 +1,5 @@
 ﻿using Actors.DTO;
-using Akka.Util.Internal;
 using CommandLine;
-using System.Text;
 using TerminalUI.Tools;
 
 namespace TerminalUI.Verbs
@@ -99,12 +97,12 @@ namespace TerminalUI.Verbs
 ID locale: {MissionName}
 Host: {missionInfo.Host}
 Missione terminata: {missionInfo.IsTerminated}
-Esito del log: {getDTOString(pingResult)}");
+Esito del log: {GetDTOString(pingResult)}");
 
             return env;
         }
 
-        private string getDTOString(DroneStateDTO dto)
+        private string GetDTOString(DroneStateDTO dto)
         {
             var dtoToStringTool = new StringFromDTOOrchestrator(dto);
 

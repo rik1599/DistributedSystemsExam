@@ -1,27 +1,22 @@
 ﻿using Actors.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TerminalUI.Tools
 {
     public class StringBuilderFromDTO
     {
-        private DroneStateDTO _dto;
-        private String _dtoAsString;
+        private readonly DroneStateDTO _dto;
+        private string _dtoAsString;
 
         public DroneStateDTO DTO { get { return _dto; } }   
 
-        public String GetString(int indent=0) 
+        public string GetString(int indent=0) 
         { 
             if (_dtoAsString == "")
             {
                 throw new Exception("Usa i metodi per aggiungere qualche informazione prima di estrarre la stringa.");
             }
             
-            return _applyIndent("\n{" + _dtoAsString + "\n}", indent);
+            return ApplyIndent("\n{" + _dtoAsString + "\n}", indent);
         }
 
         public StringBuilderFromDTO(DroneStateDTO dto)
@@ -44,31 +39,31 @@ namespace TerminalUI.Tools
         {
             _dtoAsString = _dtoAsString
                 + $"\n\tNumero Negoziazione: {_dto.NegotiationsCount}, "
-                + $"\n\tPriorità: {_applyIndent(_dto.CurrentPriority.ToString()!)}, "
+                + $"\n\tPriorità: {ApplyIndent(_dto.CurrentPriority.ToString()!)}, "
                 + "\n\tMissioni che attendo (p>mia): ["
-                    + String.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
+                    + string.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
                     {
-                        return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString()!)}, "
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString()!)}, "
-                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString()!)}, " 
+                        return ApplyIndent("\n{"
+                            + $"\n\tNodeRef: {ApplyIndent(m.NodeRef.ToString()!)}, "
+                            + $"\n\tPath: {ApplyIndent(m.MissionPath.ToString()!)}, "
+                            + $"\n\tPriority: {ApplyIndent(m.Priority.ToString()!)}, " 
                             + "\n}", 2);
                     })) + "\n\t], "
                 + "\n\tMissioni che MI attendono (p<mia): ["
-                    + String.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
+                    + string.Join(", ", _dto.GetGreaterPriorityMissions().Select(m =>
                     {
-                        return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString()!)}, "
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString()!)}, "
-                            + $"\n\tPriority: {_applyIndent(m.Priority.ToString()!)}, "
+                        return ApplyIndent("\n{"
+                            + $"\n\tNodeRef: {ApplyIndent(m.NodeRef.ToString()!)}, "
+                            + $"\n\tPath: {ApplyIndent(m.MissionPath.ToString()!)}, "
+                            + $"\n\tPriority: {ApplyIndent(m.Priority.ToString()!)}, "
                             + "\n}", 2);
                     })) + "\n\t], "
                 + "\n\tMissioni in volo: ["
-                    + String.Join(", ", _dto.FlyingConflictMissions.Select(m =>
+                    + string.Join(", ", _dto.FlyingConflictMissions.Select(m =>
                     {
-                        return _applyIndent("\n{"
-                            + $"\n\tNodeRef: {_applyIndent(m.NodeRef.ToString()!)}, "
-                            + $"\n\tPath: {_applyIndent(m.MissionPath.ToString()!)}, "
+                        return ApplyIndent("\n{"
+                            + $"\n\tNodeRef: {ApplyIndent(m.NodeRef.ToString()!)}, "
+                            + $"\n\tPath: {ApplyIndent(m.MissionPath.ToString()!)}, "
                             + $"\n\tSafe-Time-To-Fly: {m.RemainingTimeForSafeStart}, "
                             + "\n}, ", 2);
                     })) + "\n\t], ";
@@ -80,7 +75,7 @@ namespace TerminalUI.Tools
         {
             _dtoAsString = _dtoAsString
                 + $"\n\tNodi noti: ["
-                    + String.Join(", ", _dto.KnownNodes.Select(n =>
+                    + string.Join(", ", _dto.KnownNodes.Select(n =>
                     {
                         return $"\n\t\t{n}";
                     })) + "\n\t], ";
@@ -89,14 +84,13 @@ namespace TerminalUI.Tools
             {
                 _dtoAsString = _dtoAsString + 
                     $"\n\tConnessioni mancanti: ["
-                    + String.Join(", ", @dto.MissingConnections.Select(n =>
+                    + string.Join(", ", @dto.MissingConnections.Select(n =>
                     {
                         return $"\n\t\t{n}";
                     })) + "\n\t], ";
             } else
             {
-                _dtoAsString = _dtoAsString +
-                    $"\n\tConnessioni mancanti: [ ]";
+                _dtoAsString += $"\n\tConnessioni mancanti: [ ]";
             }
 
             return this;
@@ -132,20 +126,20 @@ namespace TerminalUI.Tools
             return this;
         }
 
-        private static string _applyIndent(string str, int indent=1)
+        private static string ApplyIndent(string str, int indent=1)
         {
             if (indent == 0)
             {
                 return str;
             } else if (indent > 0)
             {
-                return _applyIndent(
+                return ApplyIndent(
                     str.Replace("\n", "\n\t"), 
                     indent-1
                     );
             } else
             {
-                return _applyIndent(
+                return ApplyIndent(
                     str.Replace("\n\t", "\n"),
                     indent + 1
                     );

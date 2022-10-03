@@ -6,12 +6,8 @@ namespace TerminalUI.Verbs
     [Verb("terminate-actor-system", HelpText = "Termina un actor system (gestito da questa istanza)")]
     internal class TerminateActorSystem : IVerb
     {
-        // [Option('h', HelpText = "Hostname dell'ActorSystem", Default = "localhost")]
-        // public string? Host { get; set; }
-
         [Option('p', HelpText = "Porta dell'ActorSystem da terminare", Required = true)]
         public int Port { get; set; }
-
 
         public Environment Run(Environment env)
         {

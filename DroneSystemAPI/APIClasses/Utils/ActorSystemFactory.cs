@@ -22,7 +22,7 @@ namespace DroneSystemAPI.APIClasses.Utils
             // [todo: studiare che eccezioni lancia]
             ActorSystemImpl? system = ActorSystem.Create(
                     deployPointDetails.ActorSystemName,
-                    ConfigurationFactory.ParseString(_makeHookon(deployPointDetails.Host))
+                    ConfigurationFactory.ParseString(MakeHookon(deployPointDetails.Host))
                     ) as ActorSystemImpl;
 
             // estraggo la porta reale che è stata assegnata
@@ -34,7 +34,7 @@ namespace DroneSystemAPI.APIClasses.Utils
             return system;
         }
 
-        private static string _makeHookon(Host host)
+        private static string MakeHookon(Host host)
         {
             return @$"
 akka {{
