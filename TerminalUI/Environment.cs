@@ -48,18 +48,18 @@ namespace TerminalUI
         }
 
         private static string InterfaceActorSystemHocon => @"
-akka {{
+akka {
     loglevel = WARNING
-    actor {{
+    actor {
         provider = remote
-    }}
-    remote {{
-        dot-netty.tcp {{
+    }
+    remote {
+        dot-netty.tcp {
             port = 0
             hostname = localhost
-        }}
-    }}
-}}";
+        }
+    }
+}";
 
     }
 }
